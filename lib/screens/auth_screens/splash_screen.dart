@@ -1,6 +1,5 @@
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
-import 'package:dispatched_calculator_app/screens/home_screens/smaple.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
