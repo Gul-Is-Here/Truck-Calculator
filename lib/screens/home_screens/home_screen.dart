@@ -1,11 +1,10 @@
-import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
-
 import '../../widgets/custome_textFormField.dart';
+import '../../widgets/customized_row_label_widget.dart';
+import 'mileage_fee_section.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,221 +12,125 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var homeController = Get.put(HomeController());
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
-        title: Text(
+        title: const Text(
           'Truck Calculator',
-          style: TextStyle(color: Colors.white, fontFamily: 'Raleway-Bold'),
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: SingleChildScrollView(
         child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              10.heightBox,
-              Center(
+          key: formKey,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Center(
                   child: Text(
-                'Truck Weekly Cost',
-                style: TextStyle(fontFamily: 'Raleway-Bold', fontSize: 18),
-              )),
-              10.heightBox,
+                    'Truck Monthly Cost',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-              // Truck Payment TextFormField
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: buildTextFormField(
-                      controller: homeController.tPaymentController,
-                      label: 'TRUCK PAYMENT',
-                      hint: 'e.g., \$2000',
-                      validator: homeController.validateInput,
-                    ),
-                  ),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                      ),
-                      child: Center(
-                          child: Obx(() => Text(homeController
-                              .weeklyTruckPayment.value
-                              .toStringAsFixed(2)))),
-                    ),
-                  ))
-                ],
-              ),
-              // Truck Insurance TextFormField
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: buildTextFormField(
-                      controller: homeController.tInsuranceController,
-                      label: 'INSURANCE',
-                      hint: 'e.g., \$400',
-                      validator: homeController.validateInput,
-                    ),
-                  ),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                      ),
-                      child: Center(
-                          child: Obx(() => Text(homeController
-                              .weeklyTruckInsurance.value
-                              .toStringAsFixed(2)))),
-                    ),
-                  ))
-                ],
-              ),
-              // Truck Trailer Lease TextFormField
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: buildTextFormField(
-                      controller: homeController.tTrailerLeaseController,
-                      label: 'TRAILER LEASE',
-                      hint: 'e.g., \$300',
-                      validator: homeController.validateInput,
-                    ),
-                  ),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                      ),
-                      child: Center(
-                          child: Obx(() => Text(homeController
-                              .weeklyTrailerLease.value
-                              .toStringAsFixed(2)))),
-                    ),
-                  ))
-                ],
-              ),
-              // Truck ELD Service TextFormField
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: buildTextFormField(
-                      controller: homeController.tEldServicesController,
-                      label: 'ELD SERVICE',
-                      hint: 'e.g., \$100',
-                      validator: homeController.validateInput,
-                    ),
-                  ),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                      ),
-                      child: Center(
-                          child: Obx(() => Text(homeController
-                              .weeklyEldService.value
-                              .toStringAsFixed(2)))),
-                    ),
-                  ))
-                ],
-              ),
-              // Truck Overhead Cost TextFormField
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: buildTextFormField(
-                      controller: homeController.tOverHeadController,
-                      label: 'OVERHEAD',
-                      hint: 'e.g., \$50',
-                    ),
-                  ),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                      ),
-                      child: Center(
-                          child: Obx(() => Text(homeController
-                              .weeklyOverHead.value
-                              .toStringAsFixed(2)))),
-                    ),
-                  ))
-                ],
-              ),
-              // Truck Other Cost TextFormField
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: buildTextFormField(
-                      controller: homeController.tOtherController,
-                      label: 'OTHER',
-                      hint: 'e.g., \$200',
-                    ),
-                  ),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                      ),
-                      child: Center(
-                          child: Obx(() => Text(homeController.weeklyOther.value
-                              .toStringAsFixed(2)))),
-                    ),
-                  ))
-                ],
-              ),
-              20.heightBox,
-              Center(
-                child: Obx(() => Container(
-                      alignment: Alignment.center,
-                      height: 40,
-                      width: 300,
-                      decoration: BoxDecoration(
+                // Truck Payment TextFormField
+                buildRowWithLabel(
+                  label: 'TRUCK PAYMENT',
+                  hint: 'e.g., \$2000',
+                  controller: homeController.tPaymentController,
+                  value: homeController.weeklyTruckPayment,
+                  validator: homeController.validateInput,
+                ),
+
+                // Truck Insurance TextFormField
+                buildRowWithLabel(
+                  label: 'INSURANCE',
+                  hint: 'e.g., \$400',
+                  controller: homeController.tInsuranceController,
+                  value: homeController.weeklyInsurance,
+                  validator: homeController.validateInput,
+                ),
+
+                // Truck Trailer Lease TextFormField
+                buildRowWithLabel(
+                  label: 'TRAILER LEASE',
+                  hint: 'e.g., \$300',
+                  controller: homeController.tTrailerLeaseController,
+                  value: homeController.weeklyTrailerLease,
+                  validator: homeController.validateInput,
+                ),
+
+                // Truck ELD Service TextFormField
+                buildRowWithLabel(
+                  label: 'ELD SERVICE',
+                  hint: 'e.g., \$100',
+                  controller: homeController.tEldServicesController,
+                  value: homeController.weeklyEldService,
+                  validator: homeController.validateInput,
+                ),
+
+                // Truck Overhead Cost TextFormField
+                buildTextFormField(
+                  controller: homeController.tOverHeadController,
+                  label: 'OVERHEAD',
+                  hint: 'e.g., \$50',
+                ),
+
+                // Truck Other Cost TextFormField
+                buildTextFormField(
+                  controller: homeController.tOtherController,
+                  label: 'OTHER',
+                  hint: 'e.g., \$200',
+                ),
+
+                const SizedBox(height: 40),
+                Center(
+                  child: Obx(() => Container(
+                        alignment: Alignment.center,
+                        height: 40,
+                        width: 100,
+                        decoration: BoxDecoration(
                           color: Colors.deepPurple,
-                          borderRadius: BorderRadius.circular(6)),
-                      child: Text(
-                        'Weekly Fixed Cost  \$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '\$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      )),
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                    )),
-              ),
-              const Divider()
-              // Trcuk Cost per Miles
-              
-            ],
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          // Navigate to MileageFeeSection
+                          Get.to(() =>
+                              MileageFeSection(homeController: homeController));
+                        }
+                      },
+                      icon: const Icon(Icons.arrow_circle_right_outlined),
+                      label: const Text('Next'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
