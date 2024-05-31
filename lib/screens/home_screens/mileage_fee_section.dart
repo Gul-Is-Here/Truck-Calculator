@@ -13,7 +13,6 @@ class MileageFeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var homeController = Get.put(HomeController());
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
@@ -40,10 +39,10 @@ class MileageFeSection extends StatelessWidget {
                       color: Colors.deepPurpleAccent,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text(
+                    child: Obx(() => Text(
                       "Weekly Fixed Cost \$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}",
                       style: const TextStyle(color: Colors.white),
-                    ),
+                    )),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -90,6 +89,7 @@ class MileageFeSection extends StatelessWidget {
                       ),
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
+                          
                           // Navigate to the next screen
                           Get.to(
                               () => LoadScreen(homeController: homeController));

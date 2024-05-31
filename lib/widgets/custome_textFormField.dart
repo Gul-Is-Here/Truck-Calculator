@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 Widget buildTextFormField({
   required TextEditingController controller,
@@ -7,18 +8,12 @@ Widget buildTextFormField({
   String? Function(String?)? validator,
 }) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    padding: const EdgeInsets.symmetric(horizontal: 32),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
-          ),
-        ),
-        const SizedBox(height: 5),
+        Text(label),
+        5.heightBox,
         SizedBox(
           height: 40,
           child: TextFormField(
@@ -28,24 +23,17 @@ Widget buildTextFormField({
               filled: true,
               fillColor: Colors.grey.shade100,
               hintText: hint,
-              focusedBorder: OutlineInputBorder(
+              focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
                   color: Colors.deepPurple,
                   width: 2,
                 ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.grey.shade300,
-                ),
-                borderRadius: BorderRadius.circular(8),
               ),
             ),
-            validator: validator, // Validation added here
+            validator: validator,
           ),
         ),
-        const SizedBox(height: 20),
+        20.heightBox,
       ],
     ),
   );
