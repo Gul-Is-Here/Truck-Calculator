@@ -1,10 +1,11 @@
-import 'package:dispatched_calculator_app/screens/home_screens/dispatched_miles_screen.dart';
+import 'package:dispatched_calculator_app/screens/home_screens/result_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:get/get.dart';
+import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../widgets/custome_textFormField.dart';
+import '../../widgets/customized_row_label_widget.dart';
 
 class MileageFeSection extends StatelessWidget {
   final HomeController homeController;
@@ -46,36 +47,51 @@ class MileageFeSection extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                buildTextFormField(
-                  controller: homeController.perMileageFeeController,
+                buildRowWithLabel(
                   label: 'Mileage Fee (\$/mile)',
                   hint: 'e.g., \$0.50',
+                  controller: homeController.perMileageFeeController,
+                  value: homeController.permileageFee,
                   validator: homeController.validateInput,
                 ),
-                buildTextFormField(
-                  controller: homeController.perMileFuelController,
+                buildRowWithLabel(
                   label: 'Fuel (\$/mile)',
                   hint: 'e.g., \$0.20',
+                  controller: homeController.perMileFuelController,
+                  value: homeController.perMileFuel,
                   validator: homeController.validateInput,
                 ),
-                buildTextFormField(
-                  controller: homeController.perMileDefController,
+                buildRowWithLabel(
                   label: 'DEF (\$/mile)',
                   hint: 'e.g., \$0.05',
+                  controller: homeController.perMileDefController,
+                  value: homeController.perMileDef,
                   validator: homeController.validateInput,
                 ),
-                buildTextFormField(
-                  controller: homeController.perMileDriverPayController,
+                buildRowWithLabel(
                   label: 'Driver Pay (\$/mile)',
                   hint: 'e.g., \$0.30',
+                  controller: homeController.perMileDriverPayController,
+                  value: homeController.perMileDriverPay,
                   validator: homeController.validateInput,
                 ),
-                // buildTextFormField(
-                //   controller: homeController.factoringFeeController,
-                //   label: 'Factoring Fee (\$/mile)',
-                //   hint: 'e.g., \$0.02',
-                //   validator: homeController.validateInput,
-                // ),
+                10.heightBox,
+                Center(
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 300,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurpleAccent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Obx(() => Text(
+                          "Cost After Adding Factoring Fee \$${homeController.totalMilageCost.value.toStringAsFixed(2)}",
+                          style: const TextStyle(color: Colors.white),
+                        )),
+                  ),
+                ),
+                20.heightBox,
                 const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerRight,
@@ -89,9 +105,10 @@ class MileageFeSection extends StatelessWidget {
                       ),
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
+                          homeController.calculateVariableCosts();
                           // Navigate to the next screen
-                          Get.to(
-                              () => LoadScreen(homeController: homeController));
+                          Get.to(() =>
+                              ResultsScreen(homeController: homeController));
                         }
                       },
                       icon: const Icon(Icons.arrow_circle_right_outlined),

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,15 +31,22 @@ class HomeController extends GetxController {
   var otherCostsControllers = <TextEditingController>[].obs;
 
   RxDouble totalMilageCostPerWeek = 0.0.obs;
-  RxDouble totalMileageAndWeeklyFixedCost = 0.0.obs;
-  RxDouble profit = 0.0.obs;
+  RxDouble totalMilageCost = 0.0.obs;
+  RxDouble totalProfit = 0.0.obs;
 
-  // Varibal Which Stores The Over All Value
+  // Variables to store overall values
   RxDouble totalFreightCharges = 0.0.obs;
   RxDouble totalEstimatedTollsCost = 0.0.obs;
   RxDouble totalOtherCost = 0.0.obs;
-  RxDouble totalMilageCost = 0.0.obs;
+
   RxDouble totalFactoringFee = 0.0.obs;
+  RxDouble totalDispatchedMiles = 0.0.obs;
+  // Per Mile Value Stores Variables
+  RxDouble permileageFee = 0.0.obs;
+  RxDouble perMileFuel = 0.0.obs;
+  RxDouble perMileDef = 0.0.obs;
+  RxDouble perMileDriverPay = 0.0.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -47,6 +56,11 @@ class HomeController extends GetxController {
     tEldServicesController.addListener(_calculateFixedCost);
     tOverHeadController.addListener(_calculateFixedCost);
     tOtherController.addListener(_calculateFixedCost);
+
+    perMileageFeeController.addListener(calculateVariableCosts);
+    perMileFuelController.addListener(calculateVariableCosts);
+    perMileDefController.addListener(calculateVariableCosts);
+    perMileDriverPayController.addListener(calculateVariableCosts);
 
     addNewLoad(); // Initialize with the first load
   }
@@ -117,7 +131,7 @@ class HomeController extends GetxController {
 
   void calculateVariableCosts() {
     totalFreightCharges.value = 0.0;
-    double totalDispatchedMiles = 0.0;
+    totalDispatchedMiles.value = 0.0;
     totalEstimatedTollsCost.value = 0.0;
     totalOtherCost.value = 0.0;
 
@@ -130,62 +144,109 @@ class HomeController extends GetxController {
           double.tryParse(estimatedTollsControllers[i].text) ?? 0.0;
       double otherCosts = double.tryParse(otherCostsControllers[i].text) ?? 0.0;
 
-      print(
-          'Load $i: FreightCharge = $freightCharge, DispatchedMiles = $dispatchedMiles, EstimatedTolls = $estimatedTolls, OtherCosts = $otherCosts');
-
       totalFreightCharges.value += freightCharge;
-      totalDispatchedMiles += dispatchedMiles;
+      totalDispatchedMiles.value += dispatchedMiles;
       totalEstimatedTollsCost.value += estimatedTolls;
       totalOtherCost.value += otherCosts;
     }
-    // Calculation logic for total costs and profit
-    double totalMileageFee =
+
+    permileageFee.value =
         (double.tryParse(perMileageFeeController.text) ?? 0.0) *
-            totalDispatchedMiles;
-    double totalFuelCost =
-        (double.tryParse(perMileFuelController.text) ?? 0.0) *
-            totalDispatchedMiles;
-    double totalDefCost = (double.tryParse(perMileDefController.text) ?? 0.0) *
-        totalDispatchedMiles;
-    double totalDriverPay =
+            totalDispatchedMiles.value;
+    perMileFuel.value = (double.tryParse(perMileFuelController.text) ?? 0.0) *
+        totalDispatchedMiles.value;
+    perMileDef.value = (double.tryParse(perMileDefController.text) ?? 0.0) *
+        totalDispatchedMiles.value;
+    perMileDriverPay.value =
         (double.tryParse(perMileDriverPayController.text) ?? 0.0) *
-            totalDispatchedMiles;
-    // double totalFactoringFee =
-    //     (double.tryParse(factoringFeeController.text) ?? 0.0) *
-    //         totalFreightCharge /
-    //         100; // Factoring fee as a percentage of freight charge
+            totalDispatchedMiles.value;
 
-    // Calculate Factoring Fee
     totalFactoringFee.value = (totalFreightCharges.value * 2) / 100;
-
-    totalMilageCostPerWeek.value =
-        totalMileageFee + totalFuelCost + totalDefCost + totalDriverPay;
-
-    print(' total FreightChanges cost : ${totalFreightCharges.value}');
-    print(' total Tolls cost : ${totalEstimatedTollsCost.value}');
-    print(' total totalOtherCosts cost : ${totalOtherCost.value}');
-    print(' total factoring Charges : ${totalFactoringFee.value}');
-
-    print('-----------------');
-
-    print(' total Milage cost : $totalMileageFee');
-    print(' total fuel cost : $totalFuelCost');
-    print(' total totalDefCost cost : $totalDefCost');
-    print(' total totalDriverPay cost : $totalDriverPay');
-    print(' total Milage cost : ${totalMilageCostPerWeek.value}');
-
-    totalMileageAndWeeklyFixedCost.value = totalMilageCostPerWeek.value +
-        weeklyFixedCost.value +
+    totalMilageCost.value = permileageFee.value +
+        perMileFuel.value +
+        perMileDef.value +
+        perMileDriverPay.value +
         totalFactoringFee.value;
-    // profit.value = totalFreightCharge - totalMileageAndWeeklyFixedCost.value;
+    totalProfit.value = totalFreightCharges.value -
+        weeklyFixedCost.value -
+            totalMilageCost.value -
+            totalEstimatedTollsCost.value;
   }
+
+  // void calculateVariableCosts() {
+  //   totalFreightCharges.value = 0.0;
+  //   totalDispatchedMiles.value = 0.0;
+  //   totalEstimatedTollsCost.value = 0.0;
+  //   totalOtherCost.value = 0.0;
+
+  //   for (int i = 0; i < freightChargeControllers.length; i++) {
+  //     double freightCharge =
+  //         double.tryParse(freightChargeControllers[i].text) ?? 0.0;
+  //     double dispatchedMiles =
+  //         double.tryParse(dispatchedMilesControllers[i].text) ?? 0.0;
+  //     double estimatedTolls =
+  //         double.tryParse(estimatedTollsControllers[i].text) ?? 0.0;
+  //     double otherCosts = double.tryParse(otherCostsControllers[i].text) ?? 0.0;
+
+  //     totalFreightCharges.value += freightCharge;
+  //     totalDispatchedMiles.value += dispatchedMiles;
+  //     totalEstimatedTollsCost.value += estimatedTolls;
+  //     totalOtherCost.value += otherCosts;
+  //   }
+
+  //   double totalMileageFee =
+  //       (double.tryParse(perMileageFeeController.text) ?? 0.0) *
+  //           totalDispatchedMiles.value;
+  //   double totalFuelCost =
+  //       (double.tryParse(perMileFuelController.text) ?? 0.0) *
+  //           totalDispatchedMiles.value;
+  //   double totalDefCost = (double.tryParse(perMileDefController.text) ?? 0.0) *
+  //       totalDispatchedMiles.value;
+  //   double totalDriverPay =
+  //       (double.tryParse(perMileDriverPayController.text) ?? 0.0) *
+  //           totalDispatchedMiles.value;
+
+  //   totalFactoringFee.value = (totalFreightCharges.value * 2) / 100;
+
+  //   totalMilageCostPerWeek.value =
+  //       totalMileageFee + totalFuelCost + totalDefCost + totalDriverPay;
+
+  //   totalMileageAndWeeklyFixedCost.value = totalMilageCostPerWeek.value +
+  //       weeklyFixedCost.value +
+  //       totalFactoringFee.value;
+  //   print('Total Dispatched Miles :  ${totalDispatchedMiles.value}');
+  //   print('Total Tolls Miles :  ${totalEstimatedTollsCost.value}');
+  //   print('Total Factoring Fee  :  ${totalFactoringFee.value}');
+  //   print('Total Freight Charges :  ${totalFreightCharges.value}');
+  //   print('Total Total  Miles :  ${totalMilageCost.value}');
+  // }
 
   void addNewLoad() {
-    freightChargeControllers.add(TextEditingController());
-    dispatchedMilesControllers.add(TextEditingController());
-    estimatedTollsControllers.add(TextEditingController());
-    otherCostsControllers.add(TextEditingController());
+    var freightChargeController = TextEditingController();
+    var dispatchedMilesController = TextEditingController();
+    var estimatedTollsController = TextEditingController();
+    var otherCostsController = TextEditingController();
+
+    freightChargeController.addListener(calculateVariableCosts);
+    dispatchedMilesController.addListener(calculateVariableCosts);
+    estimatedTollsController.addListener(calculateVariableCosts);
+    otherCostsController.addListener(calculateVariableCosts);
+
+    freightChargeControllers.add(freightChargeController);
+    dispatchedMilesControllers.add(dispatchedMilesController);
+    estimatedTollsControllers.add(estimatedTollsController);
+    otherCostsControllers.add(otherCostsController);
   }
+  // Remove The Load
+  void removeLoad(int index) {
+  if (freightChargeControllers.length > 1) {
+    freightChargeControllers.removeAt(index);
+    dispatchedMilesControllers.removeAt(index);
+    estimatedTollsControllers.removeAt(index);
+    otherCostsControllers.removeAt(index);
+  }
+}
+
 
   void clearLoadFields() {
     for (var controller in freightChargeControllers) {
