@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
             bodyLarge: TextStyle(fontFamily: 'Raleway'),
             bodyMedium: TextStyle(fontFamily: 'Raleway-Bold'),
             // bodySmall: TextStyle(fontFamily: 'Raleway'),
+            
           ),
         ),
         home: const SplashScreen());

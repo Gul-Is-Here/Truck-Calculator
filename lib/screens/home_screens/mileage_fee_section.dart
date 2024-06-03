@@ -40,42 +40,42 @@ class MileageFeSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Obx(() => Text(
-                      "Weekly Fixed Cost \$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}",
-                      style: const TextStyle(color: Colors.white),
-                    )),
+                          "Weekly Fixed Cost \$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}",
+                          style: const TextStyle(color: Colors.white),
+                        )),
                   ),
                 ),
                 const SizedBox(height: 40),
                 buildTextFormField(
-                  controller: homeController.mileageFeeController,
+                  controller: homeController.perMileageFeeController,
                   label: 'Mileage Fee (\$/mile)',
                   hint: 'e.g., \$0.50',
                   validator: homeController.validateInput,
                 ),
                 buildTextFormField(
-                  controller: homeController.fuelController,
+                  controller: homeController.perMileFuelController,
                   label: 'Fuel (\$/mile)',
                   hint: 'e.g., \$0.20',
                   validator: homeController.validateInput,
                 ),
                 buildTextFormField(
-                  controller: homeController.defController,
+                  controller: homeController.perMileDefController,
                   label: 'DEF (\$/mile)',
                   hint: 'e.g., \$0.05',
                   validator: homeController.validateInput,
                 ),
                 buildTextFormField(
-                  controller: homeController.driverPayController,
+                  controller: homeController.perMileDriverPayController,
                   label: 'Driver Pay (\$/mile)',
                   hint: 'e.g., \$0.30',
                   validator: homeController.validateInput,
                 ),
-                buildTextFormField(
-                  controller: homeController.factoringFeeController,
-                  label: 'Factoring Fee (\$/mile)',
-                  hint: 'e.g., \$0.02',
-                  validator: homeController.validateInput,
-                ),
+                // buildTextFormField(
+                //   controller: homeController.factoringFeeController,
+                //   label: 'Factoring Fee (\$/mile)',
+                //   hint: 'e.g., \$0.02',
+                //   validator: homeController.validateInput,
+                // ),
                 const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerRight,
@@ -89,7 +89,6 @@ class MileageFeSection extends StatelessWidget {
                       ),
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
-                          
                           // Navigate to the next screen
                           Get.to(
                               () => LoadScreen(homeController: homeController));
