@@ -1,4 +1,5 @@
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/screens/home_screens/load_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -29,6 +30,7 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
+              
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
@@ -120,8 +122,9 @@ class HomeScreen extends StatelessWidget {
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           // Navigate to MileageFeeSection
-                          Get.to(() =>
-                              MileageFeSection(homeController: homeController));
+
+                          Get.to(
+                              () => LoadScreen(homeController: homeController));
                         }
                       },
                       icon: const Icon(Icons.arrow_circle_right_outlined),
