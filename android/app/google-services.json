@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "937943912549",
+    "project_id": "dispatch-calculator-f7ad8",
+    "storage_bucket": "dispatch-calculator-f7ad8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937943912549:android:95e9a709498e06c2d9b68c",
+        "android_client_info": {
+          "package_name": "com.example.dispatched_calculator_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKnLjO-GUDGXOQ4K7XmfaXpNurm4uPikY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
