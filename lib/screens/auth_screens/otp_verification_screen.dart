@@ -1,0 +1,126 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../controllers/auth_controller.dart';
+
+class OTPVerificationScreen extends StatelessWidget {
+  final String verificationId;
+  final String email;
+  final String name;
+  final String password;
+  final String phone;
+
+  OTPVerificationScreen({
+    required this.verificationId,
+    required this.email,
+    required this.name,
+    required this.password,
+    required this.phone,
+  });
+
+  final AuthController authController = Get.find();
+  final List<TextEditingController> _otpControllers =
+      List.generate(6, (index) => TextEditingController());
+  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+
+  void verifyOTP() {
+    String otp =
+        _otpControllers.map((controller) => controller.text.trim()).join();
+    authController.verifyOTP(otp, email, name, phone, password);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'OTP Verification',
+                style: GoogleFonts.poppins(
+                  textStyle: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Enter the OTP sent to your phone number',
+                style: GoogleFonts.poppins(
+                  textStyle: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+              SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(6, (index) {
+                  return Container(
+                    width: 60,
+                    height: 60,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: TextField(
+                        controller: _otpControllers[index],
+                        focusNode: _focusNodes[index],
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 20),
+                        onChanged: (value) {
+                          if (value.length == 1 && index < 5) {
+                            _focusNodes[index + 1].requestFocus();
+                          } else if (value.length == 1 && index == 5) {
+                            _focusNodes[index]
+                                .unfocus(); // close the keyboard on last box
+                          } else if (value.length == 0 && index > 0) {
+                            _focusNodes[index - 1]
+                                .requestFocus(); // handle backspace
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              SizedBox(height: 20),
+              Obx(() => authController.isLoading.value
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: verifyOTP,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.pinkAccent,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Verify',
+                        style: GoogleFonts.poppins(
+                          textStyle: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    )),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
