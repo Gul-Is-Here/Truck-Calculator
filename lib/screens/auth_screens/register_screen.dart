@@ -1,12 +1,11 @@
-import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
-import 'package:dispatched_calculator_app/screens/auth_screens/otp_verification_screen.dart';
-import 'package:dispatched_calculator_app/screens/auth_screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginScreen extends StatelessWidget {
-  final controller = Get.put(AuthController());
+import '../../controllers/auth_controller.dart';
+
+class RegisterScreen extends StatelessWidget {
+  AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +38,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 30),
                   Text(
-                    'Welcome Back!',
+                    'Create an Account',
                     style: GoogleFonts.poppins(
                       textStyle: TextStyle(
                         fontSize: 32,
@@ -50,7 +49,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Please login with your phone number',
+                    'Sign up to get started!',
                     style: GoogleFonts.poppins(
                       textStyle: TextStyle(
                         fontSize: 18,
@@ -64,8 +63,42 @@ class LoginScreen extends StatelessWidget {
                       color: Colors.white.withOpacity(0.8),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: TextFormField(
-                      controller: controller.phoneController,
+                    child: TextField(
+                      controller: authController.nameController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.person),
+                        labelText: 'Name',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TextField(
+                      controller: authController.emailController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.email),
+                        labelText: 'Email',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TextField(
+                      controller: authController.phoneController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.phone),
                         labelText: 'Phone Number',
@@ -73,16 +106,33 @@ class LoginScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      keyboardType: TextInputType.phone,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TextField(
+                      controller: authController.passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock),
+                        labelText: 'Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 30),
-                  Obx(() => controller.isLoading.value
+                  Obx(() => authController.isLoading.value
                       ? CircularProgressIndicator()
                       : ElevatedButton(
-                          onPressed: () => controller.loginWithPhoneNumber(),
+                          onPressed: authController.registerUser,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple,
+                            backgroundColor: Colors.pinkAccent,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 100, vertical: 15),
                             shape: RoundedRectangleBorder(
@@ -90,7 +140,7 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            'Login',
+                            'Register',
                             style: GoogleFonts.poppins(
                               textStyle: TextStyle(
                                 fontSize: 16,
@@ -102,14 +152,10 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterScreen()),
-                      );
+                      Get.back();
                     },
                     child: Text(
-                      'Don\'t have an account? Register',
+                      'Already have an account? Login',
                       style: GoogleFonts.poppins(
                         textStyle: TextStyle(
                           fontSize: 14,
