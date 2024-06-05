@@ -1,20 +1,39 @@
+import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/screens/home_screens/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/load_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../widgets/custome_textFormField.dart';
 import '../../widgets/customized_row_label_widget.dart';
 
-
+// ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
+  HomeScreen({super.key});
+  var homeController = Get.put(HomeController());
+  var authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
-    var homeController = Get.put(HomeController());
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
+      drawer: Drawer(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Get.to(() => HistoryScreen(homeController: homeController));
+                  },
+                  child: Text('History Screen')),
+              ElevatedButton(
+                  onPressed: authController.signOut,
+                  child: const Text('LogOut')),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: const Text(
@@ -29,7 +48,6 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),

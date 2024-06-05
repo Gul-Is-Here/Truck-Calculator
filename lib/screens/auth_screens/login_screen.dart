@@ -6,10 +6,9 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatelessWidget {
-  final controller = Get.put(AuthController());
-
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(AuthController());
     return Scaffold(
       body: Stack(
         children: [
@@ -102,11 +101,7 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterScreen()),
-                      );
+                      Get.to(() => RegisterScreen());
                     },
                     child: Text(
                       'Don\'t have an account? Register',

@@ -5,10 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/auth_controller.dart';
 
 class RegisterScreen extends StatelessWidget {
-  AuthController authController = Get.put(AuthController());
+ 
 
   @override
   Widget build(BuildContext context) {
+     AuthController authController = Get.put(AuthController());
     return Scaffold(
       body: Stack(
         children: [

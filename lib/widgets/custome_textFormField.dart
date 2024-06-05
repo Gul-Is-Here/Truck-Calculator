@@ -6,7 +6,13 @@ Widget buildTextFormField({
   required String label,
   required String hint,
   String? Function(String?)? validator,
+  String? initialValue,
 }) {
+  // Set initial value to controller if provided
+  if (initialValue != null && controller.text.isEmpty) {
+    controller.text = initialValue;
+  }
+
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 32),
     child: Column(
