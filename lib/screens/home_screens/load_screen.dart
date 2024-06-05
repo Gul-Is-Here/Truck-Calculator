@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/widgets/addLoad_dialogBox.dart';
+
+import 'package:dispatched_calculator_app/widgets/delete_dialogBox.dart';
 import 'package:velocity_x/velocity_x.dart';
-import '../../widgets/addLoad_dialogBox.dart';
+
 import '../../widgets/custome_textFormField.dart';
-import '../../screens/home_screens/mileage_fee_section.dart';
-import '../../widgets/delete_dialogBox.dart';
+import 'mileage_fee_section.dart';
 
-class LoadScreen extends StatelessWidget {
+class LoadScreen extends StatefulWidget {
   final HomeController homeController;
+  final Map<String, dynamic>? loadData;
 
-  LoadScreen({required this.homeController});
+  LoadScreen({required this.homeController, this.loadData});
+
+  @override
+  State<LoadScreen> createState() => _LoadScreenState();
+}
+
+class _LoadScreenState extends State<LoadScreen> {
+  final formKey = GlobalKey<FormState>(); // Move this line here
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
+    print(widget.loadData);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,12 +34,13 @@ class LoadScreen extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: Obx(
           () => Form(
-            key: formKey,
+            key: formKey, // Assign the formKey here
             child: Column(
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: homeController.freightChargeControllers.length,
+                    itemCount:
+                        widget.homeController.freightChargeControllers.length,
                     itemBuilder: (context, index) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,33 +53,52 @@ class LoadScreen extends StatelessWidget {
                           ),
                           10.heightBox,
                           buildTextFormField(
-                            
-                            controller:
-                                homeController.freightChargeControllers[index],
+                            controller: widget
+                                .homeController.freightChargeControllers[index],
                             label: 'Freight Charge (\$)',
                             hint: 'e.g., \$1000',
-                            validator: homeController.validateInput,
+                            validator: widget.homeController.validateInput,
+                            initialValue: widget.loadData != null
+                                ? (widget.loadData!['loads'][index]
+                                        ['freightCharge'] as double)
+                                    .toString()
+                                : null,
                           ),
                           buildTextFormField(
-                            controller: homeController
+                            controller: widget.homeController
                                 .dispatchedMilesControllers[index],
                             label: 'Dispatched Miles',
                             hint: 'e.g., 2000',
-                            validator: homeController.validateInput,
+                            validator: widget.homeController.validateInput,
+                            initialValue: widget.loadData != null
+                                ? (widget.loadData!['loads'][index]
+                                        ['dispatchedMiles'] as double)
+                                    .toString()
+                                : null,
                           ),
                           buildTextFormField(
-                            controller:
-                                homeController.estimatedTollsControllers[index],
+                            controller: widget.homeController
+                                .estimatedTollsControllers[index],
                             label: 'Estimated Tolls (\$)',
                             hint: 'e.g., \$50',
-                            validator: homeController.validateInput,
+                            validator: widget.homeController.validateInput,
+                            initialValue: widget.loadData != null
+                                ? (widget.loadData!['loads'][index]
+                                        ['estimatedTolls'] as double)
+                                    .toString()
+                                : null,
                           ),
                           buildTextFormField(
-                            controller:
-                                homeController.otherCostsControllers[index],
+                            controller: widget
+                                .homeController.otherCostsControllers[index],
                             label: 'Other Costs (\$)',
                             hint: 'e.g., \$100',
-                            validator: homeController.validateInput,
+                            validator: widget.homeController.validateInput,
+                            initialValue: widget.loadData != null
+                                ? (widget.loadData!['loads'][index]
+                                        ['otherCosts'] as double)
+                                    .toString()
+                                : null,
                           ),
                           20.heightBox,
                           Card(
@@ -80,7 +110,7 @@ class LoadScreen extends StatelessWidget {
                                 color: Colors.red,
                               ),
                               onPressed: () => showDeleteConfirmationDialog(
-                                  context, index, homeController),
+                                  context, index, widget.homeController),
                             ),
                           ),
                         ],
@@ -101,7 +131,7 @@ class LoadScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () =>
-                            showAddLoadDialog(context, homeController),
+                            showAddLoadDialog(context, widget.homeController),
                         icon: const Icon(Icons.add),
                         label: const Text('Add Load'),
                       ),
@@ -114,8 +144,11 @@ class LoadScreen extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
+                            widget.homeController
+                                .storeCalculatedValues(); // Add this line to store data
                             Get.to(() => MileageFeSection(
-                                homeController: homeController));
+                                  homeController: widget.homeController,
+                                ));
                           }
                         },
                         icon: const Icon(Icons.arrow_circle_right_outlined),

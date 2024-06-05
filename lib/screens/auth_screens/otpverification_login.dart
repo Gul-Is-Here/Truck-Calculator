@@ -4,28 +4,24 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../controllers/auth_controller.dart';
 
-class OTPVerificationScreen extends StatelessWidget {
+class OTPVerificationLoginScreen extends StatelessWidget {
   final String verificationId;
-  final String email;
-  final String name;
-  final String password;
   final String phone;
 
-  OTPVerificationScreen({
+  OTPVerificationLoginScreen({
     required this.verificationId,
-    required this.email,
-    required this.name,
-    required this.password,
     required this.phone,
   });
 
   final AuthController authController = Get.find();
-  final List<TextEditingController> _otpControllers = List.generate(6, (index) => TextEditingController());
+  final List<TextEditingController> _otpControllers =
+      List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
   void verifyOTP() {
-    String otp = _otpControllers.map((controller) => controller.text.trim()).join();
-    authController.verifyOTP(otp, isLogin: false);
+    String otp =
+        _otpControllers.map((controller) => controller.text.trim()).join();
+    authController.verifyOTP(otp, isLogin: true);
   }
 
   @override

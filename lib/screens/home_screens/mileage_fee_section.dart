@@ -102,12 +102,36 @@ class MileageFeSection extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          homeController.calculateVariableCosts();
-                          // Navigate to the next screen
-                          Get.to(() =>
-                              ResultsScreen(homeController: homeController));
-                        }
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Confirm Submission'),
+                              content: const Text(
+                                  'Are you sure you want to submit the data?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Yes'),
+                                  onPressed: () {
+                                    homeController.calculateVariableCosts();
+                                    homeController.storeCalculatedValues();
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                    // Navigate to the next screen
+                                    Get.to(() => ResultsScreen(
+                                        homeController: homeController));
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                       icon: const Icon(Icons.arrow_circle_right_outlined),
                       label: const Text('Next'),

@@ -1,9 +1,12 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/auth_screens/login_screen.dart';
 import '../screens/auth_screens/otp_verification_screen.dart';
+import '../screens/auth_screens/otpverification_login.dart';
 import '../screens/home_screens/home_screen.dart';
 
 class AuthController extends GetxController {
@@ -12,19 +15,18 @@ class AuthController extends GetxController {
   var verificationId = ''.obs;
   var isLoading = false.obs;
 
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final phoneController = TextEditingController();
-  final passwordController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
-  @override
-  void onClose() {
-    nameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
+  // @override
+  // void onClose() {
+  //   nameController.dispose();
+  //   emailController.dispose();
+  //   passwordController.dispose();
+  //   super.onClose();
+  // }
 
   void registerUser() async {
     String name = nameController.text.trim();
@@ -42,22 +44,9 @@ class AuthController extends GetxController {
 
     try {
       await _auth.verifyPhoneNumber(
-        phoneNumber: '+1$phone',
+        phoneNumber: phone,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          UserCredential userCredential =
-              await _auth.signInWithCredential(credential);
-          await _firestore
-              .collection('users')
-              .doc(userCredential.user!.uid)
-              .set({
-            'name': name,
-            'email': email,
-            'phone': phone,
-          });
-          Get.snackbar('Success', 'Registration successful',
-              snackPosition: SnackPosition.BOTTOM);
-          Get.offAll(() => HomeScreen());
-          isLoading.value = false;
+          await _registerUserWithCredential(credential, name, email, phone);
         },
         verificationFailed: (FirebaseAuthException e) {
           Get.snackbar('Error', 'Verification failed. Please try again.',
@@ -85,44 +74,6 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
-  // OTP Method
-
-  void verifyOTP(String otp, String email, String name, String phone,
-      String password) async {
-    if (otp.isEmpty) {
-      Get.snackbar('Error', 'Please enter the OTP',
-          snackPosition: SnackPosition.BOTTOM);
-      return;
-    }
-
-    isLoading.value = true;
-
-    try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId.value,
-        smsCode: otp,
-      );
-
-      UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'name': name,
-        'email': email,
-        'phone': phone,
-      });
-
-      Get.snackbar('Success', 'Registration successful',
-          snackPosition: SnackPosition.BOTTOM);
-      Get.offAll(() => HomeScreen());
-    } catch (e) {
-      Get.snackbar('Error', 'Invalid OTP. Please try again.',
-          snackPosition: SnackPosition.BOTTOM);
-      isLoading.value = false;
-    }
-  }
-
-  // Login Method
 
   void loginWithPhoneNumber() async {
     String phone = phoneController.text.trim();
@@ -136,19 +87,17 @@ class AuthController extends GetxController {
     isLoading.value = true;
 
     try {
-      // Query Firestore to check if the phone number exists
       QuerySnapshot userQuery = await _firestore
           .collection('users')
           .where('phone', isEqualTo: phone)
           .get();
 
       if (userQuery.docs.isNotEmpty) {
-        // Phone number exists, initiate phone verification
         await _auth.verifyPhoneNumber(
-          phoneNumber: '+1$phone',
+          phoneNumber: phone,
           verificationCompleted: (PhoneAuthCredential credential) async {
             await _auth.signInWithCredential(credential);
-            Get.offAll(() => HomeScreen()); // Navigate to home screen
+            Get.offAll(() => HomeScreen());
           },
           verificationFailed: (FirebaseAuthException e) {
             Get.snackbar('Error', 'Verification failed. Please try again.',
@@ -157,12 +106,8 @@ class AuthController extends GetxController {
           },
           codeSent: (String verificationId, int? resendToken) {
             this.verificationId.value = verificationId;
-            Get.to(() => OTPVerificationScreen(
-                verificationId: verificationId,
-                email: '',
-                name: '',
-                password: '',
-                phone: phone));
+            Get.to(() => OTPVerificationLoginScreen(
+                verificationId: verificationId, phone: phone));
             isLoading.value = false;
           },
           codeAutoRetrievalTimeout: (String verificationId) {
@@ -170,7 +115,6 @@ class AuthController extends GetxController {
           },
         );
       } else {
-        // Phone number does not exist in the database
         Get.snackbar('Error', 'Phone number does not exist',
             snackPosition: SnackPosition.BOTTOM);
         isLoading.value = false;
@@ -182,7 +126,7 @@ class AuthController extends GetxController {
     }
   }
 
-  void verifyLoginOTP(String otp) async {
+  void verifyOTP(String otp, {required bool isLogin}) async {
     if (otp.isEmpty) {
       Get.snackbar('Error', 'Please enter the OTP',
           snackPosition: SnackPosition.BOTTOM);
@@ -197,12 +141,48 @@ class AuthController extends GetxController {
         smsCode: otp,
       );
 
-      await _auth.signInWithCredential(credential);
-      Get.offAll(() => HomeScreen()); // Navigate to home screen
+      if (isLogin) {
+        await _auth.signInWithCredential(credential);
+        Get.offAll(() => HomeScreen());
+      } else {
+        await _registerUserWithCredential(
+            credential,
+            nameController.text.trim(),
+            emailController.text.trim(),
+            phoneController.text.trim());
+      }
     } catch (e) {
       Get.snackbar('Error', 'Invalid OTP. Please try again.',
           snackPosition: SnackPosition.BOTTOM);
       isLoading.value = false;
+    }
+  }
+
+  Future<void> _registerUserWithCredential(PhoneAuthCredential credential,
+      String name, String email, String phone) async {
+    UserCredential userCredential =
+        await _auth.signInWithCredential(credential);
+    await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      'name': name,
+      'email': email,
+      'phone': phone,
+    });
+    Get.snackbar('Success', 'Registration successful',
+        snackPosition: SnackPosition.BOTTOM);
+    Get.offAll(() => HomeScreen());
+    isLoading.value = false;
+  }
+
+  void signOut() async {
+    phoneController.clear();
+    emailController.clear();
+    nameController.clear();
+    try {
+      await _auth.signOut();
+      Get.offAll(() => LoginScreen());
+    } catch (e) {
+      Get.snackbar('Error', 'An error occurred. Please try again.',
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 }

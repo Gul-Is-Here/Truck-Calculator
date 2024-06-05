@@ -1,8 +1,13 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? newDocumentId;
+
   RxDouble weeklyFixedCost = 0.0.obs;
   RxDouble weeklyTruckPayment = 0.0.obs;
   RxDouble weeklyInsurance = 0.0.obs;
@@ -23,28 +28,25 @@ class HomeController extends GetxController {
   TextEditingController perMileDriverPayController = TextEditingController();
   TextEditingController factoringFeeController = TextEditingController();
 
-  // Lists to handle multiple loads
   var freightChargeControllers = <TextEditingController>[].obs;
   var dispatchedMilesControllers = <TextEditingController>[].obs;
   var estimatedTollsControllers = <TextEditingController>[].obs;
   var otherCostsControllers = <TextEditingController>[].obs;
+  RxList<Map<String, dynamic>> historyData = <Map<String, dynamic>>[].obs;
 
   RxDouble totalMilageCostPerWeek = 0.0.obs;
   RxDouble totalMilageCost = 0.0.obs;
   RxDouble totalProfit = 0.0.obs;
-
-  // Variables to store overall values
   RxDouble totalFreightCharges = 0.0.obs;
   RxDouble totalEstimatedTollsCost = 0.0.obs;
   RxDouble totalOtherCost = 0.0.obs;
-
   RxDouble totalFactoringFee = 0.0.obs;
   RxDouble totalDispatchedMiles = 0.0.obs;
-  // Per Mile Value Stores Variables
   RxDouble permileageFee = 0.0.obs;
   RxDouble perMileFuel = 0.0.obs;
   RxDouble perMileDef = 0.0.obs;
   RxDouble perMileDriverPay = 0.0.obs;
+  Rx<DateTime?> timestamp = Rx<DateTime?>(null);
 
   @override
   void onInit() {
@@ -62,6 +64,37 @@ class HomeController extends GetxController {
     perMileDriverPayController.addListener(calculateVariableCosts);
 
     addNewLoad(); // Initialize with the first load
+    fetchHistoryData(); // fetch data from firebase
+  }
+
+  @override
+  void onClose() {
+    tPaymentController.dispose();
+    tInsuranceController.dispose();
+    tTrailerLeaseController.dispose();
+    tEldServicesController.dispose();
+    tOverHeadController.dispose();
+    tOtherController.dispose();
+
+    perMileageFeeController.dispose();
+    perMileFuelController.dispose();
+    perMileDefController.dispose();
+    perMileDriverPayController.dispose();
+
+    for (var controller in freightChargeControllers) {
+      controller.dispose();
+    }
+    for (var controller in dispatchedMilesControllers) {
+      controller.dispose();
+    }
+    for (var controller in estimatedTollsControllers) {
+      controller.dispose();
+    }
+    for (var controller in otherCostsControllers) {
+      controller.dispose();
+    }
+
+    super.onClose();
   }
 
   String? validateInput(String? value) {
@@ -168,57 +201,9 @@ class HomeController extends GetxController {
         totalFactoringFee.value;
     totalProfit.value = totalFreightCharges.value -
         weeklyFixedCost.value -
-            totalMilageCost.value -
-            totalEstimatedTollsCost.value;
+        totalMilageCost.value -
+        totalEstimatedTollsCost.value;
   }
-
-  // void calculateVariableCosts() {
-  //   totalFreightCharges.value = 0.0;
-  //   totalDispatchedMiles.value = 0.0;
-  //   totalEstimatedTollsCost.value = 0.0;
-  //   totalOtherCost.value = 0.0;
-
-  //   for (int i = 0; i < freightChargeControllers.length; i++) {
-  //     double freightCharge =
-  //         double.tryParse(freightChargeControllers[i].text) ?? 0.0;
-  //     double dispatchedMiles =
-  //         double.tryParse(dispatchedMilesControllers[i].text) ?? 0.0;
-  //     double estimatedTolls =
-  //         double.tryParse(estimatedTollsControllers[i].text) ?? 0.0;
-  //     double otherCosts = double.tryParse(otherCostsControllers[i].text) ?? 0.0;
-
-  //     totalFreightCharges.value += freightCharge;
-  //     totalDispatchedMiles.value += dispatchedMiles;
-  //     totalEstimatedTollsCost.value += estimatedTolls;
-  //     totalOtherCost.value += otherCosts;
-  //   }
-
-  //   double totalMileageFee =
-  //       (double.tryParse(perMileageFeeController.text) ?? 0.0) *
-  //           totalDispatchedMiles.value;
-  //   double totalFuelCost =
-  //       (double.tryParse(perMileFuelController.text) ?? 0.0) *
-  //           totalDispatchedMiles.value;
-  //   double totalDefCost = (double.tryParse(perMileDefController.text) ?? 0.0) *
-  //       totalDispatchedMiles.value;
-  //   double totalDriverPay =
-  //       (double.tryParse(perMileDriverPayController.text) ?? 0.0) *
-  //           totalDispatchedMiles.value;
-
-  //   totalFactoringFee.value = (totalFreightCharges.value * 2) / 100;
-
-  //   totalMilageCostPerWeek.value =
-  //       totalMileageFee + totalFuelCost + totalDefCost + totalDriverPay;
-
-  //   totalMileageAndWeeklyFixedCost.value = totalMilageCostPerWeek.value +
-  //       weeklyFixedCost.value +
-  //       totalFactoringFee.value;
-  //   print('Total Dispatched Miles :  ${totalDispatchedMiles.value}');
-  //   print('Total Tolls Miles :  ${totalEstimatedTollsCost.value}');
-  //   print('Total Factoring Fee  :  ${totalFactoringFee.value}');
-  //   print('Total Freight Charges :  ${totalFreightCharges.value}');
-  //   print('Total Total  Miles :  ${totalMilageCost.value}');
-  // }
 
   void addNewLoad() {
     var freightChargeController = TextEditingController();
@@ -236,29 +221,136 @@ class HomeController extends GetxController {
     estimatedTollsControllers.add(estimatedTollsController);
     otherCostsControllers.add(otherCostsController);
   }
-  // Remove The Load
-  void removeLoad(int index) {
-  if (freightChargeControllers.length > 1) {
-    freightChargeControllers.removeAt(index);
-    dispatchedMilesControllers.removeAt(index);
-    estimatedTollsControllers.removeAt(index);
-    otherCostsControllers.removeAt(index);
-  }
-}
 
+  void removeLoad(int index) {
+    if (freightChargeControllers.length > 1) {
+      freightChargeControllers.removeAt(index);
+      dispatchedMilesControllers.removeAt(index);
+      estimatedTollsControllers.removeAt(index);
+      otherCostsControllers.removeAt(index);
+    }
+  }
 
   void clearLoadFields() {
-    for (var controller in freightChargeControllers) {
-      controller.clear();
-    }
-    for (var controller in dispatchedMilesControllers) {
-      controller.clear();
-    }
     for (var controller in estimatedTollsControllers) {
       controller.clear();
     }
     for (var controller in otherCostsControllers) {
       controller.clear();
+    }
+  }
+
+// Stored Data In firebase
+  void storeCalculatedValues() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        // Get a reference to the user's document
+        DocumentReference userDocRef =
+            _firestore.collection('users').doc(user.uid);
+
+        // Generate a new document ID with a timestamp
+        newDocumentId = DateTime.now().millisecondsSinceEpoch.toString();
+
+        // Create a reference to the new document inside the 'calculatedValues' subcollection
+        DocumentReference newValuesDocRef =
+            userDocRef.collection('calculatedValues').doc(newDocumentId);
+
+        // Set the data for the new document
+        await newValuesDocRef.set({
+          'weeklyFixedCost': weeklyFixedCost.value,
+          'totalFreightCharges': totalFreightCharges.value,
+          'totalDispatchedMiles': totalDispatchedMiles.value,
+          'totalMilageCost': totalMilageCost.value,
+          'totalProfit': totalProfit.value,
+          'timestamp': FieldValue.serverTimestamp(),
+          'loads': List.generate(freightChargeControllers.length, (index) {
+            return {
+              'freightCharge':
+                  double.tryParse(freightChargeControllers[index].text) ?? 0.0,
+              'dispatchedMiles':
+                  double.tryParse(dispatchedMilesControllers[index].text) ??
+                      0.0,
+              'estimatedTolls':
+                  double.tryParse(estimatedTollsControllers[index].text) ?? 0.0,
+              'otherCosts':
+                  double.tryParse(otherCostsControllers[index].text) ?? 0.0,
+            };
+          }),
+        });
+
+        print('Values stored successfully in Firestore');
+      } catch (e) {
+        print('Error storing values in Firestore: $e');
+      }
+    } else {
+      print('No user signed in');
+    }
+  }
+
+  void fetchHistoryData() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        QuerySnapshot snapshot = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('calculatedValues')
+            .orderBy('timestamp', descending: true)
+            .get();
+
+        historyData.value = snapshot.docs.map((doc) {
+          var data = doc.data() as Map<String, dynamic>;
+          data['id'] = doc.id;
+          print(data['id']);
+          return data;
+        }).toList();
+      } catch (e) {
+        print('Error fetching history data: $e');
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchEntryForEditing() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        DocumentSnapshot doc = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('calculatedValues')
+            .doc(newDocumentId)
+            .get();
+
+        return doc.data() as Map<String, dynamic>?;
+      } catch (e) {
+        print('Error fetching entry for editing: $e');
+      }
+    }
+    return null;
+  }
+
+  void updateEntry(Map<String, dynamic> newData) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        DocumentReference docRef = _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('calculatedValues')
+            .doc(newDocumentId);
+
+        if (await docRef.get().then((doc) => doc.exists)) {
+          // Check if the document exists before updating
+          await docRef.update(newData);
+          fetchHistoryData(); // Refresh history data
+          print('Entry updated successfully');
+        } else {
+          print('Document with ID $newDocumentId does not exist.');
+        }
+      } catch (e) {
+        print('Error updating entry: $e');
+      }
     }
   }
 }
