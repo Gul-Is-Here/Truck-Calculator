@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -95,46 +96,94 @@ class MileageFeSection extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 30),
-                    child: TextButton.icon(
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Confirm Submission'),
-                              content: const Text(
-                                  'Are you sure you want to submit the data?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Cancel'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              homeController.calculateVariableCosts();
+                              homeController.updateEntry({
+                                'weeklyFixedCost':
+                                    homeController.weeklyFixedCost.value,
+                                'totalFreightCharges':
+                                    homeController.totalFreightCharges.value,
+                                'totalDispatchedMiles':
+                                    homeController.totalDispatchedMiles.value,
+                                'totalMilageCost':
+                                    homeController.totalMilageCost.value,
+                                'totalProfit': homeController.totalProfit.value,
+                                'timestamp': FieldValue.serverTimestamp(),
+                                'loads': List.generate(
+                                  homeController
+                                      .freightChargeControllers.length,
+                                  (index) {
+                                    return {
+                                      'freightCharge': double.tryParse(
+                                              homeController
+                                                  .freightChargeControllers[
+                                                      index]
+                                                  .text) ??
+                                          0.0,
+                                      'dispatchedMiles': double.tryParse(
+                                              homeController
+                                                  .dispatchedMilesControllers[
+                                                      index]
+                                                  .text) ??
+                                          0.0,
+                                      'estimatedTolls': double.tryParse(
+                                              homeController
+                                                  .estimatedTollsControllers[
+                                                      index]
+                                                  .text) ??
+                                          0.0,
+                                      'otherCosts': double.tryParse(
+                                              homeController
+                                                  .otherCostsControllers[index]
+                                                  .text) ??
+                                          0.0,
+                                    };
                                   },
                                 ),
-                                TextButton(
-                                  child: const Text('Yes'),
-                                  onPressed: () {
-                                    homeController.calculateVariableCosts();
-                                    homeController.storeCalculatedValues();
-                                    Navigator.of(context)
-                                        .pop(); // Close the dialog
-                                    // Navigate to the next screen
-                                    Get.to(() => ResultsScreen(
-                                        homeController: homeController));
-                                  },
-                                ),
-                              ],
-                            );
+                              });
+                              Navigator.of(context).pop(); // Close the dialog
+                              Get.to(() => ResultsScreen(
+                                  homeController: homeController));
+                            }
                           },
-                        );
-                      },
-                      icon: const Icon(Icons.arrow_circle_right_outlined),
-                      label: const Text('Next'),
+                          icon: const Icon(Icons.update),
+                          label: const Text('Update'),
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              homeController.calculateVariableCosts();
+                              homeController.storeCalculatedValues();
+                              Get.snackbar(
+                                  'Success', 'Data submitted successfully',
+                                  backgroundColor: Colors.blue,
+                                  colorText: Colors.white);
+                              Navigator.of(context).pop(); // Close the dialog
+                              Get.to(() => ResultsScreen(
+                                  homeController: homeController));
+                            }
+                          },
+                          icon: const Icon(Icons.arrow_circle_right_outlined),
+                          label: const Text('Submit'),
+                        ),
+                      ],
                     ),
                   ),
                 ),

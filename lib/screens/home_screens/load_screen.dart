@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/widgets/addLoad_dialogBox.dart';
-
 import 'package:dispatched_calculator_app/widgets/delete_dialogBox.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -12,20 +11,55 @@ import 'mileage_fee_section.dart';
 class LoadScreen extends StatefulWidget {
   final HomeController homeController;
   final Map<String, dynamic>? loadData;
+  final String? documentId;
 
-  LoadScreen({required this.homeController, this.loadData});
+  LoadScreen({required this.homeController, this.loadData, this.documentId});
 
   @override
   State<LoadScreen> createState() => _LoadScreenState();
 }
 
 class _LoadScreenState extends State<LoadScreen> {
-  final formKey = GlobalKey<FormState>(); // Move this line here
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    widget.homeController.freightChargeControllers.clear();
+    widget.homeController.dispatchedMilesControllers.clear();
+    widget.homeController.estimatedTollsControllers.clear();
+    widget.homeController.otherCostsControllers.clear();
+    super.initState();
+    // Check if the data has already been loaded
+    if (widget.loadData != null) {
+      // Load data only if it hasn't been loaded before
+
+      if (widget.homeController.freightChargeControllers.isEmpty) {
+        _initializeControllers();
+      }
+    } else {
+      // Ensure at least one load is present
+      widget.homeController.addNewLoad();
+    }
+  }
+
+  void _initializeControllers() {
+    var loads = widget.loadData!['loads'] as List<dynamic>;
+    for (var load in loads) {
+      widget.homeController.freightChargeControllers.add(TextEditingController(
+          text: (load['freightCharge'] as num).toString()));
+      widget.homeController.dispatchedMilesControllers.add(
+          TextEditingController(
+              text: (load['dispatchedMiles'] as num).toString()));
+      widget.homeController.estimatedTollsControllers.add(TextEditingController(
+          text: (load['estimatedTolls'] as num).toString()));
+      widget.homeController.otherCostsControllers.add(
+          TextEditingController(text: (load['otherCosts'] as num).toString()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    print(widget.loadData);
-
+    print(widget.documentId);
     return Scaffold(
       appBar: AppBar(
         title: Text('Additional Costs'),
@@ -34,7 +68,7 @@ class _LoadScreenState extends State<LoadScreen> {
         padding: EdgeInsets.all(16.0),
         child: Obx(
           () => Form(
-            key: formKey, // Assign the formKey here
+            key: formKey,
             child: Column(
               children: [
                 Expanded(
@@ -49,7 +83,9 @@ class _LoadScreenState extends State<LoadScreen> {
                           Text(
                             'Load ${index + 1}',
                             style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           10.heightBox,
                           buildTextFormField(
@@ -58,11 +94,6 @@ class _LoadScreenState extends State<LoadScreen> {
                             label: 'Freight Charge (\$)',
                             hint: 'e.g., \$1000',
                             validator: widget.homeController.validateInput,
-                            initialValue: widget.loadData != null
-                                ? (widget.loadData!['loads'][index]
-                                        ['freightCharge'] as double)
-                                    .toString()
-                                : null,
                           ),
                           buildTextFormField(
                             controller: widget.homeController
@@ -70,11 +101,6 @@ class _LoadScreenState extends State<LoadScreen> {
                             label: 'Dispatched Miles',
                             hint: 'e.g., 2000',
                             validator: widget.homeController.validateInput,
-                            initialValue: widget.loadData != null
-                                ? (widget.loadData!['loads'][index]
-                                        ['dispatchedMiles'] as double)
-                                    .toString()
-                                : null,
                           ),
                           buildTextFormField(
                             controller: widget.homeController
@@ -82,11 +108,6 @@ class _LoadScreenState extends State<LoadScreen> {
                             label: 'Estimated Tolls (\$)',
                             hint: 'e.g., \$50',
                             validator: widget.homeController.validateInput,
-                            initialValue: widget.loadData != null
-                                ? (widget.loadData!['loads'][index]
-                                        ['estimatedTolls'] as double)
-                                    .toString()
-                                : null,
                           ),
                           buildTextFormField(
                             controller: widget
@@ -94,11 +115,6 @@ class _LoadScreenState extends State<LoadScreen> {
                             label: 'Other Costs (\$)',
                             hint: 'e.g., \$100',
                             validator: widget.homeController.validateInput,
-                            initialValue: widget.loadData != null
-                                ? (widget.loadData!['loads'][index]
-                                        ['otherCosts'] as double)
-                                    .toString()
-                                : null,
                           ),
                           20.heightBox,
                           Card(
@@ -109,10 +125,47 @@ class _LoadScreenState extends State<LoadScreen> {
                                 size: 30,
                                 color: Colors.red,
                               ),
-                              onPressed: () => showDeleteConfirmationDialog(
-                                  context, index, widget.homeController),
+                              onPressed: () {
+                                // Show delete confirmation dialog
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Delete Load'),
+                                      content: Text(
+                                          'Are you sure you want to delete this load?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Delete'),
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close dialog
+                                            var userId = widget.homeController
+                                                .auth.currentUser?.uid;
+                                            var documentId = widget.documentId;
+                                            if (userId != null &&
+                                                documentId != null) {
+                                              widget.homeController.deleteLoad(
+                                                  userId, documentId, index);
+                                            } else {
+                                              print(
+                                                  'User ID or Document ID is null.');
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                             ),
-                          ),
+                          )
                         ],
                       );
                     },
@@ -144,8 +197,6 @@ class _LoadScreenState extends State<LoadScreen> {
                         ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
-                            widget.homeController
-                                .storeCalculatedValues(); // Add this line to store data
                             Get.to(() => MileageFeSection(
                                   homeController: widget.homeController,
                                 ));
