@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
   String? newDocumentId;
 
   RxDouble weeklyFixedCost = 0.0.obs;
@@ -185,24 +185,33 @@ class HomeController extends GetxController {
     permileageFee.value =
         (double.tryParse(perMileageFeeController.text) ?? 0.0) *
             totalDispatchedMiles.value;
+    print('Permilafee : ${permileageFee.value}');
     perMileFuel.value = (double.tryParse(perMileFuelController.text) ?? 0.0) *
         totalDispatchedMiles.value;
+
+    print('perMileFuel : ${perMileFuel.value}');
     perMileDef.value = (double.tryParse(perMileDefController.text) ?? 0.0) *
         totalDispatchedMiles.value;
+    print('perMileDef : ${perMileDef.value}');
     perMileDriverPay.value =
         (double.tryParse(perMileDriverPayController.text) ?? 0.0) *
             totalDispatchedMiles.value;
+    print('perMileDriverPay : ${perMileDriverPay.value}');
 
     totalFactoringFee.value = (totalFreightCharges.value * 2) / 100;
+    print('totalFactoringFee : ${totalFactoringFee.value}');
+
     totalMilageCost.value = permileageFee.value +
         perMileFuel.value +
         perMileDef.value +
         perMileDriverPay.value +
         totalFactoringFee.value;
+    print('totalMilageCost : ${totalMilageCost.value}');
     totalProfit.value = totalFreightCharges.value -
         weeklyFixedCost.value -
         totalMilageCost.value -
         totalEstimatedTollsCost.value;
+    print('totalProfit : ${totalProfit.value}');
   }
 
   void addNewLoad() {
@@ -242,7 +251,7 @@ class HomeController extends GetxController {
 
 // Stored Data In firebase
   void storeCalculatedValues() async {
-    User? user = _auth.currentUser;
+    User? user = auth.currentUser;
     if (user != null) {
       try {
         // Get a reference to the user's document
@@ -289,37 +298,89 @@ class HomeController extends GetxController {
   }
 
   void fetchHistoryData() async {
-    User? user = _auth.currentUser;
+    User? user = auth.currentUser;
     if (user != null) {
-      try {
-        QuerySnapshot snapshot = await _firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('calculatedValues')
-            .orderBy('timestamp', descending: true)
-            .get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('calculatedValues')
+          .get();
 
-        historyData.value = snapshot.docs.map((doc) {
-          var data = doc.data() as Map<String, dynamic>;
-          data['id'] = doc.id;
-          print(data['id']);
-          return data;
-        }).toList();
-      } catch (e) {
-        print('Error fetching history data: $e');
-      }
+      // Process the data from the querySnapshot as needed
+      // For example, convert it to a list of entries
+      List<DocumentSnapshot> documents = querySnapshot.docs;
+      // Update your state with the new data
+      print('Fetched ${documents.length} documents.');
+    } else {
+      print('Error: No user is currently logged in.');
     }
   }
 
-  Future<Map<String, dynamic>?> fetchEntryForEditing() async {
-    User? user = _auth.currentUser;
+  Future<List<Map<String, dynamic>>> fetchAllEntriesForEditing() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        QuerySnapshot querySnapshot = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('calculatedValues')
+            .get();
+
+        return querySnapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          data['id'] = doc.id; // Include the document ID
+          return data;
+        }).toList();
+      } catch (e) {
+        print('Error fetching entries for editing: $e');
+      }
+    }
+    return [];
+  }
+
+  void updateEntry(Map<String, dynamic> newData) async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      if (newDocumentId == null || newDocumentId!.isEmpty) {
+        print('Error: newDocumentId is null or empty.');
+        return;
+      }
+
+      try {
+        DocumentReference docRef = _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('calculatedValues')
+            .doc(newDocumentId);
+        print('Document ID: $newDocumentId');
+
+        // Check if the document exists before updating
+        bool docExists = await docRef.get().then((doc) => doc.exists);
+        if (docExists) {
+          await docRef.update(newData);
+          print('Data to be updated: $newData');
+          fetchHistoryData(); // Refresh history data
+          print('Entry updated successfully');
+        } else {
+          print('Document with ID $newDocumentId does not exist.');
+        }
+      } catch (e) {
+        print('Error updating entry: $e');
+      }
+    } else {
+      print('Error: No user is currently logged in.');
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchEntryForEditing(String documentId) async {
+    User? user = auth.currentUser;
     if (user != null) {
       try {
         DocumentSnapshot doc = await _firestore
             .collection('users')
             .doc(user.uid)
             .collection('calculatedValues')
-            .doc(newDocumentId)
+            .doc(documentId)
             .get();
 
         return doc.data() as Map<String, dynamic>?;
@@ -330,27 +391,36 @@ class HomeController extends GetxController {
     return null;
   }
 
-  void updateEntry(Map<String, dynamic> newData) async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      try {
-        DocumentReference docRef = _firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('calculatedValues')
-            .doc(newDocumentId);
+  void deleteLoad(String? userId, String? documentId, int loadIndex) async {
+    try {
+      // Fetch the load data that corresponds to the loadIndex
+      final loadToRemove = {
+        'freightCharge': num.parse(freightChargeControllers[loadIndex].text),
+        'dispatchedMiles':
+            num.parse(dispatchedMilesControllers[loadIndex].text),
+        'estimatedTolls': num.parse(estimatedTollsControllers[loadIndex].text),
+        'otherCosts': num.parse(otherCostsControllers[loadIndex].text),
+      };
 
-        if (await docRef.get().then((doc) => doc.exists)) {
-          // Check if the document exists before updating
-          await docRef.update(newData);
-          fetchHistoryData(); // Refresh history data
-          print('Entry updated successfully');
-        } else {
-          print('Document with ID $newDocumentId does not exist.');
-        }
-      } catch (e) {
-        print('Error updating entry: $e');
-      }
+      // Remove the specific load entry from the 'loads' array in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('calculatedValues')
+          .doc(documentId)
+          .update({
+        'loads': FieldValue.arrayRemove([loadToRemove])
+      });
+
+      // Remove the load from the local state
+      freightChargeControllers.removeAt(loadIndex);
+      dispatchedMilesControllers.removeAt(loadIndex);
+      estimatedTollsControllers.removeAt(loadIndex);
+      otherCostsControllers.removeAt(loadIndex);
+      calculateVariableCosts();
+      print('Load deleted successfully');
+    } catch (error) {
+      print('Error deleting load: $error');
     }
   }
 }

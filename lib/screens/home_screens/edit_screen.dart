@@ -11,8 +11,12 @@ import '../../widgets/delete_dialogBox.dart';
 class EditScreen extends StatelessWidget {
   final String documentId;
   final HomeController homeController;
+  final Map<String, dynamic>? loadData;
 
-  EditScreen({required this.documentId, required this.homeController});
+  EditScreen(
+      {required this.documentId,
+      required this.homeController,
+      required this.loadData});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,10 @@ class EditScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
+
         child: LoadScreen(
+          loadData: loadData,
+          documentId: documentId,
           homeController: homeController,
         ), // Navigate to the LoadScreen
       ),
