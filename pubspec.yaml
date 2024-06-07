@@ -81,19 +81,25 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Raleway
+    - family: Raleway-Regular
       fonts:
-        - asset: assets/fonts/Raleway-Black.ttf
-        - asset: assets\fonts\Raleway-Light.ttf
-        - asset: assets/fonts/Raleway-Medium.ttf
         - asset: assets/fonts/Raleway-Regular.ttf
-        - asset: assets/fonts/Raleway-SemiBold.ttf
-        - asset: assets/fonts/Raleway-Thin.ttf
+          weight: 600
     - family: Raleway-Bold
       fonts:
         - asset: assets/fonts/Raleway-Bold.ttf
           # - asset: fonts/TrajanPro_Bold.ttf
           weight: 700
+    - family: Roboto-Regular
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          # - asset: fonts/TrajanPro_Bold.ttf
+          weight: 700
+    # - family: Raleway-Bold
+    #   fonts:
+    #     - asset: assets/fonts/Raleway-Bold.ttf
+    #       # - asset: fonts/TrajanPro_Bold.ttf
+    #       weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

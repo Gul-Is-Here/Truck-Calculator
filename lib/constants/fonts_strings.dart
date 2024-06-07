@@ -1,2 +1,3 @@
-const bodyMediumFonst = 'assets/fonts/Raleway-Bold.ttf';
-const bodyLargeFonts = 'assets/fonts/Raleway-Thin.ttf';
+const ralewayRegular = 'Raleway-Regular';
+// const ralewayBold = 'Raleway-Bold';
+const robotoRegular = 'Roboto-Regular.ttf';

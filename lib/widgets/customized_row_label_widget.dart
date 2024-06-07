@@ -1,3 +1,5 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'custome_textFormField.dart';
@@ -10,6 +12,8 @@ Widget buildRowWithLabel({
   String? Function(String?)? validator,
 }) {
   return Row(
+    crossAxisAlignment:
+        CrossAxisAlignment.start, // Align start to keep consistent height
     children: [
       Expanded(
         flex: 3,
@@ -20,22 +24,25 @@ Widget buildRowWithLabel({
           validator: validator,
         ),
       ),
+      const SizedBox(
+          width: 10), // Adjust spacing between TextFormField and Container
       Expanded(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 22),
           child: Container(
-            width: 40,
-            height: 40,
+            width: 70,
+            height: 50, // Ensure the height matches the TextFormField's height
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
+              color: AppColor().secondaryAppColor.withOpacity(.15),
+              borderRadius: BorderRadius.circular(4),
             ),
             child: Center(
               child: Obx(() => Text(
                     '\$${value.value.toStringAsFixed(2)}',
-                    style: TextStyle(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontFamily: robotoRegular,
                       fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
                     ),
                   )),
             ),

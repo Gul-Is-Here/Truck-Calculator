@@ -184,42 +184,39 @@ class _LoadScreenState extends State<LoadScreen> {
                   ),
                 ),
                 10.heightBox,
-                Card(
-                  elevation: 10,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton.icon(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        onPressed: () =>
-                            showAddLoadDialog(context, widget.homeController),
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Load'),
                       ),
-                      10.widthBox,
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                      onPressed: () =>
+                          showAddLoadDialog(context, widget.homeController),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Load'),
+                    ),
+                    10.widthBox,
+                    TextButton.icon(
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            Get.to(() => MileageFeSection(
-                                  isUpdate: widget.isUpdate,
-                                  homeController: widget.homeController,
-                                ));
-                          }
-                        },
-                        icon: const Icon(Icons.arrow_circle_right_outlined),
-                        label: const Text('Next'),
                       ),
-                    ],
-                  ),
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          Get.to(() => MileageFeSection(
+                                isUpdate: widget.isUpdate,
+                                homeController: widget.homeController,
+                              ));
+                        }
+                      },
+                      icon: const Icon(Icons.arrow_circle_right_outlined),
+                      label: const Text('Next'),
+                    ),
+                  ],
                 ),
                 10.heightBox,
               ],

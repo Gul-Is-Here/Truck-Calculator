@@ -1,3 +1,5 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -14,28 +16,45 @@ Widget buildTextFormField({
   }
 
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 32),
+    padding: EdgeInsets.symmetric(horizontal: 14),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        Text(
+          label,
+          style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              letterSpacing: 1.5,
+              fontFamily: robotoRegular,
+              fontSize: 12,
+              fontWeight: FontWeight.bold),
+        ),
         5.heightBox,
         SizedBox(
-          height: 40,
+          height: 70,
           child: TextFormField(
             controller: controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.grey.shade100,
-              hintText: hint,
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.deepPurple,
-                  width: 2,
+                filled: true,
+                fillColor: AppColor().secondaryAppColor.withOpacity(.15),
+                hintText: hint,
+                hintStyle:
+                    const TextStyle(fontSize: 12, fontFamily: robotoRegular),
+                errorStyle: TextStyle(fontSize: 12, fontFamily: robotoRegular),
+                // isDense: true,
+                alignLabelWithHint: true,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: AppColor().primaryAppColor,
+                    width: 2,
+                  ),
                 ),
-              ),
-            ),
+                labelStyle: TextStyle(
+                  fontFamily:
+                      robotoRegular, // Apply fontFamily to the text input
+                  fontSize: 14,
+                )),
             validator: validator,
           ),
         ),
