@@ -141,7 +141,7 @@ class HomeScreen extends StatelessWidget {
                           // Navigate to MileageFeeSection
 
                           Get.to(
-                              () => LoadScreen(homeController: homeController));
+                              () => LoadScreen(homeController: homeController,isUpdate: true,));
                         }
                       },
                       icon: const Icon(Icons.arrow_circle_right_outlined),

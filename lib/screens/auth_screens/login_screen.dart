@@ -1,3 +1,4 @@
+import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/otp_verification_screen.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/register_screen.dart';
@@ -31,14 +32,14 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 80),
-                  Icon(
-                    Icons.calculate,
-                    size: 150,
-                    color: Colors.white,
+                  Image.asset(
+                    appLogo,
+                    height: 150,
+                    fit: BoxFit.cover,
                   ),
                   SizedBox(height: 30),
                   Text(
-                    'Welcome Back!',
+                    controller.getGreeting(),
                     style: GoogleFonts.poppins(
                       textStyle: TextStyle(
                         fontSize: 32,

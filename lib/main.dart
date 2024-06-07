@@ -1,5 +1,6 @@
 import 'package:dispatched_calculator_app/firebase_options.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/splash_screen.dart';
+import 'package:dispatched_calculator_app/screens/home_screens/home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,14 +20,15 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
         title: 'Dispatched Calculator',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          appBarTheme: AppBarTheme(color: Color(0xFF1A5CA7)),
+          buttonTheme: ButtonThemeData(),
           useMaterial3: true,
-          textTheme: const TextTheme(
+          textTheme: TextTheme(
             bodyLarge: TextStyle(fontFamily: 'Raleway'),
             bodyMedium: TextStyle(fontFamily: 'Raleway-Bold'),
             // bodySmall: TextStyle(fontFamily: 'Raleway'),
           ),
         ),
-        home: const SplashScreen());
+        home: Home());
   }
 }

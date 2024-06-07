@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../constants/image_strings.dart';
 import '../../controllers/auth_controller.dart';
 
 class RegisterScreen extends StatelessWidget {
- 
-
   @override
   Widget build(BuildContext context) {
-     AuthController authController = Get.put(AuthController());
+    AuthController authController = Get.put(AuthController());
     return Scaffold(
       body: Stack(
         children: [
@@ -32,10 +31,10 @@ class RegisterScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 80),
-                  Icon(
-                    Icons.calculate,
-                    size: 150,
-                    color: Colors.white,
+                  Image.asset(
+                    appLogo,
+                    height: 150,
+                    fit: BoxFit.cover,
                   ),
                   SizedBox(height: 30),
                   Text(
@@ -109,24 +108,24 @@ class RegisterScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: authController.passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        labelText: 'Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(height: 20),
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white.withOpacity(0.8),
+                  //     borderRadius: BorderRadius.circular(12),
+                  //   ),
+                  //   child: TextField(
+                  //     controller: authController.passwordController,
+                  //     obscureText: true,
+                  //     decoration: InputDecoration(
+                  //       prefixIcon: Icon(Icons.lock),
+                  //       labelText: 'Password',
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(12),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   SizedBox(height: 30),
                   Obx(() => authController.isLoading.value
                       ? CircularProgressIndicator()

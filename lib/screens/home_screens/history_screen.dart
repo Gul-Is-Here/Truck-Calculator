@@ -95,6 +95,7 @@ class HistoryScreen extends StatelessWidget {
                                   .fetchEntryForEditing(documentId);
                               print(loadData);
                               Get.to(() => LoadScreen(
+                                isUpdate: false,
                                     documentId: documentId,
                                     homeController: homeController,
                                     loadData: loadData,
