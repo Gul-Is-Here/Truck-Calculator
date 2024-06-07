@@ -12,8 +12,13 @@ class LoadScreen extends StatefulWidget {
   final HomeController homeController;
   final Map<String, dynamic>? loadData;
   final String? documentId;
+  final bool isUpdate;
 
-  LoadScreen({required this.homeController, this.loadData, this.documentId});
+  LoadScreen(
+      {required this.homeController,
+      this.loadData,
+      this.documentId,
+      required this.isUpdate});
 
   @override
   State<LoadScreen> createState() => _LoadScreenState();
@@ -114,7 +119,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                 .homeController.otherCostsControllers[index],
                             label: 'Other Costs (\$)',
                             hint: 'e.g., \$100',
-                            validator: widget.homeController.validateInput,
+                            // validator: widget.homeController.validateInput,
                           ),
                           20.heightBox,
                           Card(
@@ -144,18 +149,25 @@ class _LoadScreenState extends State<LoadScreen> {
                                         TextButton(
                                           child: Text('Delete'),
                                           onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Close dialog
-                                            var userId = widget.homeController
-                                                .auth.currentUser?.uid;
-                                            var documentId = widget.documentId;
-                                            if (userId != null &&
-                                                documentId != null) {
-                                              widget.homeController.deleteLoad(
-                                                  userId, documentId, index);
+                                            if (widget.isUpdate == true) {
+                                              widget.homeController
+                                                  .removeLoad(index);
                                             } else {
-                                              print(
-                                                  'User ID or Document ID is null.');
+                                              Navigator.of(context)
+                                                  .pop(); // Close dialog
+                                              var userId = widget.homeController
+                                                  .auth.currentUser?.uid;
+                                              var documentId =
+                                                  widget.documentId;
+                                              if (userId != null &&
+                                                  documentId != null) {
+                                                widget.homeController
+                                                    .deleteLoad(userId,
+                                                        documentId, index);
+                                              } else {
+                                                print(
+                                                    'User ID or Document ID is null.');
+                                              }
                                             }
                                           },
                                         ),
@@ -198,6 +210,7 @@ class _LoadScreenState extends State<LoadScreen> {
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
                             Get.to(() => MileageFeSection(
+                                  isUpdate: widget.isUpdate,
                                   homeController: widget.homeController,
                                 ));
                           }

@@ -29,6 +29,7 @@ class EditScreen extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
 
         child: LoadScreen(
+          isUpdate: false,
           loadData: loadData,
           documentId: documentId,
           homeController: homeController,

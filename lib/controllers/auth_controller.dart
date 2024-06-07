@@ -20,13 +20,23 @@ class AuthController extends GetxController {
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  // @override
-  // void onClose() {
-  //   nameController.dispose();
-  //   emailController.dispose();
-  //   passwordController.dispose();
-  //   super.onClose();
-  // }
+  // Ensure the phone number is in the correct format with the country code +1 for USA
+  String _formatPhoneNumber(String phone) {
+    return '+1$phone';
+  }
+
+  // Greeting Method
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+    print(hour);
+    if (hour < 12) {
+      return 'Good Morning!';
+    } else if (hour < 17) {
+      return 'Good Afternoon!';
+    } else {
+      return 'Good Evening!';
+    }
+  }
 
   void registerUser() async {
     String name = nameController.text.trim();
@@ -44,12 +54,12 @@ class AuthController extends GetxController {
 
     try {
       await _auth.verifyPhoneNumber(
-        phoneNumber: phone,
+        phoneNumber: _formatPhoneNumber(phone),
         verificationCompleted: (PhoneAuthCredential credential) async {
           await _registerUserWithCredential(credential, name, email, phone);
         },
         verificationFailed: (FirebaseAuthException e) {
-          Get.snackbar('Error', 'Verification failed. Please try again.',
+          Get.snackbar('Error', 'Verification failed: ${e.message}',
               snackPosition: SnackPosition.BOTTOM);
           isLoading.value = false;
         },
@@ -69,7 +79,7 @@ class AuthController extends GetxController {
         },
       );
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred. Please try again.',
+      Get.snackbar('Error', 'An error occurred: ${e.toString()}',
           snackPosition: SnackPosition.BOTTOM);
       isLoading.value = false;
     }
@@ -94,20 +104,22 @@ class AuthController extends GetxController {
 
       if (userQuery.docs.isNotEmpty) {
         await _auth.verifyPhoneNumber(
-          phoneNumber: phone,
+          phoneNumber: _formatPhoneNumber(phone),
           verificationCompleted: (PhoneAuthCredential credential) async {
             await _auth.signInWithCredential(credential);
             Get.offAll(() => HomeScreen());
           },
           verificationFailed: (FirebaseAuthException e) {
-            Get.snackbar('Error', 'Verification failed. Please try again.',
+            Get.snackbar('Error', 'Verification failed: ${e.message}',
                 snackPosition: SnackPosition.BOTTOM);
             isLoading.value = false;
           },
           codeSent: (String verificationId, int? resendToken) {
             this.verificationId.value = verificationId;
             Get.to(() => OTPVerificationLoginScreen(
-                verificationId: verificationId, phone: phone));
+                  verificationId: verificationId,
+                  phone: phone,
+                ));
             isLoading.value = false;
           },
           codeAutoRetrievalTimeout: (String verificationId) {
@@ -120,7 +132,7 @@ class AuthController extends GetxController {
         isLoading.value = false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred. Please try again.',
+      Get.snackbar('Error', 'An error occurred: ${e.toString()}',
           snackPosition: SnackPosition.BOTTOM);
       isLoading.value = false;
     }
@@ -146,13 +158,14 @@ class AuthController extends GetxController {
         Get.offAll(() => HomeScreen());
       } else {
         await _registerUserWithCredential(
-            credential,
-            nameController.text.trim(),
-            emailController.text.trim(),
-            phoneController.text.trim());
+          credential,
+          nameController.text.trim(),
+          emailController.text.trim(),
+          phoneController.text.trim(),
+        );
       }
     } catch (e) {
-      Get.snackbar('Error', 'Invalid OTP. Please try again.',
+      Get.snackbar('Error', 'Invalid OTP: ${e.toString()}',
           snackPosition: SnackPosition.BOTTOM);
       isLoading.value = false;
     }
@@ -181,7 +194,7 @@ class AuthController extends GetxController {
       await _auth.signOut();
       Get.offAll(() => LoginScreen());
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred. Please try again.',
+      Get.snackbar('Error', 'An error occurred: ${e.toString()}',
           snackPosition: SnackPosition.BOTTOM);
     }
   }
