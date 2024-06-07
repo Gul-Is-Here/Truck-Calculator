@@ -1,3 +1,4 @@
+import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/otp_verification_screen.dart';
@@ -39,7 +40,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 30),
                   Text(
-                    controller.getGreeting(),
+                    AppClass().getGreeting(),
                     style: GoogleFonts.poppins(
                       textStyle: TextStyle(
                         fontSize: 32,

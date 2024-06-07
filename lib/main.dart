@@ -1,6 +1,8 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/firebase_options.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/splash_screen.dart';
-import 'package:dispatched_calculator_app/screens/home_screens/home.dart';
+import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,15 +22,33 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
         title: 'Dispatched Calculator',
         theme: ThemeData(
-          appBarTheme: AppBarTheme(color: Color(0xFF1A5CA7)),
-          buttonTheme: ButtonThemeData(),
+          appBarTheme: AppBarTheme(
+              color: AppColor().primaryAppColor,
+              iconTheme: AppColor().appDrawerColor),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              textStyle: const TextStyle(
+                  fontFamily: robotoRegular,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
+              // backgroundColor: AppColor().primaryAppColor,
+              foregroundColor: AppColor().secondaryAppColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          cardColor: AppColor().appTextColor,
           useMaterial3: true,
           textTheme: TextTheme(
-            bodyLarge: TextStyle(fontFamily: 'Raleway'),
-            bodyMedium: TextStyle(fontFamily: 'Raleway-Bold'),
+            bodyLarge: const TextStyle(fontFamily: robotoRegular),
+            bodyMedium: TextStyle(
+                fontFamily: robotoRegular,
+                fontSize: 12,
+                color: AppColor().secondaryAppColor),
             // bodySmall: TextStyle(fontFamily: 'Raleway'),
           ),
         ),
-        home: Home());
+        home: const SplashScreen());
   }
 }

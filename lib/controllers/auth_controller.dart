@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../screens/auth_screens/login_screen.dart';
 import '../screens/auth_screens/otp_verification_screen.dart';
 import '../screens/auth_screens/otpverification_login.dart';
+import '../screens/calculator_screen/calculator_screen.dart';
 import '../screens/home_screens/home_screen.dart';
 
 class AuthController extends GetxController {
@@ -25,18 +26,6 @@ class AuthController extends GetxController {
     return '+1$phone';
   }
 
-  // Greeting Method
-  String getGreeting() {
-    final hour = DateTime.now().hour;
-    print(hour);
-    if (hour < 12) {
-      return 'Good Morning!';
-    } else if (hour < 17) {
-      return 'Good Afternoon!';
-    } else {
-      return 'Good Evening!';
-    }
-  }
 
   void registerUser() async {
     String name = nameController.text.trim();

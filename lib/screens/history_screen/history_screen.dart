@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dispatched_calculator_app/screens/home_screens/load_screen.dart';
+import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:intl/intl.dart';
-import 'edit_screen.dart';
+import '../load_screen/edit_load_screen.dart';
 
 class HistoryScreen extends StatelessWidget {
   final HomeController homeController;
