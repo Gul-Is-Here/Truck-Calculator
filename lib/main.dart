@@ -29,7 +29,20 @@ class MyApp extends StatelessWidget {
             style: TextButton.styleFrom(
               textStyle: const TextStyle(
                   fontFamily: robotoRegular,
-                  fontSize: 24,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+              // backgroundColor: AppColor().primaryAppColor,
+              foregroundColor: AppColor().secondaryAppColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              textStyle: const TextStyle(
+                  fontFamily: robotoRegular,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold),
               // backgroundColor: AppColor().primaryAppColor,
               foregroundColor: AppColor().secondaryAppColor,
