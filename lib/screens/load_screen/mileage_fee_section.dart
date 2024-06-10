@@ -91,7 +91,11 @@ class MileageFeSection extends StatelessWidget {
           const SizedBox(height: 20),
           Container(
             padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(color: AppColor().primaryAppColor),
+            decoration: BoxDecoration(
+                color: AppColor().primaryAppColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.elliptical(40, 40),
+                )),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -105,8 +109,8 @@ class MileageFeSection extends StatelessWidget {
                         "Cost including factoring Fee",
                         style: TextStyle(
                           color: AppColor().appTextColor,
-                          fontFamily: ralewayRegular,
-                          fontSize: 20,
+                          fontFamily: robotoRegular,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                         maxLines:
@@ -128,10 +132,12 @@ class MileageFeSection extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  flex: 4,
+                  flex: 3,
                   child: isUpdate == false
-                      ? ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
+                      ? TextButton(
+                          style: TextButton.styleFrom(
+                            side:
+                                const BorderSide(width: 1, color: Colors.white),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -187,19 +193,17 @@ class MileageFeSection extends StatelessWidget {
                                   homeController: homeController));
                             }
                           },
-                          icon: const Icon(
-                            Icons.update,
-                            color: Colors.white,
-                          ),
-                          label: const Text(
+                          child: const Text(
+                            textAlign: TextAlign.center,
                             'Update',
                             style: TextStyle(
-                              color: Colors.white,
-                            ),
+                                color: Colors.white, fontFamily: robotoRegular),
                           ),
                         )
                       : TextButton(
                           style: ElevatedButton.styleFrom(
+                            side:
+                                const BorderSide(width: 1, color: Colors.white),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),

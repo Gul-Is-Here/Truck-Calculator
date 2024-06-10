@@ -4,8 +4,10 @@ import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../constants/fonts_strings.dart';
+import '../../constants/image_strings.dart';
 import '../../widgets/custome_textFormField.dart';
 import '../../widgets/customized_row_label_widget.dart';
 
@@ -22,7 +24,7 @@ class CalculatorScreen extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       drawer: Drawer(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             children: [
               ElevatedButton(
@@ -31,8 +33,7 @@ class CalculatorScreen extends StatelessWidget {
                   },
                   child: Text('History Screen')),
               ElevatedButton(
-                  onPressed: authController.signOut,
-                  child: const Text('LogOut')),
+                  onPressed: authController.signOut, child: Text('LogOut')),
             ],
           ),
         ),
@@ -45,12 +46,12 @@ class CalculatorScreen extends StatelessWidget {
               child: Form(
                 key: formKey,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
                       Center(
                         child: Text(
                           'Truck Monthly Cost',
@@ -60,7 +61,7 @@ class CalculatorScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20),
 
                       // Truck Payment TextFormField
                       buildRowWithLabel(
@@ -120,7 +121,7 @@ class CalculatorScreen extends StatelessWidget {
                         ],
                       ),
 
-                      // const SizedBox(height: 40),
+                      //  SizedBox(height: 40),
                       // Center(
                       //   child: Obx(() => Container(
                       //         alignment: Alignment.center,
@@ -132,15 +133,15 @@ class CalculatorScreen extends StatelessWidget {
                       //         ),
                       //         child: Text(
                       //           '\$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}',
-                      //           style: const TextStyle(color: Colors.white),
+                      //           style:  TextStyle(color: Colors.white),
                       //         ),
                       //       )),
                       // ),
-                      // const SizedBox(height: 20),
+                      //  SizedBox(height: 20),
                       // Align(
                       //   alignment: Alignment.centerRight,
                       //   child: Padding(
-                      //     padding: const EdgeInsets.only(right: 16.0),
+                      //     padding:  EdgeInsets.only(right: 16.0),
                       //     child: TextButton.icon(
                       //       style: TextButton.styleFrom(
                       //         shape: RoundedRectangleBorder(
@@ -150,8 +151,8 @@ class CalculatorScreen extends StatelessWidget {
                       //       onPressed: () {
 
                       //       },
-                      //       icon: const Icon(Icons.arrow_circle_right_outlined),
-                      //       label: const Text('Next'),
+                      //       icon:  Icon(Icons.arrow_circle_right_outlined),
+                      //       label:  Text('Next'),
                       //     ),
                       //   ),
                       // ),
@@ -163,10 +164,14 @@ class CalculatorScreen extends StatelessWidget {
           ),
           // Fixed Footer
           Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(color: AppColor().primaryAppColor),
+            padding: EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+                color: AppColor().primaryAppColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.elliptical(40, 40),
+                )),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   children: [
@@ -199,10 +204,11 @@ class CalculatorScreen extends StatelessWidget {
                             ));
                       }
                     },
-                    icon: Icon(
-                      size: 50,
-                      Icons.arrow_circle_right_outlined,
-                      color: AppColor().appTextColor,
+                    icon: SvgPicture.asset(
+                      arrow_forward, fit: BoxFit.cover,
+                      // semanticsLabel: 'My SVG Image',
+                      height: 60,
+                      width: 60,
                     ))
               ],
             ),
