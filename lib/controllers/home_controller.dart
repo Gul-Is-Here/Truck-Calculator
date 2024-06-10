@@ -34,7 +34,7 @@ class HomeController extends GetxController {
   var otherCostsControllers = <TextEditingController>[].obs;
   RxList<Map<String, dynamic>> historyData = <Map<String, dynamic>>[].obs;
 
-  RxDouble totalMilageCostPerWeek = 0.0.obs;
+  RxDouble totalFrightChargesAndTolls = 0.0.obs;
   RxDouble totalMilageCost = 0.0.obs;
   RxDouble totalProfit = 0.0.obs;
   RxDouble totalFreightCharges = 0.0.obs;
@@ -212,6 +212,7 @@ class HomeController extends GetxController {
         totalMilageCost.value -
         totalEstimatedTollsCost.value;
     print('totalProfit : ${totalProfit.value}');
+    totalFrightChargesAndTolls.value=totalFreightCharges.value+totalEstimatedTollsCost.value;
   }
 
   void addNewLoad() {

@@ -3,6 +3,7 @@ import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
+import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -22,22 +23,7 @@ class CalculatorScreen extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      drawer: Drawer(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => HistoryScreen(homeController: homeController));
-                  },
-                  child: Text('History Screen')),
-              ElevatedButton(
-                  onPressed: authController.signOut, child: Text('LogOut')),
-            ],
-          ),
-        ),
-      ),
+      drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: Column(
         children: [

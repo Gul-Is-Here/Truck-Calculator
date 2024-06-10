@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/result_screen.dart';
+import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
@@ -12,19 +13,16 @@ class MileageFeSection extends StatelessWidget {
   final HomeController homeController;
   final bool isUpdate;
 
-  MileageFeSection({required this.homeController, required this.isUpdate});
+  const MileageFeSection(
+      {super.key, required this.homeController, required this.isUpdate});
 
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      drawer: Drawer(),
-      appBar: AppBar(
-          // backgroundColor: Colors.deepPurple,
-          // title: const Text('Mileage Fee Section',
-          //     style: TextStyle(color: Colors.white)),
-          ),
+      drawer: MyDrawerWidget(),
+      appBar: AppBar(),
       body: Column(
         children: [
           Expanded(
