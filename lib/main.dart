@@ -2,7 +2,6 @@ import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/firebase_options.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/splash_screen.dart';
-import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
