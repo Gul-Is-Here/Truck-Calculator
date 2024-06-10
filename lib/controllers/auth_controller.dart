@@ -3,11 +3,9 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../screens/auth_screens/login_screen.dart';
 import '../screens/auth_screens/otp_verification_screen.dart';
 import '../screens/auth_screens/otpverification_login.dart';
-import '../screens/calculator_screen/calculator_screen.dart';
 import '../screens/home_screens/home_screen.dart';
 
 class AuthController extends GetxController {

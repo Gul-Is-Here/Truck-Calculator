@@ -1,7 +1,6 @@
 import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
-import 'package:dispatched_calculator_app/screens/auth_screens/otp_verification_screen.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

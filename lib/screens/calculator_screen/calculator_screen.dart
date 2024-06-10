@@ -1,7 +1,6 @@
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
