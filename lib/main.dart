@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
                   fontFamily: robotoRegular,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
-              // backgroundColor: AppColor().primaryAppColor,
               foregroundColor: AppColor().secondaryAppColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -43,7 +42,6 @@ class MyApp extends StatelessWidget {
                   fontFamily: robotoRegular,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
-              // backgroundColor: AppColor().primaryAppColor,
               foregroundColor: AppColor().secondaryAppColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),

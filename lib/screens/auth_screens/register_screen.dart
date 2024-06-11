@@ -1,7 +1,7 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../constants/image_strings.dart';
 import '../../controllers/auth_controller.dart';
 
@@ -12,18 +12,6 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.6),
-                  Colors.black.withOpacity(0.3),
-                ],
-              ),
-            ),
-          ),
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -39,57 +27,61 @@ class RegisterScreen extends StatelessWidget {
                   SizedBox(height: 30),
                   Text(
                     'Create an Account',
-                    style: GoogleFonts.poppins(
-                      textStyle: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    style: TextStyle(
+                      fontFamily: robotoRegular,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: AppColor().secondaryAppColor,
                     ),
                   ),
                   SizedBox(height: 10),
                   Text(
                     'Sign up to get started!',
-                    style: GoogleFonts.poppins(
-                      textStyle: TextStyle(
+                    style: TextStyle(
+                        fontFamily: robotoRegular,
                         fontSize: 18,
-                        color: Colors.white70,
-                      ),
-                    ),
+                        color: AppColor().secondaryAppColor),
                   ),
-                  SizedBox(height: 40),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: authController.nameController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
+                  const SizedBox(height: 40),
+                  TextField(
+                    cursorColor: AppColor().secondaryAppColor,
+                    controller: authController.nameController,
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: AppColor().secondaryAppColor,
+                        ),
                         labelText: 'Name',
+                        labelStyle:
+                            TextStyle(color: AppColor().secondaryAppColor),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                      ),
-                    ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                                color: AppColor().secondaryAppColor))),
                   ),
                   SizedBox(height: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: authController.emailController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.email),
+                  TextField(
+                    cursorColor: AppColor().secondaryAppColor,
+                    controller: authController.emailController,
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.email,
+                          color: AppColor().secondaryAppColor,
+                        ),
                         labelText: 'Email',
+                        labelStyle: TextStyle(
+                            color: AppColor().secondaryAppColor,
+                            fontFamily: robotoRegular),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                      ),
-                    ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                                color: AppColor().secondaryAppColor))),
                   ),
                   SizedBox(height: 20),
                   Container(
@@ -99,56 +91,49 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     child: TextField(
                       controller: authController.phoneController,
+                      cursorColor: AppColor().secondaryAppColor,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.phone),
-                        labelText: 'Phone Number',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                          prefixIcon: Icon(
+                            Icons.phone,
+                            color: AppColor().secondaryAppColor,
+                          ),
+                          labelText: 'Phone Number',
+                          labelStyle: TextStyle(
+                              color: AppColor().secondaryAppColor,
+                              fontFamily: robotoRegular),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: AppColor().secondaryAppColor))),
                     ),
                   ),
-                  // SizedBox(height: 20),
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white.withOpacity(0.8),
-                  //     borderRadius: BorderRadius.circular(12),
-                  //   ),
-                  //   child: TextField(
-                  //     controller: authController.passwordController,
-                  //     obscureText: true,
-                  //     decoration: InputDecoration(
-                  //       prefixIcon: Icon(Icons.lock),
-                  //       labelText: 'Password',
-                  //       border: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(12),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  SizedBox(height: 30),
-                  Obx(() => authController.isLoading.value
-                      ? CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: authController.registerUser,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pinkAccent,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 100, vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'Register',
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
+                  const SizedBox(height: 30),
+                  Obx(
+                    () => authController.isLoading.value
+                        ? CircularProgressIndicator(
+                            color: AppColor().primaryAppColor,
+                          )
+                        : ElevatedButton(
+                            onPressed: authController.registerUser,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColor().primaryAppColor,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 100, vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
+                            child: Text('Register',
+                                style: TextStyle(
+                                  fontFamily: robotoRegular,
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                )),
                           ),
-                        )),
+                  ),
                   SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
@@ -156,11 +141,10 @@ class RegisterScreen extends StatelessWidget {
                     },
                     child: Text(
                       'Already have an account? Login',
-                      style: GoogleFonts.poppins(
-                        textStyle: TextStyle(
-                          fontSize: 14,
-                          color: Colors.blueAccent,
-                        ),
+                      style: TextStyle(
+                        fontFamily: robotoRegular,
+                        fontSize: 14,
+                        color: AppColor().secondaryAppColor,
                       ),
                     ),
                   ),

@@ -1,9 +1,7 @@
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../controllers/auth_controller.dart';
-
 class OTPVerificationScreen extends StatelessWidget {
   final String verificationId;
   final String email;
@@ -39,22 +37,23 @@ class OTPVerificationScreen extends StatelessWidget {
             children: [
               Text(
                 'OTP Verification',
-                style: GoogleFonts.poppins(
-                  textStyle: TextStyle(
+                style: 
+                   TextStyle(
+                    fontFamily: robotoRegular,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                
               ),
               SizedBox(height: 20),
               Text(
                 'Enter the OTP sent to your phone number',
-                style: GoogleFonts.poppins(
-                  textStyle: TextStyle(
+                style: 
+                  TextStyle(
+                    fontFamily: robotoRegular,
                     fontSize: 16,
                     color: Colors.grey,
-                  ),
-                ),
+                  )
               ),
               SizedBox(height: 40),
               Row(

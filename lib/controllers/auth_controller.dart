@@ -1,3 +1,4 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +24,6 @@ class AuthController extends GetxController {
   String _formatPhoneNumber(String phone) {
     return '+1$phone';
   }
-
 
   void registerUser() async {
     String name = nameController.text.trim();
@@ -77,7 +77,10 @@ class AuthController extends GetxController {
 
     if (phone.isEmpty) {
       Get.snackbar('Error', 'Please enter your phone number',
+          colorText: AppColor().appTextColor,
+          backgroundColor: Colors.red,
           snackPosition: SnackPosition.BOTTOM);
+
       return;
     }
 

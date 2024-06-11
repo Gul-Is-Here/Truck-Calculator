@@ -14,7 +14,8 @@ class AppClass {
       return 'Good Evening!';
     }
   }
- void showExitDialog(BuildContext context) {
+
+  void showExitDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -38,5 +39,4 @@ class AppClass {
       }
     });
   }
-  
 }

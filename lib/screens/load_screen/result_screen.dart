@@ -8,9 +8,9 @@ import 'package:velocity_x/velocity_x.dart';
 import '../../widgets/result_widget.dart';
 
 class ResultsScreen extends StatelessWidget {
-  final HomeController homeController = Get.put(HomeController());
+  final HomeController homeController;
 
- 
+  ResultsScreen({required this.homeController});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class ResultsScreen extends StatelessWidget {
                     ResultWidget(
                       textColor: AppColor().appTextColor,
                       headingTextColor: AppColor().appTextColor,
-                      cardColor: homeController.totalProfit.value <= 0
+                      cardColor: homeController.totalProfit <= 0
                           ? Colors.red
                           : AppColor().primaryAppColor,
                       title: 'Total Profit',
