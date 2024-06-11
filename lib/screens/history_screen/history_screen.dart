@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
+import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:intl/intl.dart';
 
+import '../../widgets/history_screen_widget.dart';
 
 class HistoryScreen extends StatelessWidget {
   final HomeController homeController;
@@ -13,10 +15,10 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Calculation History'),
-      ),
+      drawer: MyDrawerWidget(),
+      appBar: AppBar(),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -43,42 +45,42 @@ class HistoryScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Total Freight Charges:',
                           value:
                               '\$${(load['totalFreightCharges'] as double? ?? 0.0).toStringAsFixed(2)}',
                         ),
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Total Estimated Tolls:',
                           value:
                               '\$${(load['totalEstimatedTolls'] as double? ?? 0.0).toStringAsFixed(2)}',
                         ),
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Total Other Costs:',
                           value:
                               '\$${(load['totalOtherCosts'] as double? ?? 0.0).toStringAsFixed(2)}',
                         ),
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Total Dispatched Miles:',
                           value:
                               '${(load['totalDispatchedMiles'] as double? ?? 0.0).toStringAsFixed(2)} miles',
                         ),
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Total Weekly Fixed Cost:',
                           value:
                               '\$${(load['weeklyFixedCost'] as double? ?? 0.0).toStringAsFixed(2)}',
                         ),
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Total Cost Per Week:',
                           value:
                               '\$${(load['totalMilageCost'] as double? ?? 0.0).toStringAsFixed(2)}',
                         ),
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Total Profit:',
                           value:
                               '\$${(load['totalProfit'] as double? ?? 0.0).toStringAsFixed(2)}',
                         ),
-                        _buildResultRow(
+                        CustomizedHistoryWidget(
                           title: 'Timestamp:',
                           value: load['timestamp'] != null
                               ? DateFormat('yyyy-MM-dd HH:mm:ss').format(
@@ -95,7 +97,7 @@ class HistoryScreen extends StatelessWidget {
                                   .fetchEntryForEditing(documentId);
                               print(loadData);
                               Get.to(() => LoadScreen(
-                                isUpdate: false,
+                                    isUpdate: false,
                                     documentId: documentId,
                                     homeController: homeController,
                                     loadData: loadData,
@@ -116,22 +118,5 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildResultRow({required String title, required String value}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            value,
-            style: TextStyle(fontSize: 16),
-          ),
-        ],
-      ),
-    );
-  }
+ 
 }

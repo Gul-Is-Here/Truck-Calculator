@@ -37,10 +37,12 @@ Widget buildTextFormField({
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
                 filled: true,
-                fillColor: AppColor().secondaryAppColor.withOpacity(.15),
+                fillColor: AppColor().secondaryAppColor.withOpacity(.08),
                 hintText: hint,
-                hintStyle:
-                    const TextStyle(fontSize: 12, fontFamily: robotoRegular),
+                hintStyle: TextStyle(
+                    fontSize: 12,
+                    fontFamily: robotoRegular,
+                    color: Colors.grey.shade400),
                 errorStyle: TextStyle(fontSize: 12, fontFamily: robotoRegular),
                 // isDense: true,
                 alignLabelWithHint: true,
@@ -58,7 +60,6 @@ Widget buildTextFormField({
             validator: validator,
           ),
         ),
-        20.heightBox,
       ],
     ),
   );
