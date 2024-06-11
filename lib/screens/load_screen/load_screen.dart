@@ -146,12 +146,12 @@ class _LoadScreenState extends State<LoadScreen> {
                                           widget.homeController.validateInput,
                                     ),
                                     buildTextFormField(
-                                      controller: widget.homeController
-                                          .otherCostsControllers[index],
-                                      label: 'Other Costs (\$)',
-                                      hint: 'e.g., \$100',
-                                      // validator: widget.homeController.validateInput,
-                                    ),
+                                        controller: widget.homeController
+                                            .otherCostsControllers[index],
+                                        label: 'Other Costs (\$)',
+                                        hint: 'e.g., \$100',
+                                        validator: widget.homeController
+                                            .validateNonNegative),
 
                                     Row(
                                       mainAxisAlignment:

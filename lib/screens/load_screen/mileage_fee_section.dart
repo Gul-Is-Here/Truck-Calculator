@@ -94,14 +94,17 @@ class MileageFeSection extends StatelessWidget {
                                 fontWeight: FontWeight.bold),
                           ),
                           10.widthBox,
-                          Tooltip(
-                            triggerMode: TooltipTriggerMode.tap,
-                            message:
-                                'Factoring fee ${(homeController.totalFreightCharges.value * 2) / 100}',
-                            child: Icon(
-                              Icons.info_outline,
-                              size: 30,
-                              color: AppColor().primaryAppColor,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Tooltip(
+                              triggerMode: TooltipTriggerMode.tap,
+                              message:
+                                  'Factoring fee is the 2% of total fright changres ${(homeController.totalFreightCharges.value * 2) / 100}',
+                              child: Icon(
+                                Icons.info_outline,
+                                size: 30,
+                                color: AppColor().primaryAppColor,
+                              ),
                             ),
                           )
                         ],
@@ -183,7 +186,7 @@ class MileageFeSection extends StatelessWidget {
                         Tooltip(
                           triggerMode: TooltipTriggerMode.tap,
                           message:
-                              'Factoring fee ${(homeController.totalFreightCharges.value * 2) / 100}',
+                              'Factoring fee is the 2% of total fright changres ${(homeController.totalFreightCharges.value * 2) / 100}',
                           child: Icon(
                             Icons.info_outline,
                             color: AppColor().appTextColor,
@@ -259,7 +262,7 @@ class MileageFeSection extends StatelessWidget {
                               });
                               Navigator.of(context).pop(); // Close the dialog
                               Get.to(() => ResultsScreen(
-                                ));
+                                  homeController: homeController));
                             }
                           });
                         },
@@ -288,7 +291,7 @@ class MileageFeSection extends StatelessWidget {
                                   colorText: Colors.white);
                               Navigator.of(context).pop(); // Close the dialog
                               Get.to(() => ResultsScreen(
-                                  ));
+                                  homeController: homeController));
                             }
                           });
                         },

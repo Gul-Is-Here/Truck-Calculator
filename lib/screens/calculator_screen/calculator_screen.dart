@@ -89,19 +89,19 @@ class CalculatorScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: buildTextFormField(
-                              controller: homeController.tOverHeadController,
-                              label: 'Overhead',
-                              hint: 'e.g., \$50',
-                            ),
+                                controller: homeController.tOverHeadController,
+                                label: 'Overhead',
+                                hint: 'e.g., \$50',
+                                validator: homeController.validateNonNegative),
                           ),
 
                           // Truck Other Cost TextFormField
                           Expanded(
                             child: buildTextFormField(
-                              controller: homeController.tOtherController,
-                              label: 'Other',
-                              hint: 'e.g., \$200',
-                            ),
+                                controller: homeController.tOtherController,
+                                label: 'Other',
+                                hint: 'e.g., \$200',
+                                validator: homeController.validateNonNegative),
                           ),
                         ],
                       ),

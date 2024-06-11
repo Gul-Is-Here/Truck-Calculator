@@ -9,6 +9,7 @@ class HomeController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
   String? newDocumentId;
+  var docId;
   RxBool isLoading = false.obs;
   RxDouble weeklyFixedCost = 0.0.obs;
   RxDouble weeklyTruckPayment = 0.0.obs;
@@ -104,8 +105,22 @@ class HomeController extends GetxController {
       return 'Must be filled!';
     } else if (double.tryParse(value) == null) {
       return 'Enter a valid number';
+    } else if (double.parse(value) < 0) {
+      return 'Cannot enter negative value';
     }
     return null;
+  }
+
+  // for non null value only use in other costs and overHead Costs
+  String? validateNonNegative(String? value) {
+    if (value == null || value.isEmpty) {
+      return null; // No validation needed for empty values
+    } else if (double.tryParse(value) == null) {
+      return 'Enter a valid number';
+    } else if (double.parse(value) < 0) {
+      return 'Value must be positive';
+    }
+    return null; // No errors
   }
 
   void _calculateFixedCost() {
@@ -271,6 +286,7 @@ class HomeController extends GetxController {
 
         // Set the data for the new document
         await newValuesDocRef.set({
+          'totalfactoringFee': totalFactoringFee.value,
           'truckPayment': weeklyTruckPayment.value,
           'truckInsurance': weeklyInsurance.value,
           'trailerLease': weeklyTrailerLease.value,
@@ -339,6 +355,8 @@ class HomeController extends GetxController {
         return querySnapshot.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           data['id'] = doc.id; // Include the document ID
+          docId = data['id'];
+          print(docId);
           return data;
         }).toList();
       } catch (e) {
@@ -350,6 +368,7 @@ class HomeController extends GetxController {
 
   void updateEntry(Map<String, dynamic> newData) async {
     User? user = auth.currentUser;
+    newDocumentId = docId;
     if (user != null) {
       if (newDocumentId == null || newDocumentId!.isEmpty) {
         print('Error: newDocumentId is null or empty.');

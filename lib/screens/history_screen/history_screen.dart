@@ -6,8 +6,6 @@ import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:intl/intl.dart';
 
-import '../../widgets/history_screen_widget.dart';
-
 class HistoryScreen extends StatelessWidget {
   final HomeController homeController;
 
@@ -15,87 +13,76 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       drawer: MyDrawerWidget(),
-      appBar: AppBar(),
+      appBar: AppBar(title: Text('History')),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: FutureBuilder<List<Map<String, dynamic>>>(
           future: homeController.fetchAllEntriesForEditing(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             }
 
-            var data = snapshot.data!;
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
+            var data = snapshot.data ?? [];
             if (data.isEmpty) {
               return Center(child: Text('No history data available.'));
             }
 
-            return ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                final load = data[index];
-
-                return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomizedHistoryWidget(
-                          title: 'Total Freight Charges:',
-                          value:
-                              '\$${(load['totalFreightCharges'] as double? ?? 0.0).toStringAsFixed(2)}',
-                        ),
-                        CustomizedHistoryWidget(
-                          title: 'Total Estimated Tolls:',
-                          value:
-                              '\$${(load['totalEstimatedTolls'] as double? ?? 0.0).toStringAsFixed(2)}',
-                        ),
-                        CustomizedHistoryWidget(
-                          title: 'Total Other Costs:',
-                          value:
-                              '\$${(load['totalOtherCosts'] as double? ?? 0.0).toStringAsFixed(2)}',
-                        ),
-                        CustomizedHistoryWidget(
-                          title: 'Total Dispatched Miles:',
-                          value:
-                              '${(load['totalDispatchedMiles'] as double? ?? 0.0).toStringAsFixed(2)} miles',
-                        ),
-                        CustomizedHistoryWidget(
-                          title: 'Total Weekly Fixed Cost:',
-                          value:
-                              '\$${(load['weeklyFixedCost'] as double? ?? 0.0).toStringAsFixed(2)}',
-                        ),
-                        CustomizedHistoryWidget(
-                          title: 'Total Cost Per Week:',
-                          value:
-                              '\$${(load['totalMilageCost'] as double? ?? 0.0).toStringAsFixed(2)}',
-                        ),
-                        CustomizedHistoryWidget(
-                          title: 'Total Profit:',
-                          value:
-                              '\$${(load['totalProfit'] as double? ?? 0.0).toStringAsFixed(2)}',
-                        ),
-                        CustomizedHistoryWidget(
-                          title: 'Timestamp:',
-                          value: load['timestamp'] != null
-                              ? DateFormat('yyyy-MM-dd HH:mm:ss').format(
-                                  (load['timestamp'] as Timestamp).toDate())
-                              : 'N/A',
-                        ),
-                        SizedBox(height: 10),
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: const <DataColumn>[
+                  DataColumn(
+                    label: Text(
+                      'Week',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Date',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Time',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Action',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ],
+                rows: data.map<DataRow>((load) {
+                  var timestamp = (load['timestamp'] as Timestamp?)?.toDate();
+                  var date = timestamp != null
+                      ? DateFormat('yyyy-MM-dd').format(timestamp)
+                      : 'N/A';
+                  var time = timestamp != null
+                      ? DateFormat('HH:mm:ss').format(timestamp)
+                      : 'N/A';
+                  return DataRow(
+                    cells: <DataCell>[
+                      DataCell(Text('Week 1')), // Assuming all are 'Week 1'
+                      DataCell(Text(date)),
+                      DataCell(Text(time)),
+                      DataCell(
                         ElevatedButton(
                           onPressed: () async {
                             var documentId = load['id'] as String?;
-
                             if (documentId != null) {
                               var loadData = await homeController
                                   .fetchEntryForEditing(documentId);
-                              print(loadData);
                               Get.to(() => LoadScreen(
                                     isUpdate: false,
                                     documentId: documentId,
@@ -105,18 +92,16 @@ class HistoryScreen extends StatelessWidget {
                             }
                           },
                           child: Text('Edit'),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              },
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
             );
           },
         ),
       ),
     );
   }
-
- 
 }

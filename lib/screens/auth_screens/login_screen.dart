@@ -1,11 +1,11 @@
 import 'package:dispatched_calculator_app/app_classes/app_class.dart';
+import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -13,18 +13,6 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.6),
-                  Colors.black.withOpacity(0.3),
-                ],
-              ),
-            ),
-          ),
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -40,22 +28,20 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 30),
                   Text(
                     AppClass().getGreeting(),
-                    style: GoogleFonts.poppins(
-                      textStyle: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    style: TextStyle(
+                      fontFamily: robotoRegular,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: AppColor().secondaryAppColor,
                     ),
                   ),
                   SizedBox(height: 10),
                   Text(
                     'Please login with your phone number',
-                    style: GoogleFonts.poppins(
-                      textStyle: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white70,
-                      ),
+                    style: TextStyle(
+                      fontFamily: robotoRegular,
+                      fontSize: 18,
+                      color: AppColor().secondaryAppColor,
                     ),
                   ),
                   SizedBox(height: 40),
@@ -65,24 +51,38 @@ class LoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TextFormField(
+                      cursorColor: AppColor().secondaryAppColor,
                       controller: controller.phoneController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.phone),
-                        labelText: 'Phone Number',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                          // fillColor: Colors.grey,
+                          prefixIcon: Icon(
+                            Icons.phone,
+                            color: AppColor().secondaryAppColor,
+                          ),
+                          labelText: 'Phone Number',
+                          labelStyle:
+                              TextStyle(color: AppColor().secondaryAppColor),
+                          border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColor().secondaryAppColor),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: AppColor().secondaryAppColor))),
                       keyboardType: TextInputType.phone,
                     ),
                   ),
                   SizedBox(height: 30),
                   Obx(() => controller.isLoading.value
-                      ? CircularProgressIndicator()
+                      ?  CircularProgressIndicator(
+                          color: AppColor().primaryAppColor,
+                        )
                       : ElevatedButton(
                           onPressed: () => controller.loginWithPhoneNumber(),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple,
+                            backgroundColor: AppColor().primaryAppColor,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 100, vertical: 15),
                             shape: RoundedRectangleBorder(
@@ -91,14 +91,15 @@ class LoginScreen extends StatelessWidget {
                           ),
                           child: Text(
                             'Login',
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
+                            style: 
+                              TextStyle(
+                                fontFamily: robotoRegular,
                                 fontSize: 16,
-                                color: Colors.white,
+                                color: AppColor().appTextColor,
                               ),
                             ),
                           ),
-                        )),
+                        ),
                   SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
@@ -106,11 +107,12 @@ class LoginScreen extends StatelessWidget {
                     },
                     child: Text(
                       'Don\'t have an account? Register',
-                      style: GoogleFonts.poppins(
-                        textStyle: TextStyle(
+                      style:
+                       TextStyle(
+                        fontFamily: robotoRegular,
                           fontSize: 14,
-                          color: Colors.blueAccent,
-                        ),
+                          color: AppColor().secondaryAppColor,
+                        
                       ),
                     ),
                   ),
