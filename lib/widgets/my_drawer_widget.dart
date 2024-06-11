@@ -59,7 +59,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => HistoryScreen(homeController: homeController));
+                    Get.to(() => UpdateScreen(homeController: homeController));
                   },
                 ),
                 ListTile(

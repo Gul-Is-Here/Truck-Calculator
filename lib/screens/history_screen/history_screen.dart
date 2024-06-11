@@ -6,10 +6,10 @@ import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:intl/intl.dart';
 
-class HistoryScreen extends StatelessWidget {
+class UpdateScreen extends StatelessWidget {
   final HomeController homeController;
 
-  HistoryScreen({required this.homeController});
+  UpdateScreen({required this.homeController});
 
   @override
   Widget build(BuildContext context) {
