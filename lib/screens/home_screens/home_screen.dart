@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
               10.heightBox,
               CardWidget(
                   onTap: () {
-                    Get.to(() => HistoryScreen(homeController: homeController));
+                    Get.to(() => UpdateScreen(homeController: homeController));
                   },
                   butonText: 'Update',
                   cardText:

@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
+import '../app_classes/date_utills.dart';
+
 class HomeController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -100,6 +102,7 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
+  void calculateDateTime() {}
   String? validateInput(String? value) {
     if (value == null || value.isEmpty) {
       return 'Must be filled!';
@@ -121,6 +124,35 @@ class HomeController extends GetxController {
       return 'Value must be positive';
     }
     return null; // No errors
+  }
+
+  void moveCurrentWeekDataToHistory(QuerySnapshot currentWeekSnapshot) async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        // Get a reference to the user's document
+        DocumentReference userDocRef =
+            _firestore.collection('users').doc(user.uid);
+
+        // Store the current week's data in the "history" collection
+        for (QueryDocumentSnapshot doc in currentWeekSnapshot.docs) {
+          // Cast doc.data() to the correct type
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          await userDocRef.collection('history').add(data);
+        }
+
+        // Delete the current week's data from the original collection
+        for (QueryDocumentSnapshot doc in currentWeekSnapshot.docs) {
+          await userDocRef.collection('calculatedValues').doc(doc.id).delete();
+        }
+
+        print('Current week data moved to history successfully');
+      } catch (e) {
+        print('Error moving current week data to history: $e');
+      }
+    } else {
+      print('No user signed in');
+    }
   }
 
   void _calculateFixedCost() {
