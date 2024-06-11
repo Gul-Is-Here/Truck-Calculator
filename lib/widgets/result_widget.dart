@@ -4,7 +4,16 @@ import 'package:flutter/material.dart';
 class ResultWidget extends StatelessWidget {
   final String title;
   final String value;
-   ResultWidget({super.key, required this.title, required this.value});
+  final Color cardColor;
+  final Color textColor;
+  final Color headingTextColor;
+  ResultWidget(
+      {super.key,
+      required this.headingTextColor,
+      required this.textColor,
+      required this.title,
+      required this.value,
+      required this.cardColor});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +23,7 @@ class ResultWidget extends StatelessWidget {
         height: 100,
         width: double.infinity,
         child: Card(
+          color: cardColor,
           elevation: 5,
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -23,13 +33,17 @@ class ResultWidget extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: robotoRegular),
+                    fontSize: 16,
+                    color: headingTextColor
+                  ),
                 ),
                 Text(
                   value,
-                  style: TextStyle(fontSize: 18, fontFamily: robotoRegular),
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 24,
+                      fontFamily: robotoRegular,
+                      fontWeight: FontWeight.bold),
                 ),
               ],
             ),

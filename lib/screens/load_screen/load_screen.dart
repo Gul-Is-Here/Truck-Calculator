@@ -1,4 +1,5 @@
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
+import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -16,8 +17,9 @@ class LoadScreen extends StatefulWidget {
   final String? documentId;
   final bool isUpdate;
 
-  LoadScreen(
-      {required this.homeController,
+  const LoadScreen(
+      {super.key,
+      required this.homeController,
       this.loadData,
       this.documentId,
       required this.isUpdate});
@@ -68,7 +70,8 @@ class _LoadScreenState extends State<LoadScreen> {
   Widget build(BuildContext context) {
     print(widget.documentId);
     return Scaffold(
-      drawer: Drawer(),
+      resizeToAvoidBottomInset: false,
+      drawer: MyDrawerWidget(),
       appBar: AppBar(
           // title: Text('Additional Costs'),
           ),
@@ -95,19 +98,24 @@ class _LoadScreenState extends State<LoadScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     // const SizedBox(height: 20)
-                                    Card(
-                                      elevation: 10,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          'Load ${index + 1}',
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontFamily: robotoRegular,
-                                            fontWeight: FontWeight.bold,
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 10),
+                                      child: Card(
+                                        color: AppColor().secondaryAppColor,
+                                        elevation: 10,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            'Load ${index + 1}',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: AppColor().appTextColor,
+                                              fontFamily: robotoRegular,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -144,87 +152,85 @@ class _LoadScreenState extends State<LoadScreen> {
                                       hint: 'e.g., \$100',
                                       // validator: widget.homeController.validateInput,
                                     ),
-                                    20.heightBox,
+
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Card(
-                                          elevation: 5,
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.delete,
-                                              size: 30,
-                                              color: Colors.red,
-                                            ),
-                                            onPressed: () {
-                                              // Show delete confirmation dialog
-                                              showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return AlertDialog(
-                                                    title: Text('Delete Load'),
-                                                    content: Text(
-                                                        'Are you sure you want to delete this load?'),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        child: Text('Cancel'),
-                                                        onPressed: () {
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            size: 24,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () {
+                                            // Show delete confirmation dialog
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text('Delete Load'),
+                                                  content: Text(
+                                                      'Are you sure you want to delete this load?'),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      child: Text('Cancel'),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                    TextButton(
+                                                      child: Text('Delete'),
+                                                      onPressed: () {
+                                                        if (widget.isUpdate ==
+                                                            true) {
+                                                          widget.homeController
+                                                              .removeLoad(
+                                                                  index);
                                                           Navigator.of(context)
                                                               .pop();
-                                                        },
-                                                      ),
-                                                      TextButton(
-                                                        child: Text('Delete'),
-                                                        onPressed: () {
-                                                          if (widget.isUpdate ==
-                                                              true) {
+                                                        } else {
+                                                          Navigator.of(context)
+                                                              .pop(); // Close dialog
+                                                          var userId = widget
+                                                              .homeController
+                                                              .auth
+                                                              .currentUser
+                                                              ?.uid;
+                                                          var documentId =
+                                                              widget.documentId;
+                                                          if (userId != null &&
+                                                              documentId !=
+                                                                  null) {
                                                             widget
                                                                 .homeController
-                                                                .removeLoad(
-                                                                    index);
+                                                                .deleteLoad(
+                                                                    userId,
+                                                                    documentId,
+                                                                    index,
+                                                                    context);
                                                           } else {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(); // Close dialog
-                                                            var userId = widget
-                                                                .homeController
-                                                                .auth
-                                                                .currentUser
-                                                                ?.uid;
-                                                            var documentId =
-                                                                widget
-                                                                    .documentId;
-                                                            if (userId !=
-                                                                    null &&
-                                                                documentId !=
-                                                                    null) {
-                                                              widget
-                                                                  .homeController
-                                                                  .deleteLoad(
-                                                                      userId,
-                                                                      documentId,
-                                                                      index);
-                                                            } else {
-                                                              print(
-                                                                  'User ID or Document ID is null.');
-                                                            }
+                                                            print(
+                                                                'User ID or Document ID is null.');
                                                           }
-                                                        },
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
+                                                        }
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
                                         ),
-                                        Card(
-                                          elevation: 5 
-                                           ,
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10.0),
                                           child: TextButton.icon(
                                             style: TextButton.styleFrom(
+                                              side: BorderSide(
+                                                  color: AppColor()
+                                                      .secondaryAppColor),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -233,7 +239,10 @@ class _LoadScreenState extends State<LoadScreen> {
                                             onPressed: () => showAddLoadDialog(
                                                 context, widget.homeController),
                                             icon: const Icon(Icons.add),
-                                            label: const Text('Add Load'),
+                                            label: Text(
+                                              'Add',
+                                              style: TextStyle(fontSize: 16),
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -266,19 +275,19 @@ class _LoadScreenState extends State<LoadScreen> {
                 Column(
                   children: [
                     Text(
-                      'Total Freight Charge',
+                      'Total Freight Charges',
                       style: TextStyle(
-                          color: AppColor().appTextColor,
-                          fontFamily: robotoRegular,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
+                        color: AppColor().appTextColor,
+                        fontFamily: robotoRegular,
+                        fontSize: 16,
+                      ),
                     ),
                     Obx(
                       () => Text(
                         '\$${widget.homeController.totalFreightCharges.toStringAsFixed(2)}',
                         style: TextStyle(
                             fontFamily: robotoRegular,
-                            fontSize: 18,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: AppColor().appTextColor),
                       ),
@@ -297,8 +306,8 @@ class _LoadScreenState extends State<LoadScreen> {
                     icon: SvgPicture.asset(
                       arrow_forward, fit: BoxFit.cover,
                       // semanticsLabel: 'My SVG Image',
-                      height: 60,
-                      width: 60,
+                      height: 40,
+                      width: 40,
                     )),
               ],
             ),

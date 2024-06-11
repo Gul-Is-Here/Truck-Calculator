@@ -2,18 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 class HomeController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
   String? newDocumentId;
-
+  RxBool isLoading = false.obs;
   RxDouble weeklyFixedCost = 0.0.obs;
   RxDouble weeklyTruckPayment = 0.0.obs;
   RxDouble weeklyInsurance = 0.0.obs;
   RxDouble weeklyTrailerLease = 0.0.obs;
   RxDouble weeklyEldService = 0.0.obs;
   RxBool fixedCostCalculated = false.obs;
+  RxDouble weeklyoverHeadAmount = 0.0.obs;
+  RxDouble weeklyOtherCost = 0.0.obs;
 
   TextEditingController tPaymentController = TextEditingController();
   TextEditingController tInsuranceController = TextEditingController();
@@ -65,6 +69,7 @@ class HomeController extends GetxController {
 
     addNewLoad(); // Initialize with the first load
     fetchHistoryData(); // fetch data from firebase
+    fetchResultData();
   }
 
   @override
@@ -75,12 +80,10 @@ class HomeController extends GetxController {
     tEldServicesController.dispose();
     tOverHeadController.dispose();
     tOtherController.dispose();
-
     perMileageFeeController.dispose();
     perMileFuelController.dispose();
     perMileDefController.dispose();
     perMileDriverPayController.dispose();
-
     for (var controller in freightChargeControllers) {
       controller.dispose();
     }
@@ -93,13 +96,12 @@ class HomeController extends GetxController {
     for (var controller in otherCostsControllers) {
       controller.dispose();
     }
-
     super.onClose();
   }
 
   String? validateInput(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Field cannot be empty';
+      return 'Must be filled!';
     } else if (double.tryParse(value) == null) {
       return 'Enter a valid number';
     }
@@ -150,15 +152,15 @@ class HomeController extends GetxController {
     weeklyTrailerLease.value = (trailerLeaseAmount * 12) / 52;
     weeklyEldService.value = (eldService * 12) / 52;
 
-    overHeadAmount = (overHeadAmount * 12) / 52;
-    otherAmount = (otherAmount * 12) / 52;
+    weeklyoverHeadAmount.value = (overHeadAmount * 12) / 52;
+    weeklyOtherCost.value = (otherAmount * 12) / 52;
 
     weeklyFixedCost.value = weeklyTruckPayment.value +
         weeklyInsurance.value +
         weeklyTrailerLease.value +
         weeklyEldService.value +
-        overHeadAmount +
-        otherAmount;
+        weeklyoverHeadAmount.value +
+        weeklyOtherCost.value;
   }
 
   void calculateVariableCosts() {
@@ -212,7 +214,8 @@ class HomeController extends GetxController {
         totalMilageCost.value -
         totalEstimatedTollsCost.value;
     print('totalProfit : ${totalProfit.value}');
-    totalFrightChargesAndTolls.value=totalFreightCharges.value+totalEstimatedTollsCost.value;
+    totalFrightChargesAndTolls.value =
+        totalFreightCharges.value + totalEstimatedTollsCost.value;
   }
 
   void addNewLoad() {
@@ -268,6 +271,12 @@ class HomeController extends GetxController {
 
         // Set the data for the new document
         await newValuesDocRef.set({
+          'truckPayment': weeklyTruckPayment.value,
+          'truckInsurance': weeklyInsurance.value,
+          'trailerLease': weeklyTrailerLease.value,
+          'EldService': weeklyEldService.value,
+          'overheadCost': weeklyoverHeadAmount.value,
+          'tOtherCost': weeklyOtherCost.value,
           'weeklyFixedCost': weeklyFixedCost.value,
           'totalFreightCharges': totalFreightCharges.value,
           'totalDispatchedMiles': totalDispatchedMiles.value,
@@ -392,7 +401,8 @@ class HomeController extends GetxController {
     return null;
   }
 
-  void deleteLoad(String? userId, String? documentId, int loadIndex) async {
+  void deleteLoad(String? userId, String? documentId, int loadIndex,
+      BuildContext context) async {
     try {
       // Fetch the load data that corresponds to the loadIndex
       final loadToRemove = {
@@ -420,8 +430,44 @@ class HomeController extends GetxController {
       otherCostsControllers.removeAt(loadIndex);
       calculateVariableCosts();
       print('Load deleted successfully');
+      //  Navigator.of(context).pop();
     } catch (error) {
       print('Error deleting load: $error');
+    }
+  }
+
+  // Load ResultScreen Data from Firebase
+  void fetchResultData() async {
+    try {
+      User? user = auth.currentUser;
+      if (user != null) {
+        print('Fetching data for user: ${user.uid}'); // Debug print
+        QuerySnapshot querySnapshot = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('calculatedValues')
+            .orderBy('timestamp', descending: true)
+            .limit(1)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          var data = querySnapshot.docs.first.data() as Map<String, dynamic>;
+          print('Fetched data: $data'); // Debug print
+
+          totalFrightChargesAndTolls.value =
+              (data['totalFreightCharges'] ?? 0) +
+                  (data['totalEstimatedTollsCost'] ?? 0);
+          totalProfit.value = data['totalProfit'] ?? 0;
+          totalDispatchedMiles.value = data['totalDispatchedMiles'] ?? 0;
+        } else {}
+      } else {
+        Get.snackbar('Error', 'No user signed in',
+            snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to fetch data: $e',
+          snackPosition: SnackPosition.BOTTOM);
+      print('Error fetching data: $e'); // Debug print
     }
   }
 }

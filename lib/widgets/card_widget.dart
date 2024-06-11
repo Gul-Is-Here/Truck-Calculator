@@ -14,33 +14,37 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 10,
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * .18,
-        width: MediaQuery.of(context).size.width * .8,
-        child: Column(
-          children: [
-            10.heightBox,
-            TextButton(
-              onPressed: onTap,
-              child: Text(
-                butonText,
-                style: TextStyle(fontSize: 24, fontFamily: robotoRegular),
-              ),
-            ),
-            10.heightBox,
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                textAlign: TextAlign.center,
-                cardText,
-                style: TextStyle(
-                  fontSize: 12,
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 10,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * .18,
+          width: MediaQuery.of(context).size.width * .8,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              10.heightBox,
+              TextButton(
+                onPressed: onTap,
+                child: Text(
+                  butonText,
+                  style: TextStyle(fontSize: 24, fontFamily: robotoRegular),
                 ),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  textAlign: TextAlign.center,
+                  cardText,
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

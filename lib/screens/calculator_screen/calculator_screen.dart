@@ -50,7 +50,7 @@ class CalculatorScreen extends StatelessWidget {
 
                       // Truck Payment TextFormField
                       buildRowWithLabel(
-                        label: 'TRUCK PAYMENT',
+                        label: 'Truck Payment',
                         hint: 'e.g., \$2000',
                         controller: homeController.tPaymentController,
                         value: homeController.weeklyTruckPayment,
@@ -59,7 +59,7 @@ class CalculatorScreen extends StatelessWidget {
 
                       // Truck Insurance TextFormField
                       buildRowWithLabel(
-                        label: 'INSURANCE',
+                        label: 'Insurance',
                         hint: 'e.g., \$400',
                         controller: homeController.tInsuranceController,
                         value: homeController.weeklyInsurance,
@@ -68,7 +68,7 @@ class CalculatorScreen extends StatelessWidget {
 
                       // Truck Trailer Lease TextFormField
                       buildRowWithLabel(
-                        label: 'TRAILER LEASE',
+                        label: 'Trailer lease',
                         hint: 'e.g., \$300',
                         controller: homeController.tTrailerLeaseController,
                         value: homeController.weeklyTrailerLease,
@@ -77,7 +77,7 @@ class CalculatorScreen extends StatelessWidget {
 
                       // Truck ELD Service TextFormField
                       buildRowWithLabel(
-                        label: 'ELD SERVICE',
+                        label: 'ELD Service',
                         hint: 'e.g., \$100',
                         controller: homeController.tEldServicesController,
                         value: homeController.weeklyEldService,
@@ -90,7 +90,7 @@ class CalculatorScreen extends StatelessWidget {
                           Expanded(
                             child: buildTextFormField(
                               controller: homeController.tOverHeadController,
-                              label: 'OVERHEAD',
+                              label: 'Overhead',
                               hint: 'e.g., \$50',
                             ),
                           ),
@@ -99,7 +99,7 @@ class CalculatorScreen extends StatelessWidget {
                           Expanded(
                             child: buildTextFormField(
                               controller: homeController.tOtherController,
-                              label: 'OTHER',
+                              label: 'Other',
                               hint: 'e.g., \$200',
                             ),
                           ),
@@ -163,18 +163,20 @@ class CalculatorScreen extends StatelessWidget {
                     Text(
                       'Weekly fixed cost',
                       style: TextStyle(
-                          color: AppColor().appTextColor,
-                          fontFamily: robotoRegular,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
+                        color: AppColor().appTextColor,
+                        fontFamily: robotoRegular,
+                        fontSize: 16,
+                      ),
                     ),
-                    Text(
-                      '\$${homeController.weeklyFixedCost.toStringAsFixed(2)}',
-                      style: TextStyle(
-                          fontFamily: robotoRegular,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor().appTextColor),
+                    Obx(
+                      () => Text(
+                        '\$${homeController.weeklyFixedCost.toStringAsFixed(2)}',
+                        style: TextStyle(
+                            fontFamily: robotoRegular,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: AppColor().appTextColor),
+                      ),
                     )
                   ],
                 ),

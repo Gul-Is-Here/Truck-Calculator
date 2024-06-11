@@ -56,8 +56,9 @@ class OTPVerificationLoginScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
+                  // ignore: sized_box_for_whitespace
                   return Container(
-                    width: 60,
+                    width: MediaQuery.of(context).size.width * .14,
                     height: 60,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),

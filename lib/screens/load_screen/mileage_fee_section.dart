@@ -18,9 +18,57 @@ class MileageFeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
+    final formKey1 = GlobalKey<FormState>();
+
+    Future<void> showConfirmationDialog(
+        BuildContext context, VoidCallback onYesPressed) {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button for close
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title:
+                Text(isUpdate == false ? 'Confirm Update' : 'Confirm Submit'),
+            titleTextStyle: const TextStyle(
+                fontFamily: robotoRegular, color: Colors.black, fontSize: 18),
+            content: Text(isUpdate == false
+                ? 'Are you sure you want to update?'
+                : 'Are you sure you want to submit?'),
+            contentTextStyle: TextStyle(
+              fontFamily: robotoRegular,
+              color: Colors.black,
+            ),
+            actions: [
+              TextButton(
+                child: const Text(
+                  'No',
+                  style:
+                      TextStyle(color: Colors.red, fontFamily: robotoRegular),
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop(); // Dismiss the dialog
+                },
+              ),
+              TextButton(
+                child: Text(
+                  'Yes',
+                  style: TextStyle(
+                      color: AppColor().primaryAppColor,
+                      fontFamily: robotoRegular),
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext).pop(); // Dismiss the dialog
+                  onYesPressed(); // Call the provided callback
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: Column(
@@ -28,29 +76,37 @@ class MileageFeSection extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               child: Form(
-                key: formKey,
+                key: formKey1,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
-                      // Center(
-                      //   child: Container(
-                      //     alignment: Alignment.center,
-                      //     width: 400,
-                      //     height: 40,
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.deepPurpleAccent,
-                      //       borderRadius: BorderRadius.circular(10),
-                      //     ),
-                      //     child: Obx(() => Text(
-                      //           "Weekly Fixed Cost \$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}",
-                      //           style: const TextStyle(color: Colors.white),
-                      //         )),
-                      //   ),
-                      // ),
-                      const SizedBox(height: 40),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Mileage Fee',
+                            style: TextStyle(
+                                fontFamily: robotoRegular,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          10.widthBox,
+                          Tooltip(
+                            triggerMode: TooltipTriggerMode.tap,
+                            message:
+                                'Factoring fee ${(homeController.totalFreightCharges.value * 2) / 100}',
+                            child: Icon(
+                              Icons.info_outline,
+                              size: 30,
+                              color: AppColor().primaryAppColor,
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 20),
                       buildRowWithLabel(
                         label: 'Mileage Fee (\$/mile)',
                         hint: 'e.g., \$0.50',
@@ -79,6 +135,13 @@ class MileageFeSection extends StatelessWidget {
                         value: homeController.perMileDriverPay,
                         validator: homeController.validateInput,
                       ),
+                      // screenHeight < 800
+                      //     ? SizedBox(
+                      //         height: MediaQuery.of(context).size.height * .1,
+                      //       )
+                      //     : SizedBox(
+                      //         height: MediaQuery.of(context).size.height * .15,
+                      //       ),
                     ],
                   ),
                 ),
@@ -92,56 +155,64 @@ class MileageFeSection extends StatelessWidget {
             decoration: BoxDecoration(
                 color: AppColor().primaryAppColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.elliptical(40, 40),
+                  topLeft: Radius.elliptical(45, 25),
                 )),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  flex: 7,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        textAlign: TextAlign.center,
-                        "Cost including factoring Fee",
-                        style: TextStyle(
-                          color: AppColor().appTextColor,
-                          fontFamily: robotoRegular,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines:
-                            null, // Allows the text to use as many lines as needed
-                        overflow: TextOverflow
-                            .visible, // Ensures text is visible and wrapped
-                        softWrap: true,
-                      ),
-                      Obx(() => Text(
-                            textAlign: TextAlign.center,
-                            '\$${homeController.totalMilageCost.value.toStringAsFixed(2)}',
-                            style: TextStyle(
-                                color: AppColor().appTextColor,
-                                fontFamily: robotoRegular,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ))
-                    ],
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: isUpdate == false
-                      ? TextButton(
-                          style: TextButton.styleFrom(
-                            side:
-                                const BorderSide(width: 1, color: Colors.white),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          textAlign: TextAlign.center,
+                          "Total",
+                          style: TextStyle(
+                            color: AppColor().appTextColor,
+                            fontFamily: robotoRegular,
+                            fontSize: 16,
                           ),
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
+                          maxLines:
+                              null, // Allows the text to use as many lines as needed
+                          overflow: TextOverflow
+                              .visible, // Ensures text is visible and wrapped
+                          softWrap: true,
+                        ),
+                        5.widthBox,
+                        Tooltip(
+                          triggerMode: TooltipTriggerMode.tap,
+                          message:
+                              'Factoring fee ${(homeController.totalFreightCharges.value * 2) / 100}',
+                          child: Icon(
+                            Icons.info_outline,
+                            color: AppColor().appTextColor,
+                          ),
+                        )
+                      ],
+                    ),
+                    Obx(() => Text(
+                          textAlign: TextAlign.center,
+                          '\$${homeController.totalMilageCost.value.toStringAsFixed(2)}',
+                          style: TextStyle(
+                              color: AppColor().appTextColor,
+                              fontFamily: robotoRegular,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ),
+                isUpdate == false
+                    ? TextButton(
+                        style: TextButton.styleFrom(
+                          side: const BorderSide(width: 1, color: Colors.white),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          showConfirmationDialog(context, () {
+                            if (formKey1.currentState!.validate()) {
                               homeController.calculateVariableCosts();
                               homeController.updateEntry({
                                 'weeklyFixedCost':
@@ -188,26 +259,27 @@ class MileageFeSection extends StatelessWidget {
                               });
                               Navigator.of(context).pop(); // Close the dialog
                               Get.to(() => ResultsScreen(
-                                  homeController: homeController));
+                                ));
                             }
-                          },
-                          child: const Text(
-                            textAlign: TextAlign.center,
-                            'Update',
-                            style: TextStyle(
-                                color: Colors.white, fontFamily: robotoRegular),
+                          });
+                        },
+                        child: const Text(
+                          textAlign: TextAlign.center,
+                          'Update',
+                          style: TextStyle(
+                              color: Colors.white, fontFamily: robotoRegular),
+                        ),
+                      )
+                    : TextButton(
+                        style: ElevatedButton.styleFrom(
+                          side: const BorderSide(width: 1, color: Colors.white),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        )
-                      : TextButton(
-                          style: ElevatedButton.styleFrom(
-                            side:
-                                const BorderSide(width: 1, color: Colors.white),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
+                        ),
+                        onPressed: () {
+                          showConfirmationDialog(context, () {
+                            if (formKey1.currentState!.validate()) {
                               homeController.calculateVariableCosts();
                               homeController.storeCalculatedValues();
                               Get.snackbar(
@@ -216,17 +288,17 @@ class MileageFeSection extends StatelessWidget {
                                   colorText: Colors.white);
                               Navigator.of(context).pop(); // Close the dialog
                               Get.to(() => ResultsScreen(
-                                  homeController: homeController));
+                                  ));
                             }
-                          },
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            'Submit',
-                            style: TextStyle(
-                                color: Colors.white, fontFamily: robotoRegular),
-                          ),
+                          });
+                        },
+                        child: const Text(
+                          textAlign: TextAlign.center,
+                          'Submit',
+                          style: TextStyle(
+                              color: Colors.white, fontFamily: robotoRegular),
                         ),
-                ),
+                      ),
               ],
             ),
           )
