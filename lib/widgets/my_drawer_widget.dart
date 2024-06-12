@@ -4,6 +4,7 @@ import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
+import 'package:dispatched_calculator_app/screens/history_screen/update_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -59,7 +60,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => UpdateScreen(homeController: homeController));
+                    Get.to(() => HistoryScreen());
                   },
                 ),
                 ListTile(

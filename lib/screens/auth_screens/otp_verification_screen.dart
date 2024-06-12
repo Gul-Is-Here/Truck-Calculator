@@ -2,27 +2,28 @@ import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+
 class OTPVerificationScreen extends StatelessWidget {
   final String verificationId;
   final String email;
   final String name;
-  final String password;
   final String phone;
 
   OTPVerificationScreen({
     required this.verificationId,
     required this.email,
     required this.name,
-    required this.password,
     required this.phone,
   });
 
   final AuthController authController = Get.find();
-  final List<TextEditingController> _otpControllers = List.generate(6, (index) => TextEditingController());
+  final List<TextEditingController> _otpControllers =
+      List.generate(6, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
   void verifyOTP() {
-    String otp = _otpControllers.map((controller) => controller.text.trim()).join();
+    String otp =
+        _otpControllers.map((controller) => controller.text.trim()).join();
     authController.verifyOTP(otp, isLogin: false);
   }
 
@@ -37,30 +38,25 @@ class OTPVerificationScreen extends StatelessWidget {
             children: [
               Text(
                 'OTP Verification',
-                style: 
-                   TextStyle(
-                    fontFamily: robotoRegular,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                
+                style: TextStyle(
+                  fontFamily: robotoRegular,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 20),
-              Text(
-                'Enter the OTP sent to your phone number',
-                style: 
-                  TextStyle(
+              Text('Enter the OTP sent to your phone number',
+                  style: TextStyle(
                     fontFamily: robotoRegular,
                     fontSize: 16,
                     color: Colors.grey,
-                  )
-              ),
+                  )),
               SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
                   return Container(
-                    width: 60,
+                    width: MediaQuery.of(context).size.width * .14,
                     height: 60,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
