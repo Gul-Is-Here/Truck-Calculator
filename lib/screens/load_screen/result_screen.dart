@@ -51,7 +51,9 @@ class ResultsScreen extends StatelessWidget {
                       cardColor: homeController.totalProfit <= 0
                           ? Colors.red
                           : AppColor().primaryAppColor,
-                      title: 'Total Profit',
+                      title: homeController.totalProfit <= 0
+                          ? 'Loss'
+                          : 'Total Profit',
                       value:
                           '\$${homeController.totalProfit.value.toStringAsFixed(2)}',
                     ),

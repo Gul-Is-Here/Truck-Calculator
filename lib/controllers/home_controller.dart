@@ -102,6 +102,82 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
+// A method to delete data from calculatedValues Collection and transfer to History Collection
+  void transferAndDeleteWeeklyData() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        // Get a reference to the user's document
+        DocumentReference userDocRef =
+            _firestore.collection('users').doc(user.uid);
+
+        // Calculate the start and end dates of the current week
+        DateTime now = DateTime.now();
+        DateTime startOfWeek =
+            DateTime(now.year, now.month, now.day - now.weekday);
+        DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+        print('Current date time : $now');
+        print('Start of the week :$startOfWeek');
+        print('End of the week : $endOfWeek');
+
+        // Query documents in the calculatedValues subcollection within the current week
+        QuerySnapshot querySnapshot = await userDocRef
+            .collection('calculatedValues')
+            .where('timestamp',
+                isGreaterThanOrEqualTo: startOfWeek,
+                isLessThanOrEqualTo: endOfWeek)
+            .get();
+
+        // Transfer each document to the history subcollection
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          await userDocRef.collection('history').doc(doc.id).set(data);
+          await userDocRef.collection('calculatedValues').doc(doc.id).delete();
+        }
+
+        print(
+            'Specific data transferred to history and original documents deleted successfully.');
+      } catch (e) {
+        print(
+            'Error transferring data to history and deleting original documents: $e');
+      }
+    } else {
+      print('No user signed in');
+    }
+  }
+
+  // A method to get data from History Collection
+  Future<List<Map<String, dynamic>>> fetchHistoryDataById() async {
+    final User? user = auth.currentUser;
+
+    if (user == null) {
+      print('Error: No user is currently logged in.');
+      return [];
+    }
+
+    try {
+      final QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('history')
+          .get();
+
+      final List<Map<String, dynamic>> documents =
+          querySnapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          'data': doc.data() as Map<String, dynamic>,
+        };
+      }).toList();
+
+      print('Fetched ${documents.length} documents.');
+      return documents;
+    } catch (e) {
+      print('Error fetching history data: $e');
+      return [];
+    }
+  }
+
   void calculateDateTime() {}
   String? validateInput(String? value) {
     if (value == null || value.isEmpty) {
@@ -124,35 +200,6 @@ class HomeController extends GetxController {
       return 'Value must be positive';
     }
     return null; // No errors
-  }
-
-  void moveCurrentWeekDataToHistory(QuerySnapshot currentWeekSnapshot) async {
-    User? user = auth.currentUser;
-    if (user != null) {
-      try {
-        // Get a reference to the user's document
-        DocumentReference userDocRef =
-            _firestore.collection('users').doc(user.uid);
-
-        // Store the current week's data in the "history" collection
-        for (QueryDocumentSnapshot doc in currentWeekSnapshot.docs) {
-          // Cast doc.data() to the correct type
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          await userDocRef.collection('history').add(data);
-        }
-
-        // Delete the current week's data from the original collection
-        for (QueryDocumentSnapshot doc in currentWeekSnapshot.docs) {
-          await userDocRef.collection('calculatedValues').doc(doc.id).delete();
-        }
-
-        print('Current week data moved to history successfully');
-      } catch (e) {
-        print('Error moving current week data to history: $e');
-      }
-    } else {
-      print('No user signed in');
-    }
   }
 
   void _calculateFixedCost() {
@@ -331,6 +378,7 @@ class HomeController extends GetxController {
           'totalMilageCost': totalMilageCost.value,
           'totalProfit': totalProfit.value,
           'timestamp': FieldValue.serverTimestamp(),
+          'updateTime': DateTime.now(),
           'loads': List.generate(freightChargeControllers.length, (index) {
             return {
               'freightCharge':

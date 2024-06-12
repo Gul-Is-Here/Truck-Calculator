@@ -1,3 +1,4 @@
+import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,11 +16,13 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  var homeController = Get.put(HomeController());
 
   @override
   void initState() {
     super.initState();
     _navigateToNextScreen();
+    homeController.transferAndDeleteWeeklyData();
   }
 
   Future<void> _navigateToNextScreen() async {

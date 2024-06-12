@@ -18,7 +18,7 @@ class AuthController extends GetxController {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+
 
   // Ensure the phone number is in the correct format with the country code +1 for USA
   String _formatPhoneNumber(String phone) {
@@ -29,9 +29,9 @@ class AuthController extends GetxController {
     String name = nameController.text.trim();
     String email = emailController.text.trim();
     String phone = phoneController.text.trim();
-    String password = passwordController.text.trim();
+    
 
-    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+    if (name.isEmpty || email.isEmpty || phone.isEmpty) {
       Get.snackbar('Error', 'Please fill all fields',
           snackPosition: SnackPosition.BOTTOM);
       return;
@@ -56,7 +56,6 @@ class AuthController extends GetxController {
                 verificationId: verificationId,
                 email: email,
                 name: name,
-                password: password,
                 phone: phone,
               ));
           isLoading.value = false;

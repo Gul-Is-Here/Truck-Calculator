@@ -5,9 +5,11 @@ import 'package:velocity_x/velocity_x.dart';
 class CardWidget extends StatelessWidget {
   final String butonText;
   final String cardText;
+  final Color cardColor;
   final void Function() onTap;
   const CardWidget(
       {super.key,
+      required this.cardColor,
       required this.butonText,
       required this.cardText,
       required this.onTap});
@@ -17,6 +19,7 @@ class CardWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        
         elevation: 10,
         child: SizedBox(
           height: MediaQuery.of(context).size.height * .18,
@@ -30,7 +33,7 @@ class CardWidget extends StatelessWidget {
                 onPressed: onTap,
                 child: Text(
                   butonText,
-                  style: TextStyle(fontSize: 24, fontFamily: robotoRegular),
+                  style: TextStyle(fontSize: 24, fontFamily: robotoRegular,color: cardColor),
                 ),
               ),
               Padding(
@@ -40,6 +43,7 @@ class CardWidget extends StatelessWidget {
                   cardText,
                   style: TextStyle(
                     fontSize: 12,
+                    color: cardColor
                   ),
                 ),
               )

@@ -228,6 +228,7 @@ class MileageFeSection extends StatelessWidget {
                                     homeController.totalMilageCost.value,
                                 'totalProfit': homeController.totalProfit.value,
                                 'timestamp': FieldValue.serverTimestamp(),
+                                'updateTime': DateTime.now(),
                                 'loads': List.generate(
                                   homeController
                                       .freightChargeControllers.length,
