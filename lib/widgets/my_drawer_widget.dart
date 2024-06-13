@@ -3,9 +3,11 @@ import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/screens/calculator_screen/calculator_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/update_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
+import 'package:dispatched_calculator_app/screens/load_screen/mileage_fee_section.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -54,13 +56,44 @@ class MyDrawerWidget extends StatelessWidget {
                     color: AppColor().secondaryAppColor,
                     size: 30,
                   ),
-                  title: Text('History',
+                  title: Text('Truck Monthly Payment',
                       style: TextStyle(
                           fontSize: 18,
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
                     Get.to(() => HistoryScreen());
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.travel_explore,
+                    color: AppColor().secondaryAppColor,
+                    size: 30,
+                  ),
+                  title: Text('Mileage',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: robotoRegular,
+                          color: AppColor().primaryAppColor)),
+                  onTap: () {
+                    Get.to(() => MileageFeSection(
+                        homeController: homeController, isUpdate: true));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.calculate,
+                    color: AppColor().secondaryAppColor,
+                    size: 30,
+                  ),
+                  title: Text('History',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: robotoRegular,
+                          color: AppColor().primaryAppColor)),
+                  onTap: () {
+                    Get.to(() => CalculatorScreen());
                   },
                 ),
                 ListTile(

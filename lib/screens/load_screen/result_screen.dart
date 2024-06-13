@@ -41,7 +41,7 @@ class ResultsScreen extends StatelessWidget {
                       textColor: AppColor().appTextColor,
                       headingTextColor: AppColor().appTextColor,
                       cardColor: AppColor().secondaryAppColor,
-                      title: 'Total Freight Charges and Tolls',
+                      title: 'Total Freight Charges',
                       value:
                           '\$${homeController.totalFrightChargesAndTolls.value.toStringAsFixed(2)}',
                     ),

@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../constants/fonts_strings.dart';
 import '../../constants/image_strings.dart';
+import '../../services/firebase_services.dart';
 import '../../widgets/custome_textFormField.dart';
 import '../../widgets/customized_row_label_widget.dart';
 
@@ -19,9 +20,10 @@ class CalculatorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    const bool isUpdate = false;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: Column(
@@ -105,42 +107,6 @@ class CalculatorScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-
-                      //  SizedBox(height: 40),
-                      // Center(
-                      //   child: Obx(() => Container(
-                      //         alignment: Alignment.center,
-                      //         height: 40,
-                      //         width: 100,
-                      //         decoration: BoxDecoration(
-                      //           color: Colors.deepPurple,
-                      //           borderRadius: BorderRadius.circular(8),
-                      //         ),
-                      //         child: Text(
-                      //           '\$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}',
-                      //           style:  TextStyle(color: Colors.white),
-                      //         ),
-                      //       )),
-                      // ),
-                      //  SizedBox(height: 20),
-                      // Align(
-                      //   alignment: Alignment.centerRight,
-                      //   child: Padding(
-                      //     padding:  EdgeInsets.only(right: 16.0),
-                      //     child: TextButton.icon(
-                      //       style: TextButton.styleFrom(
-                      //         shape: RoundedRectangleBorder(
-                      //           borderRadius: BorderRadius.circular(10),
-                      //         ),
-                      //       ),
-                      //       onPressed: () {
-
-                      //       },
-                      //       icon:  Icon(Icons.arrow_circle_right_outlined),
-                      //       label:  Text('Next'),
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -185,10 +151,17 @@ class CalculatorScreen extends StatelessWidget {
                       if (formKey.currentState!.validate()) {
                         // Navigate to MileageFeeSection
 
-                        Get.to(() => LoadScreen(
-                              homeController: homeController,
-                              isUpdate: true,
-                            ));
+                        FirebaseServices().storeTruckMonthlyPayments(
+                            weeklyTruckPayment:
+                                homeController.weeklyTruckPayment.value,
+                            weeklyInsurance:
+                                homeController.weeklyInsurance.value,
+                            weeklyTrailerLease:
+                                homeController.weeklyTrailerLease.value,
+                            weeklyEldService: homeController.weeklyEldService.value,
+                            weeklyoverHeadAmount: homeController.weeklyoverHeadAmount.value,
+                            weeklyOtherCost: homeController.weeklyOtherCost.value,
+                            weeklyFixedCost: homeController.weeklyFixedCost.value);
                       }
                     },
                     icon: SvgPicture.asset(

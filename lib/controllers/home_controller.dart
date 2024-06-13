@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +8,10 @@ import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 import '../app_classes/date_utills.dart';
+import '../services/firebase_services.dart';
 
 class HomeController extends GetxController {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  String? newDocumentId;
-  var docId;
+
   RxBool isLoading = false.obs;
   RxDouble weeklyFixedCost = 0.0.obs;
   RxDouble weeklyTruckPayment = 0.0.obs;
@@ -41,6 +41,13 @@ class HomeController extends GetxController {
   var otherCostsControllers = <TextEditingController>[].obs;
   RxList<Map<String, dynamic>> historyData = <Map<String, dynamic>>[].obs;
 
+
+// loads controller save value in variables
+ RxDouble freightCharge=0.0.obs;
+ RxDouble dispatchedMiles=0.0.obs;
+RxDouble estimatedTolls=0.0.obs;
+RxDouble otherCost=0.0.obs;
+ //----------------
   RxDouble totalFrightChargesAndTolls = 0.0.obs;
   RxDouble totalMilageCost = 0.0.obs;
   RxDouble totalProfit = 0.0.obs;
@@ -69,7 +76,6 @@ class HomeController extends GetxController {
     perMileFuelController.addListener(calculateVariableCosts);
     perMileDefController.addListener(calculateVariableCosts);
     perMileDriverPayController.addListener(calculateVariableCosts);
-
     addNewLoad(); // Initialize with the first load
     fetchHistoryData(); // fetch data from firebase
     fetchResultData();
@@ -104,12 +110,12 @@ class HomeController extends GetxController {
 
 // A method to delete data from calculatedValues Collection and transfer to History Collection
   void transferAndDeleteWeeklyData() async {
-    User? user = auth.currentUser;
+    User? user = FirebaseServices().auth.currentUser;
     if (user != null) {
       try {
         // Get a reference to the user's document
         DocumentReference userDocRef =
-            _firestore.collection('users').doc(user.uid);
+            FirebaseServices().firestore.collection('users').doc(user.uid);
 
         // Calculate the start and end dates of the current week
         DateTime now = DateTime.now();
@@ -127,16 +133,21 @@ class HomeController extends GetxController {
                 isGreaterThanOrEqualTo: startOfWeek,
                 isLessThanOrEqualTo: endOfWeek)
             .get();
+        if (endOfWeek == true) {
+          for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+            await userDocRef.collection('history').doc(doc.id).set(data);
+            await userDocRef
+                .collection('calculatedValues')
+                .doc(doc.id)
+                .delete();
 
-        // Transfer each document to the history subcollection
-        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          await userDocRef.collection('history').doc(doc.id).set(data);
-          await userDocRef.collection('calculatedValues').doc(doc.id).delete();
+            print(
+                'Specific data transferred to history and original documents deleted successfully.');
+          }
         }
 
-        print(
-            'Specific data transferred to history and original documents deleted successfully.');
+        // Transfer each document to the history subcollection
       } catch (e) {
         print(
             'Error transferring data to history and deleting original documents: $e');
@@ -148,7 +159,7 @@ class HomeController extends GetxController {
 
   // A method to get data from History Collection
   Future<List<Map<String, dynamic>>> fetchHistoryDataById() async {
-    final User? user = auth.currentUser;
+    final User? user = FirebaseServices().auth.currentUser;
 
     if (user == null) {
       print('Error: No user is currently logged in.');
@@ -156,7 +167,7 @@ class HomeController extends GetxController {
     }
 
     try {
-      final QuerySnapshot querySnapshot = await _firestore
+      final QuerySnapshot querySnapshot = await FirebaseServices().firestore
           .collection('users')
           .doc(user.uid)
           .collection('history')
@@ -264,18 +275,18 @@ class HomeController extends GetxController {
     totalOtherCost.value = 0.0;
 
     for (int i = 0; i < freightChargeControllers.length; i++) {
-      double freightCharge =
+       freightCharge.value =
           double.tryParse(freightChargeControllers[i].text) ?? 0.0;
-      double dispatchedMiles =
+       dispatchedMiles.value =
           double.tryParse(dispatchedMilesControllers[i].text) ?? 0.0;
-      double estimatedTolls =
+       estimatedTolls.value =
           double.tryParse(estimatedTollsControllers[i].text) ?? 0.0;
-      double otherCosts = double.tryParse(otherCostsControllers[i].text) ?? 0.0;
+       otherCost.value = double.tryParse(otherCostsControllers[i].text) ?? 0.0;
 
-      totalFreightCharges.value += freightCharge;
-      totalDispatchedMiles.value += dispatchedMiles;
-      totalEstimatedTollsCost.value += estimatedTolls;
-      totalOtherCost.value += otherCosts;
+      totalFreightCharges.value += freightCharge.value ;
+      totalDispatchedMiles.value += dispatchedMiles.value ;
+      totalEstimatedTollsCost.value += estimatedTolls.value ;
+      totalOtherCost.value += otherCost.value ;
     }
 
     permileageFee.value =
@@ -290,8 +301,9 @@ class HomeController extends GetxController {
         totalDispatchedMiles.value;
     print('perMileDef : ${perMileDef.value}');
     perMileDriverPay.value =
-        (double.tryParse(perMileDriverPayController.text) ?? 0.0) *
-            totalDispatchedMiles.value;
+        ((double.tryParse(perMileDriverPayController.text) ?? 0.0) *
+                totalDispatchedMiles.value) *
+            1.2;
     print('perMileDriverPay : ${perMileDriverPay.value}');
 
     totalFactoringFee.value = (totalFreightCharges.value * 2) / 100;
@@ -306,10 +318,10 @@ class HomeController extends GetxController {
     totalProfit.value = totalFreightCharges.value -
         weeklyFixedCost.value -
         totalMilageCost.value -
-        totalEstimatedTollsCost.value;
+        totalEstimatedTollsCost.value -
+        totalOtherCost.value;
     print('totalProfit : ${totalProfit.value}');
-    totalFrightChargesAndTolls.value =
-        totalFreightCharges.value + totalEstimatedTollsCost.value;
+    totalFrightChargesAndTolls.value = totalFreightCharges.value;
   }
 
   void addNewLoad() {
@@ -347,66 +359,13 @@ class HomeController extends GetxController {
     }
   }
 
-// Stored Data In firebase
-  void storeCalculatedValues() async {
-    User? user = auth.currentUser;
-    if (user != null) {
-      try {
-        // Get a reference to the user's document
-        DocumentReference userDocRef =
-            _firestore.collection('users').doc(user.uid);
 
-        // Generate a new document ID with a timestamp
-        newDocumentId = DateTime.now().millisecondsSinceEpoch.toString();
 
-        // Create a reference to the new document inside the 'calculatedValues' subcollection
-        DocumentReference newValuesDocRef =
-            userDocRef.collection('calculatedValues').doc(newDocumentId);
-
-        // Set the data for the new document
-        await newValuesDocRef.set({
-          'totalfactoringFee': totalFactoringFee.value,
-          'truckPayment': weeklyTruckPayment.value,
-          'truckInsurance': weeklyInsurance.value,
-          'trailerLease': weeklyTrailerLease.value,
-          'EldService': weeklyEldService.value,
-          'overheadCost': weeklyoverHeadAmount.value,
-          'tOtherCost': weeklyOtherCost.value,
-          'weeklyFixedCost': weeklyFixedCost.value,
-          'totalFreightCharges': totalFreightCharges.value,
-          'totalDispatchedMiles': totalDispatchedMiles.value,
-          'totalMilageCost': totalMilageCost.value,
-          'totalProfit': totalProfit.value,
-          'timestamp': FieldValue.serverTimestamp(),
-          'updateTime': DateTime.now(),
-          'loads': List.generate(freightChargeControllers.length, (index) {
-            return {
-              'freightCharge':
-                  double.tryParse(freightChargeControllers[index].text) ?? 0.0,
-              'dispatchedMiles':
-                  double.tryParse(dispatchedMilesControllers[index].text) ??
-                      0.0,
-              'estimatedTolls':
-                  double.tryParse(estimatedTollsControllers[index].text) ?? 0.0,
-              'otherCosts':
-                  double.tryParse(otherCostsControllers[index].text) ?? 0.0,
-            };
-          }),
-        });
-
-        print('Values stored successfully in Firestore');
-      } catch (e) {
-        print('Error storing values in Firestore: $e');
-      }
-    } else {
-      print('No user signed in');
-    }
-  }
 
   void fetchHistoryData() async {
-    User? user = auth.currentUser;
+    User? user = FirebaseServices().auth.currentUser;
     if (user != null) {
-      QuerySnapshot querySnapshot = await _firestore
+      QuerySnapshot querySnapshot = await FirebaseServices().firestore
           .collection('users')
           .doc(user.uid)
           .collection('calculatedValues')
@@ -423,10 +382,10 @@ class HomeController extends GetxController {
   }
 
   Future<List<Map<String, dynamic>>> fetchAllEntriesForEditing() async {
-    User? user = auth.currentUser;
+    User? user = FirebaseServices().auth.currentUser;
     if (user != null) {
       try {
-        QuerySnapshot querySnapshot = await _firestore
+        QuerySnapshot querySnapshot = await FirebaseServices().firestore
             .collection('users')
             .doc(user.uid)
             .collection('calculatedValues')
@@ -435,8 +394,8 @@ class HomeController extends GetxController {
         return querySnapshot.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           data['id'] = doc.id; // Include the document ID
-          docId = data['id'];
-          print(docId);
+          FirebaseServices().docId = data['id'];
+          print(FirebaseServices().docId);
           return data;
         }).toList();
       } catch (e) {
@@ -447,21 +406,21 @@ class HomeController extends GetxController {
   }
 
   void updateEntry(Map<String, dynamic> newData) async {
-    User? user = auth.currentUser;
-    newDocumentId = docId;
+    User? user = FirebaseServices().auth.currentUser;
+    FirebaseServices().loadsId = FirebaseServices().docId;
     if (user != null) {
-      if (newDocumentId == null || newDocumentId!.isEmpty) {
+      if (FirebaseServices().loadsId == null || FirebaseServices().loadsId!.isEmpty) {
         print('Error: newDocumentId is null or empty.');
         return;
       }
 
       try {
-        DocumentReference docRef = _firestore
+        DocumentReference docRef = FirebaseServices().firestore
             .collection('users')
             .doc(user.uid)
             .collection('calculatedValues')
-            .doc(newDocumentId);
-        print('Document ID: $newDocumentId');
+            .doc(FirebaseServices().loadsId);
+        print('Document ID: $FirebaseServices().loadsId');
 
         // Check if the document exists before updating
         bool docExists = await docRef.get().then((doc) => doc.exists);
@@ -471,7 +430,7 @@ class HomeController extends GetxController {
           fetchHistoryData(); // Refresh history data
           print('Entry updated successfully');
         } else {
-          print('Document with ID $newDocumentId does not exist.');
+          print('Document with ID $FirebaseServices().loadsId does not exist.');
         }
       } catch (e) {
         print('Error updating entry: $e');
@@ -482,10 +441,10 @@ class HomeController extends GetxController {
   }
 
   Future<Map<String, dynamic>?> fetchEntryForEditing(String documentId) async {
-    User? user = auth.currentUser;
+    User? user = FirebaseServices().auth.currentUser;
     if (user != null) {
       try {
-        DocumentSnapshot doc = await _firestore
+        DocumentSnapshot doc = await FirebaseServices().firestore
             .collection('users')
             .doc(user.uid)
             .collection('calculatedValues')
@@ -538,10 +497,10 @@ class HomeController extends GetxController {
   // Load ResultScreen Data from Firebase
   void fetchResultData() async {
     try {
-      User? user = auth.currentUser;
+      User? user = FirebaseServices().auth.currentUser;
       if (user != null) {
         print('Fetching data for user: ${user.uid}'); // Debug print
-        QuerySnapshot querySnapshot = await _firestore
+        QuerySnapshot querySnapshot = await FirebaseServices().firestore
             .collection('users')
             .doc(user.uid)
             .collection('calculatedValues')
