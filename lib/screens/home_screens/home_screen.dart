@@ -5,6 +5,7 @@ import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/screens/calculator_screen/calculator_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_details_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/update_screen.dart';
+import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
 import 'package:dispatched_calculator_app/widgets/card_widget.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:velocity_x/velocity_x.dart';
 
 import '../history_screen/history_screen.dart';
 
+// ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   var homeController = HomeController();
@@ -37,7 +39,10 @@ class HomeScreen extends StatelessWidget {
             20.heightBox,
             CardWidget(
               onTap: () {
-                Get.to(() => UpdateScreen(homeController: homeController));
+                Get.to(() => UpdateScreen(
+                      homeController: homeController,
+                      isUpdate: true,
+                    ));
               },
               butonText: 'Update',
               cardText:
@@ -47,7 +52,10 @@ class HomeScreen extends StatelessWidget {
             10.heightBox,
             CardWidget(
               onTap: () {
-                Get.to(() => CalculatorScreen());
+                Get.to(() => LoadScreen(
+                      homeController: homeController,
+                      isUpdate: false,
+                    ));
               },
               butonText: 'Calculator',
               cardText:
@@ -57,7 +65,7 @@ class HomeScreen extends StatelessWidget {
             10.heightBox,
             CardWidget(
               onTap: () {
-                print(homeController.newDocumentId);
+                // print(homeController.newDocumentId);
 
                 Get.to(() => HistoryScreen(), transition: Transition.fadeIn);
               },

@@ -84,31 +84,26 @@ class RegisterScreen extends StatelessWidget {
                                 color: AppColor().secondaryAppColor))),
                   ),
                   SizedBox(height: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: authController.phoneController,
-                      cursorColor: AppColor().secondaryAppColor,
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.phone,
+                  TextField(
+                    controller: authController.phoneController,
+                    cursorColor: AppColor().secondaryAppColor,
+                    decoration: InputDecoration(
+                        // filled: true,
+                        prefixIcon: Icon(
+                          Icons.phone,
+                          color: AppColor().secondaryAppColor,
+                        ),
+                        labelText: 'Phone Number',
+                        labelStyle: TextStyle(
                             color: AppColor().secondaryAppColor,
-                          ),
-                          labelText: 'Phone Number',
-                          labelStyle: TextStyle(
-                              color: AppColor().secondaryAppColor,
-                              fontFamily: robotoRegular),
-                          border: OutlineInputBorder(
+                            fontFamily: robotoRegular),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                  color: AppColor().secondaryAppColor))),
-                    ),
+                            borderSide: BorderSide(
+                                color: AppColor().secondaryAppColor))),
                   ),
                   const SizedBox(height: 30),
                   Obx(

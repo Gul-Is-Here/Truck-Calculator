@@ -4,14 +4,12 @@ import 'package:dispatched_calculator_app/widgets/custome_row_widget.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
-
 import '../../widgets/custome_history_card_widget.dart';
 
 class HistoryDetailsScreen extends StatelessWidget {
   final String documentId;
   final dynamic data;
-
-  HistoryDetailsScreen(
+  const HistoryDetailsScreen(
       {super.key, required this.documentId, required this.data});
 
   @override
@@ -26,7 +24,7 @@ class HistoryDetailsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // OverView Section
-              Text(
+              const Text(
                 'Overview',
                 style: TextStyle(
                   fontFamily: robotoRegular,
@@ -52,11 +50,11 @@ class HistoryDetailsScreen extends StatelessWidget {
                 values: data['totalFreightCharges'].toStringAsFixed(2),
               ),
               10.heightBox,
-              Divider(
+              const Divider(
                 thickness: 2,
               ),
               10.heightBox,
-              Text(
+              const Text(
                 'Truck Monthly Cost',
                 style: TextStyle(
                   fontFamily: robotoRegular,
@@ -95,11 +93,11 @@ class HistoryDetailsScreen extends StatelessWidget {
                 values: data['tOtherCost'].toStringAsFixed(2),
               ),
               10.heightBox,
-              Divider(
+              const Divider(
                 thickness: 2,
               ),
               10.heightBox,
-              Text(
+              const Text(
                 'Truck loads',
                 style: TextStyle(
                   fontFamily: robotoRegular,
@@ -109,9 +107,9 @@ class HistoryDetailsScreen extends StatelessWidget {
               ),
               10.heightBox,
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.25,
+                height: MediaQuery.of(context).size.height * 0.2,
                 child: ListView(
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   children: List.generate(data['loads'].length, (index) {
                     return SizedBox(
@@ -119,17 +117,27 @@ class HistoryDetailsScreen extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Card(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.elliptical(20, 20),
+                              bottomRight: Radius.elliptical(20, 20),
+                            ),
+                          ),
                           elevation: 5,
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                'Load ${index + 1}',
-                                style: const TextStyle(
-                                    fontFamily: robotoRegular,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  '${index + 1}',
+                                  style: const TextStyle(
+                                      fontFamily: robotoRegular,
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
-                              10.heightBox,
                               CustomeHistoryCardWidget(
                                 textHeading: 'Dispatched Miles',
                                 values: data['loads'][index]['dispatchedMiles']

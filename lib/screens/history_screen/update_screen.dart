@@ -7,13 +7,16 @@ import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:intl/intl.dart';
 
+import '../../services/firebase_services.dart';
+
 class UpdateScreen extends StatelessWidget {
   final HomeController homeController;
-
-  UpdateScreen({required this.homeController});
+  final bool isUpdate;
+  const UpdateScreen({required this.homeController, required this.isUpdate});
 
   @override
   Widget build(BuildContext context) {
+    print('update screen : $isUpdate');
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
@@ -86,7 +89,7 @@ class UpdateScreen extends StatelessWidget {
                       : 'N/A';
                   return DataRow(
                     cells: <DataCell>[
-                      DataCell(Text(homeController.docId,
+                      DataCell(Text(FirebaseServices().docId,
                           style: TextStyle(
                               fontFamily: robotoRegular,
                               fontSize: 14))), // Assuming all are 'Week 1'
@@ -108,7 +111,7 @@ class UpdateScreen extends StatelessWidget {
                                   var loadData = await homeController
                                       .fetchEntryForEditing(documentId);
                                   Get.to(() => LoadScreen(
-                                        isUpdate: false,
+                                        isUpdate: isUpdate,
                                         documentId: documentId,
                                         homeController: homeController,
                                         loadData: loadData,
