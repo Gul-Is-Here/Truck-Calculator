@@ -1,4 +1,5 @@
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     _navigateToNextScreen();
     
-    homeController.transferAndDeleteWeeklyData();
+    FirebaseServices().transferAndDeleteWeeklyData();
    
   }
 

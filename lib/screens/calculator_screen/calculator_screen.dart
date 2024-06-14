@@ -14,16 +14,16 @@ import '../../widgets/customized_row_label_widget.dart';
 
 // ignore: must_be_immutable
 class CalculatorScreen extends StatelessWidget {
-  CalculatorScreen({super.key});
-  var homeController = Get.put(HomeController());
-  var authController = Get.put(AuthController());
+  CalculatorScreen({Key? key}) : super(key: key);
+
+  final HomeController homeController = Get.put(HomeController());
+  final AuthController authController = Get.put(AuthController());
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    const bool isUpdate = false;
-
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: Column(
@@ -43,9 +43,10 @@ class CalculatorScreen extends StatelessWidget {
                         child: Text(
                           'Truck Monthly Cost',
                           style: TextStyle(
-                              fontFamily: robotoRegular,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold),
+                            fontFamily: robotoRegular,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -54,7 +55,7 @@ class CalculatorScreen extends StatelessWidget {
                       buildRowWithLabel(
                         label: 'Truck Payment',
                         hint: 'e.g., \$2000',
-                        controller: homeController.tPaymentController,
+                        controller: homeController.tTruckPaymentController,
                         value: homeController.weeklyTruckPayment,
                         validator: homeController.validateInput,
                       ),
@@ -70,12 +71,11 @@ class CalculatorScreen extends StatelessWidget {
 
                       // Truck Trailer Lease TextFormField
                       buildRowWithLabel(
-                        label: 'Trailer lease',
-                        hint: 'e.g., \$300',
-                        controller: homeController.tTrailerLeaseController,
-                        value: homeController.weeklyTrailerLease,
-                        validator: homeController.validateInput,
-                      ),
+                          label: 'Trailer lease',
+                          hint: 'e.g., \$300',
+                          controller: homeController.tTrailerLeaseController,
+                          value: homeController.weeklyTrailerLease,
+                          validator: homeController.validateInput),
 
                       // Truck ELD Service TextFormField
                       buildRowWithLabel(
@@ -91,19 +91,21 @@ class CalculatorScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: buildTextFormField(
-                                controller: homeController.tOverHeadController,
-                                label: 'Overhead',
-                                hint: 'e.g., \$50',
-                                validator: homeController.validateNonNegative),
+                              controller: homeController.tOverHeadController,
+                              label: 'Overhead',
+                              hint: 'e.g., \$50',
+                              validator: homeController.validateNonNegative,
+                            ),
                           ),
 
                           // Truck Other Cost TextFormField
                           Expanded(
                             child: buildTextFormField(
-                                controller: homeController.tOtherController,
-                                label: 'Other',
-                                hint: 'e.g., \$200',
-                                validator: homeController.validateNonNegative),
+                              controller: homeController.tOtherController,
+                              label: 'Other',
+                              hint: 'e.g., \$200',
+                              validator: homeController.validateNonNegative,
+                            ),
                           ),
                         ],
                       ),
@@ -117,10 +119,11 @@ class CalculatorScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-                color: AppColor().primaryAppColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.elliptical(40, 40),
-                )),
+              color: AppColor().primaryAppColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.elliptical(40, 40),
+              ),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -136,40 +139,51 @@ class CalculatorScreen extends StatelessWidget {
                     ),
                     Obx(
                       () => Text(
-                        '\$${homeController.weeklyFixedCost.toStringAsFixed(2)}',
+                        '\$${homeController.weeklyFixedCost.value.toStringAsFixed(2)}',
                         style: TextStyle(
-                            fontFamily: robotoRegular,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor().appTextColor),
+                          fontFamily: robotoRegular,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor().appTextColor,
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
                 IconButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        // Navigate to MileageFeeSection
-
-                        FirebaseServices().storeTruckMonthlyPayments(
-                            weeklyTruckPayment:
-                                homeController.weeklyTruckPayment.value,
-                            weeklyInsurance:
-                                homeController.weeklyInsurance.value,
-                            weeklyTrailerLease:
-                                homeController.weeklyTrailerLease.value,
-                            weeklyEldService: homeController.weeklyEldService.value,
-                            weeklyoverHeadAmount: homeController.weeklyoverHeadAmount.value,
-                            weeklyOtherCost: homeController.weeklyOtherCost.value,
-                            weeklyFixedCost: homeController.weeklyFixedCost.value);
-                      }
-                    },
-                    icon: SvgPicture.asset(
-                      arrow_forward, fit: BoxFit.cover,
-                      // semanticsLabel: 'My SVG Image',
-                      height: 60,
-                      width: 60,
-                    ))
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      // Perform form submission
+                      FirebaseServices().storeTruckMonthlyPayments(
+                        weeklyTruckPayment: double.tryParse(
+                                homeController.tTruckPaymentController.text) ??
+                            0.0,
+                        weeklyInsurance: double.tryParse(
+                                homeController.tInsuranceController.text) ??
+                            0.0,
+                        weeklyTrailerLease: double.tryParse(
+                                homeController.tTrailerLeaseController.text) ??
+                            0.0,
+                        weeklyEldService: double.tryParse(
+                                homeController.tEldServicesController.text) ??
+                            0.0,
+                        weeklyOverheadAmount: double.tryParse(
+                                homeController.tOverHeadController.text) ??
+                            0.0,
+                        weeklyOtherCost: double.tryParse(
+                                homeController.tOtherController.text) ??
+                            0.0,
+                        weeklyFixedCost: homeController.weeklyFixedCost.value,
+                      );
+                    }
+                  },
+                  icon: SvgPicture.asset(
+                    arrow_forward,
+                    fit: BoxFit.cover,
+                    height: 60,
+                    width: 60,
+                  ),
+                ),
               ],
             ),
           ),

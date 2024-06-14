@@ -11,7 +11,6 @@ import 'package:velocity_x/velocity_x.dart';
 import '../../constants/colors.dart';
 import '../../constants/fonts_strings.dart';
 import '../../services/firebase_services.dart';
-import '../../services/firebase_services.dart';
 import '../../widgets/custome_textFormField.dart';
 import 'mileage_fee_section.dart';
 
@@ -116,8 +115,7 @@ class _LoadScreenState extends State<LoadScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Load screen${widget.isUpdate}');
-    print(widget.documentId);
+    print(widget.homeController.totalMilageCost.value);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
@@ -232,16 +230,13 @@ class _LoadScreenState extends State<LoadScreen> {
                                                     TextButton(
                                                       child: Text('Delete'),
                                                       onPressed: () {
-                                                        if (widget.isUpdate ==
-                                                            true) {
+                                                        if (widget.isUpdate) {
                                                           widget.homeController
                                                               .removeLoad(
                                                                   index);
                                                           Navigator.of(context)
                                                               .pop();
                                                         } else {
-                                                          Navigator.of(context)
-                                                              .pop(); // Close dialog
                                                           var userId =
                                                               FirebaseServices()
                                                                   .auth
@@ -252,17 +247,32 @@ class _LoadScreenState extends State<LoadScreen> {
                                                           if (userId != null &&
                                                               documentId !=
                                                                   null) {
-                                                            widget
-                                                                .homeController
-                                                                .deleteLoad(
-                                                                    userId,
+                                                            FirebaseServices().deleteLoad(
+                                                                documentId:
                                                                     documentId,
+                                                                loadIndex:
                                                                     index,
-                                                                    context);
+                                                                context:
+                                                                    context,
+                                                                freightChargeControllers: widget
+                                                                    .homeController
+                                                                    .freightChargeControllers,
+                                                                dispatchedMilesControllers: widget
+                                                                    .homeController
+                                                                    .dispatchedMilesControllers,
+                                                                estimatedTollsControllers: widget
+                                                                    .homeController
+                                                                    .estimatedTollsControllers,
+                                                                otherCostsControllers: widget
+                                                                    .homeController
+                                                                    .otherCostsControllers,
+                                                                userId: userId);
                                                           } else {
                                                             print(
                                                                 'User ID or Document ID is null.');
                                                           }
+                                                          Navigator.of(context)
+                                                              .pop();
                                                         }
                                                       },
                                                     ),
@@ -337,61 +347,70 @@ class _LoadScreenState extends State<LoadScreen> {
                                     if (formKey.currentState!.validate()) {
                                       widget.homeController
                                           .calculateVariableCosts();
-                                      widget.homeController.updateEntry({
-                                        'weeklyFixedCost': widget.homeController
-                                            .weeklyFixedCost.value,
-                                        'totalFreightCharges': widget
-                                            .homeController
-                                            .totalFreightCharges
-                                            .value,
-                                        'totalDispatchedMiles': widget
-                                            .homeController
-                                            .totalDispatchedMiles
-                                            .value,
-                                        'totalMilageCost': widget.homeController
-                                            .totalMilageCost.value,
-                                        'totalProfit': widget
-                                            .homeController.totalProfit.value,
-                                        'timestamp':
-                                            FieldValue.serverTimestamp(),
-                                        'updateTime': DateTime.now(),
-                                        'loads': List.generate(
-                                          widget.homeController
-                                              .freightChargeControllers.length,
-                                          (index) {
-                                            return {
-                                              'freightCharge': double.tryParse(
-                                                      widget
-                                                          .homeController
-                                                          .freightChargeControllers[
-                                                              index]
-                                                          .text) ??
-                                                  0.0,
-                                              'dispatchedMiles':
-                                                  double.tryParse(widget
-                                                          .homeController
-                                                          .dispatchedMilesControllers[
-                                                              index]
-                                                          .text) ??
-                                                      0.0,
-                                              'estimatedTolls': double.tryParse(
-                                                      widget
-                                                          .homeController
-                                                          .estimatedTollsControllers[
-                                                              index]
-                                                          .text) ??
-                                                  0.0,
-                                              'otherCosts': double.tryParse(
-                                                      widget
-                                                          .homeController
-                                                          .otherCostsControllers[
-                                                              index]
-                                                          .text) ??
-                                                  0.0,
-                                            };
-                                          },
-                                        ),
-                                      });
+                                      FirebaseServices().updateEntry(
+                                        documentId: widget.documentId!,
+                                        data: {
+                                          'weeklyFixedCost': widget
+                                              .homeController
+                                              .weeklyFixedCost
+                                              .value,
+                                          'totalFreightCharges': widget
+                                              .homeController
+                                              .totalFreightCharges
+                                              .value,
+                                          'totalDispatchedMiles': widget
+                                              .homeController
+                                              .totalDispatchedMiles
+                                              .value,
+                                          'totalMilageCost': widget
+                                              .homeController
+                                              .totalMilageCost
+                                              .value,
+                                          'totalProfit': widget
+                                              .homeController.totalProfit.value,
+                                          'timestamp':
+                                              FieldValue.serverTimestamp(),
+                                          'updateTime': DateTime.now(),
+                                          'loads': List.generate(
+                                            widget
+                                                .homeController
+                                                .freightChargeControllers
+                                                .length,
+                                            (index) {
+                                              return {
+                                                'freightCharge':
+                                                    double.tryParse(widget
+                                                            .homeController
+                                                            .freightChargeControllers[
+                                                                index]
+                                                            .text) ??
+                                                        0.0,
+                                                'dispatchedMiles':
+                                                    double.tryParse(widget
+                                                            .homeController
+                                                            .dispatchedMilesControllers[
+                                                                index]
+                                                            .text) ??
+                                                        0.0,
+                                                'estimatedTolls':
+                                                    double.tryParse(widget
+                                                            .homeController
+                                                            .estimatedTollsControllers[
+                                                                index]
+                                                            .text) ??
+                                                        0.0,
+                                                'otherCosts': double.tryParse(
+                                                        widget
+                                                            .homeController
+                                                            .otherCostsControllers[
+                                                                index]
+                                                            .text) ??
+                                                    0.0,
+                                              };
+                                            },
+                                          ),
+                                        },
+                                      );
                                       Navigator.of(context)
                                           .pop(); // Close the dialog
                                       Get.to(() => ResultsScreen(
@@ -421,6 +440,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                     if (formKey.currentState!.validate()) {
                                       widget.homeController
                                           .calculateVariableCosts();
+
                                       FirebaseServices().storeCalculatedValues(
                                           totalFactoringFee: widget
                                               .homeController
@@ -434,8 +454,10 @@ class _LoadScreenState extends State<LoadScreen> {
                                               .homeController
                                               .totalDispatchedMiles
                                               .value,
-                                          totalMilageCost: widget.homeController
-                                              .totalMilageCost.value,
+                                          totalMileageCost: widget
+                                              .homeController
+                                              .totalMilageCost
+                                              .value,
                                           totalProfit: widget
                                               .homeController.totalProfit.value,
                                           freightChargeControllers: widget

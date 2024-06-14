@@ -49,18 +49,29 @@ class MileageFeSection extends StatelessWidget {
                           ),
                           10.widthBox,
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Tooltip(
-                              triggerMode: TooltipTriggerMode.tap,
-                              message:
-                                  'Factoring fee is the 2% of total fright changres ${(homeController.totalFreightCharges.value * 2) / 100}',
-                              child: Icon(
-                                Icons.info_outline,
-                                size: 30,
-                                color: AppColor().primaryAppColor,
-                              ),
-                            ),
-                          )
+                              padding: const EdgeInsets.all(8.0),
+                              child: IconButton.filledTonal(
+                                  onPressed: () {
+                                    FirebaseServices().storePerMileageAmount(
+                                        perMileFee: double.tryParse(homeController
+                                                .perMileageFeeController
+                                                .text) ??
+                                            0.0,
+                                        perMileFuel: double.tryParse(
+                                                homeController
+                                                    .perMileFuelController
+                                                    .text) ??
+                                            0.0,
+                                        perMileDef:
+                                            double.tryParse(homeController.perMileDefController.text) ??
+                                                0.0,
+                                        perMileDriverPay: double.tryParse(
+                                                homeController
+                                                    .perMileDriverPayController
+                                                    .text) ??
+                                            0.0);
+                                  },
+                                  icon: Icon(Icons.edit)))
                         ],
                       ),
                       SizedBox(height: 20),
@@ -68,28 +79,28 @@ class MileageFeSection extends StatelessWidget {
                         label: 'Mileage Fee (\$/mile)',
                         hint: 'e.g., \$0.50',
                         controller: homeController.perMileageFeeController,
-                        value: homeController.permileageFee,
+                        value: homeController.permileageFee.obs,
                         validator: homeController.validateInput,
                       ),
                       buildRowWithLabel(
                         label: 'Fuel (\$/mile)',
                         hint: 'e.g., \$0.20',
                         controller: homeController.perMileFuelController,
-                        value: homeController.perMileFuel,
+                        value: homeController.perMileFuel.obs,
                         validator: homeController.validateInput,
                       ),
                       buildRowWithLabel(
                         label: 'DEF (\$/mile)',
                         hint: 'e.g., \$0.05',
                         controller: homeController.perMileDefController,
-                        value: homeController.perMileDef,
+                        value: homeController.perMileDef.obs,
                         validator: homeController.validateInput,
                       ),
                       buildRowWithLabel(
                         label: 'Driver Pay (\$/mile)',
                         hint: 'e.g., \$0.30',
                         controller: homeController.perMileDriverPayController,
-                        value: homeController.perMileDriverPay,
+                        value: homeController.perMileDriverPay.obs,
                         validator: homeController.validateInput,
                       ),
                       // screenHeight < 800
@@ -162,18 +173,17 @@ class MileageFeSection extends StatelessWidget {
                 ElevatedButton(
                     onPressed: () {
                       FirebaseServices().storePerMileageAmount(
-                          perMileFeeController: double.tryParse(homeController
+                          perMileFee: double.tryParse(homeController
                                   .perMileageFeeController.text) ??
                               0.0,
-                          perMileFuelController: double.tryParse(
+                          perMileFuel: double.tryParse(
                                   homeController.perMileFuelController.text) ??
                               0.0,
-                          perMileDefController: double.tryParse(
+                          perMileDef: double.tryParse(
                                   homeController.perMileDefController.text) ??
                               0.0,
-                          perMileDriverPayController: double.tryParse(
-                                  homeController
-                                      .perMileDriverPayController.text) ??
+                          perMileDriverPay: double.tryParse(homeController
+                                  .perMileDriverPayController.text) ??
                               0.0);
                     },
                     child: Text('Mileage Fee'))
