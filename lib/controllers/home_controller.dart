@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import '../services/firebase_services.dart';
 
 class HomeController extends GetxController {
@@ -13,7 +15,8 @@ class HomeController extends GetxController {
   var weeklyoverHeadAmount = 0.0.obs;
   var weeklyOtherCost = 0.0.obs;
   var weeklyFixedCost = 0.0.obs;
-  var totalWeeklyFixedCost = 0.0.obs;
+  RxBool isEditable = true.obs;
+  RxDouble totalWeeklyFixedCost = 0.0.obs;
   final tTruckPaymentController = TextEditingController();
   final tInsuranceController = TextEditingController();
   final tTrailerLeaseController = TextEditingController();
@@ -118,7 +121,8 @@ class HomeController extends GetxController {
     return null; // No errors
   }
 
-  void _calculateFixedCost() {
+  void _calculateFixedCost() async {
+    // Get the monthly amounts from the input fields
     double truckPaymentAmount =
         double.tryParse(tTruckPaymentController.text) ?? 0;
     double truckInsuranceAmount =
@@ -129,6 +133,7 @@ class HomeController extends GetxController {
     double overHeadAmount = double.tryParse(tOverHeadController.text) ?? 0;
     double otherAmount = double.tryParse(tOtherController.text) ?? 0;
 
+    // Calculate weekly values from monthly amounts
     weeklyTruckPayment.value = (truckPaymentAmount * 12) / 52;
     weeklyInsurance.value = (truckInsuranceAmount * 12) / 52;
     weeklyTrailerLease.value = (trailerLeaseAmount * 12) / 52;
@@ -136,35 +141,48 @@ class HomeController extends GetxController {
     weeklyoverHeadAmount.value = (overHeadAmount * 12) / 52;
     weeklyOtherCost.value = (otherAmount * 12) / 52;
 
+    // Calculate the total weekly fixed cost from the individual weekly costs
     weeklyFixedCost.value = weeklyTruckPayment.value +
         weeklyInsurance.value +
         weeklyTrailerLease.value +
         weeklyEldService.value +
         weeklyoverHeadAmount.value +
         weeklyOtherCost.value;
+
+    // Fetch the fixed weekly costs from Firebase
+    // Map<String, double> weeklyFixedCosts =
+    //     await FirebaseServices().fetchFixedWeeklyCost();
+
+    // // Update the individual weekly costs with the fetched values if they exist
+    // weeklyTruckPayment.value =
+    //     weeklyFixedCosts['truckPayment'] ?? weeklyTruckPayment.value;
+    // weeklyInsurance.value =
+    //     weeklyFixedCosts['truckInsurance'] ?? weeklyInsurance.value;
+    // weeklyTrailerLease.value =
+    //     weeklyFixedCosts['trailerLease'] ?? weeklyTrailerLease.value;
+    // weeklyEldService.value =
+    //     weeklyFixedCosts['eldService'] ?? weeklyEldService.value;
+    // weeklyoverHeadAmount.value =
+    //     weeklyFixedCosts['overheadCost'] ?? weeklyoverHeadAmount.value;
+    // weeklyOtherCost.value =
+    //     weeklyFixedCosts['otherCost'] ?? weeklyOtherCost.value;
+
+    // // Recalculate the total weekly fixed cost after updating with fetched values
+    // weeklyFixedCost.value = weeklyTruckPayment.value +
+    //     weeklyInsurance.value +
+    //     weeklyTrailerLease.value +
+    //     weeklyEldService.value +
+    //     weeklyoverHeadAmount.value +
+    //     weeklyOtherCost.value;
+    // totalWeeklyFixedCost.value =
+    //     weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
   }
 
-  void calculateFixedWeeklyCost(
-    double truckPaymentAmount,
-    double truckInsuranceAmount,
-    double trailerLeaseAmount,
-    double eldService,
-    double overHeadAmount,
-    double otherAmount,
-  ) async {
-    // Calculate weekly costs
-    weeklyTruckPayment.value = (truckPaymentAmount * 12) / 52;
-    weeklyInsurance.value = (truckInsuranceAmount * 12) / 52;
-    weeklyTrailerLease.value = (trailerLeaseAmount * 12) / 52;
-    weeklyEldService.value = (eldService * 12) / 52;
-    weeklyoverHeadAmount.value = (overHeadAmount * 12) / 52;
-    weeklyOtherCost.value = (otherAmount * 12) / 52;
-
-    // Fetch data from Firebase and store local variables
+  //------------------->Truck Weekly Fixed Cost Value <----------------------
+  Future<void> updateFixedCosts() async {
     Map<String, double> weeklyFixedCosts =
         await FirebaseServices().fetchFixedWeeklyCost();
 
-    // Update with fetched values
     weeklyTruckPayment.value =
         weeklyFixedCosts['truckPayment'] ?? weeklyTruckPayment.value;
     weeklyInsurance.value =
@@ -177,23 +195,15 @@ class HomeController extends GetxController {
         weeklyFixedCosts['overheadCost'] ?? weeklyoverHeadAmount.value;
     weeklyOtherCost.value =
         weeklyFixedCosts['otherCost'] ?? weeklyOtherCost.value;
-    totalWeeklyFixedCost.value = weeklyFixedCosts['weeklyFixedCost']!;
-    // Sum of all values
-    totalWeeklyFixedCost.value = weeklyTruckPayment.value +
+
+    totalWeeklyFixedCost.value =
+        weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
+    weeklyFixedCost.value = weeklyTruckPayment.value +
         weeklyInsurance.value +
         weeklyTrailerLease.value +
         weeklyEldService.value +
         weeklyoverHeadAmount.value +
         weeklyOtherCost.value;
-
-    // Debug prints
-    print('weeklyTruckPayment: ${weeklyTruckPayment.value}');
-    print('weeklyInsurance: ${weeklyInsurance.value}');
-    print('weeklyTrailerLease: ${weeklyTrailerLease.value}');
-    print('weeklyEldService: ${weeklyEldService.value}');
-    print('weeklyoverHeadAmount: ${weeklyoverHeadAmount.value}');
-    print('weeklyOtherCost: ${weeklyOtherCost.value}');
-    print('weeklyFixedCost: ${totalWeeklyFixedCost.value}');
   }
 
   void calculateVariableCosts() async {
@@ -202,7 +212,6 @@ class HomeController extends GetxController {
     totalDispatchedMiles.value = 0.0;
     totalEstimatedTollsCost.value = 0.0;
     totalOtherCost.value = 0.0;
-
     // Calculate totals from controllers
     for (int i = 0; i < freightChargeControllers.length; i++) {
       freightCharge.value =
@@ -218,7 +227,23 @@ class HomeController extends GetxController {
       totalEstimatedTollsCost.value += estimatedTolls.value;
       totalOtherCost.value += otherCost.value;
     }
+    Map<String, dynamic> weeklyFixedCosts =
+        await FirebaseServices().fetchFixedWeeklyCost();
 
+    // Update with fetched values
+    weeklyTruckPayment.value =
+        weeklyFixedCosts['truckPayment'] ?? weeklyTruckPayment.value;
+    weeklyInsurance.value =
+        weeklyFixedCosts['truckInsurance'] ?? weeklyInsurance.value;
+    weeklyTrailerLease.value =
+        weeklyFixedCosts['trailerLease'] ?? weeklyTrailerLease.value;
+    weeklyEldService.value =
+        weeklyFixedCosts['eldService'] ?? weeklyEldService.value;
+    weeklyoverHeadAmount.value =
+        weeklyFixedCosts['overheadCost'] ?? weeklyoverHeadAmount.value;
+    weeklyOtherCost.value =
+        weeklyFixedCosts['otherCost'] ?? weeklyOtherCost.value;
+    totalWeeklyFixedCost.value = weeklyFixedCosts['weeklyFixedCost'];
     // Fetch per-mile costs from Firebase
     Map<String, double> perMileageCosts =
         await FirebaseServices().perMileageAmountStoreAndFetch();
@@ -236,17 +261,6 @@ class HomeController extends GetxController {
         (perMileDef * totalDispatchedMiles.value) +
         ((perMileDriverPay * totalDispatchedMiles.value) * 1.2) +
         totalFactoringFee.value;
-
-    // // Debug prints
-    // print('permileageFee: ${permileageFee * totalDispatchedMiles.value}');
-    // print('perMileFuel: ${perMileFuel * totalDispatchedMiles.value}');
-    // print('perMileDef: ${perMileDef * totalDispatchedMiles.value}');
-    // print(
-    //     'perMileDriverPay: ${(perMileDriverPay * totalDispatchedMiles.value) * 1.2}');
-    // print('totalDispatchedMiles: ${totalDispatchedMiles.value}');
-    // print('totalMilageCost: ${totalMilageCost.value}');
-
-    // Calculate total profit
     totalProfit.value = totalFreightCharges.value -
         totalWeeklyFixedCost.value -
         totalMilageCost.value -

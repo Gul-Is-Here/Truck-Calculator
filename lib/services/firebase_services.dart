@@ -8,6 +8,9 @@ class FirebaseServices {
   final FirebaseAuth auth = FirebaseAuth.instance;
   String docId = '';
 
+
+ 
+
   Future<void> storeTruckMonthlyPayments({
     required double weeklyTruckPayment,
     required double weeklyInsurance,
@@ -33,7 +36,7 @@ class FirebaseServices {
           docRef = snapshot.docs.first.reference;
         } else {
           // If no document exists, create a new one with a generated ID
-          String truckMonthlyPaymentsID =
+        String truckMonthlyPaymentsID =
               DateTime.now().millisecondsSinceEpoch.toString();
           docRef = truckPaymentCollection.doc(truckMonthlyPaymentsID);
         }
@@ -180,7 +183,7 @@ class FirebaseServices {
           double eldService = data['eldService'] ?? 0.0;
           double overheadCost = data['overheadCost'] ?? 0.0;
           double otherCost = data['otherCost'] ?? 0.0;
-          RxDouble weeklyFixedCost = data['weeklyFixedCost'] ?? 0.0;
+          double weeklyFixedCost = data['weeklyFixedCost'] ?? 0.0;
 
           // Debug prints for verification
           print('Fetching weekly fixed costs:');
@@ -199,7 +202,7 @@ class FirebaseServices {
             'eldService': eldService,
             'overheadCost': overheadCost,
             'otherCost': otherCost,
-            'weeklyFixedCost': weeklyFixedCost.value,
+            'weeklyFixedCost': weeklyFixedCost,
           };
         } else {
           print('No document found in Firestore for WeeklyFixedCost');

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'custome_textFormField.dart';
 
 Widget buildRowWithLabel({
+   bool? isEnable,
   required String label,
   required String hint,
   required TextEditingController controller,
@@ -22,6 +23,7 @@ Widget buildRowWithLabel({
           label: label,
           hint: hint,
           validator: validator,
+          isEnable: isEnable
         ),
       ),
       const SizedBox(

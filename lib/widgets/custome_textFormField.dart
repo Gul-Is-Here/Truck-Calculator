@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 Widget buildTextFormField({
+  bool? isEnable,
   required TextEditingController controller,
   required String label,
   required String hint,
@@ -33,6 +34,7 @@ Widget buildTextFormField({
         SizedBox(
           height: 70,
           child: TextFormField(
+            enabled: isEnable,
             controller: controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
