@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'custome_textFormField.dart';
 
-Widget buildRowWithLabel({
+Widget buildRowForMileage({
   bool? isEnable,
   String? intialValue,
   required String label,
@@ -29,29 +29,6 @@ Widget buildRowWithLabel({
       ),
       const SizedBox(
           width: 10), // Adjust spacing between TextFormField and Container
-      Expanded(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22),
-          child: Container(
-            width: 70,
-            height: 50, // Ensure the height matches the TextFormField's height
-            decoration: BoxDecoration(
-              color: AppColor().secondaryAppColor.withOpacity(.15),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(
-              child: Obx(() => Text(
-                    '\$${value.value.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontFamily: robotoRegular,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )),
-            ),
-          ),
-        ),
-      ),
     ],
   );
 }

@@ -1,34 +1,125 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dispatched_calculator_app/constants/colors.dart';
-import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
-import 'package:dispatched_calculator_app/screens/load_screen/result_screen.dart';
-import 'package:dispatched_calculator_app/services/firebase_services.dart';
-import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:velocity_x/velocity_x.dart';
+
+import '../../constants/colors.dart';
+import '../../constants/fonts_strings.dart';
+import '../../controllers/home_controller.dart';
+import '../../services/firebase_services.dart';
 import '../../widgets/customized_row_label_widget.dart';
+import '../../widgets/customized_row_mileage.dart';
+import '../../widgets/my_drawer_widget.dart';
 
 class MileageFeSection extends StatelessWidget {
   final HomeController homeController;
   final bool isUpdate;
 
   const MileageFeSection(
-      {super.key, required this.homeController, required this.isUpdate});
+      {Key? key, required this.homeController, required this.isUpdate});
 
   @override
   Widget build(BuildContext context) {
     final formKey1 = GlobalKey<FormState>();
 
+    void _submitForm() async {
+      if (formKey1.currentState!.validate()) {
+        await FirebaseServices().storePerMileageAmount(
+          isEditabbleMilage: homeController.isEditableMilage.value,
+          perMileFee:
+              double.tryParse(homeController.perMileageFeeController.text) ??
+                  0.0,
+          perMileFuel:
+              double.tryParse(homeController.perMileFuelController.text) ?? 0.0,
+          perMileDef:
+              double.tryParse(homeController.perMileDefController.text) ?? 0.0,
+          perMileDriverPay:
+              double.tryParse(homeController.perMileDriverPayController.text) ??
+                  0.0,
+        );
+        homeController.isEditableMilage.value = false;
+        await FirebaseServices().toggleIsEditabbleMilage();
+        bool updatedIsEditableMilage =
+            await FirebaseServices().fetchIsEditabbleMilage();
+        homeController.isEditableMilage.value = updatedIsEditableMilage;
+      }
+    }
+
+    Future<void> showSubmitConfirmationDialog() async {
+      bool? shouldSubmit = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Confirm Submission'),
+          content: Text('Are you sure you want to submit the data?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                _submitForm();
+                homeController.updatedIsEditableMilage.value = false;
+                homeController.isEditableMilage.value =
+                    homeController.updatedIsEditableMilage.value;
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Future<void> showEditConfirmationDialog() async {
+      bool? shouldEdit = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Confirm Edit'),
+          content: Text('Are you sure you want to edit?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await FirebaseServices().toggleIsEditabbleMilage();
+                homeController.updatedIsEditableMilage.value =
+                    await FirebaseServices().fetchIsEditabbleMilage();
+
+                homeController.isEditableMilage.value =
+                    homeController.updatedIsEditableMilage.value;
+
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    void initializeControllers() async {
+      var fetchedValues = await FirebaseServices().fetchPerMileageAmount();
+      homeController.perMileageFeeController.text =
+          fetchedValues['milageFeePerMile'].toString();
+      homeController.perMileFuelController.text =
+          fetchedValues['fuelFeePerMile'].toString();
+      homeController.perMileDefController.text =
+          fetchedValues['defFeePerMile'].toString();
+      homeController.perMileDriverPayController.text =
+          fetchedValues['driverPayFeePerMile'].toString();
+    }
+
+    initializeControllers();
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+      body: Obx(
+        () => Column(
+          children: [
+            SingleChildScrollView(
               child: Form(
                 key: formKey1,
                 child: Padding(
@@ -43,144 +134,89 @@ class MileageFeSection extends StatelessWidget {
                           Text(
                             'Mileage Fee',
                             style: TextStyle(
-                                fontFamily: robotoRegular,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold),
+                              fontFamily: robotoRegular,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          10.widthBox,
+                          SizedBox(width: 10),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Tooltip(
-                              triggerMode: TooltipTriggerMode.tap,
-                              message:
-                                  'Factoring fee is the 2% of total fright changres ${(homeController.totalFreightCharges.value * 2) / 100}',
-                              child: Icon(
-                                Icons.info_outline,
-                                size: 30,
-                                color: AppColor().primaryAppColor,
-                              ),
+                            child: IconButton(
+                              onPressed: () {
+                                showEditConfirmationDialog();
+                              },
+                              icon: Icon(Icons.edit),
                             ),
-                          )
+                          ),
                         ],
                       ),
                       SizedBox(height: 20),
-                      buildRowWithLabel(
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPermileageFee.value.toString(),
                         label: 'Mileage Fee (\$/mile)',
                         hint: 'e.g., \$0.50',
                         controller: homeController.perMileageFeeController,
-                        value: homeController.permileageFee,
+                        value: homeController.fPermileageFee,
                         validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
                       ),
-                      buildRowWithLabel(
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPerMileFuel.value.toString(),
                         label: 'Fuel (\$/mile)',
                         hint: 'e.g., \$0.20',
                         controller: homeController.perMileFuelController,
-                        value: homeController.perMileFuel,
+                        value: homeController.fPerMileFuel,
                         validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
                       ),
-                      buildRowWithLabel(
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPerMileDef.value.toString(),
                         label: 'DEF (\$/mile)',
                         hint: 'e.g., \$0.05',
                         controller: homeController.perMileDefController,
-                        value: homeController.perMileDef,
+                        value: homeController.fPerMileDef,
                         validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
                       ),
-                      buildRowWithLabel(
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPerMileDriverPay.value.toString(),
                         label: 'Driver Pay (\$/mile)',
                         hint: 'e.g., \$0.30',
                         controller: homeController.perMileDriverPayController,
-                        value: homeController.perMileDriverPay,
+                        value: homeController.fPerMileDriverPay,
                         validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
                       ),
-                      // screenHeight < 800
-                      //     ? SizedBox(
-                      //         height: MediaQuery.of(context).size.height * .1,
-                      //       )
-                      //     : SizedBox(
-                      //         height: MediaQuery.of(context).size.height * .15,
-                      //       ),
                     ],
                   ),
                 ),
               ),
             ),
-          ),
-          10.heightBox,
-          const SizedBox(height: 20),
-          Container(
-            padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-                color: AppColor().primaryAppColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.elliptical(45, 25),
-                )),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          "Total",
-                          style: TextStyle(
-                            color: AppColor().appTextColor,
-                            fontFamily: robotoRegular,
-                            fontSize: 16,
-                          ),
-                          maxLines:
-                              null, // Allows the text to use as many lines as needed
-                          overflow: TextOverflow
-                              .visible, // Ensures text is visible and wrapped
-                          softWrap: true,
-                        ),
-                        5.widthBox,
-                        Tooltip(
-                          triggerMode: TooltipTriggerMode.tap,
-                          message:
-                              'Factoring fee is the 2% of total fright changres ${(homeController.totalFreightCharges.value * 2) / 100}',
-                          child: Icon(
-                            Icons.info_outline,
-                            color: AppColor().appTextColor,
-                          ),
-                        )
-                      ],
-                    ),
-                    Obx(() => Text(
-                          textAlign: TextAlign.center,
-                          '\$${homeController.totalMilageCost.value.toStringAsFixed(2)}',
-                          style: TextStyle(
-                              color: AppColor().appTextColor,
-                              fontFamily: robotoRegular,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold),
-                        )),
-                  ],
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      FirebaseServices().storePerMileageAmount(
-                          perMileFeeController: double.tryParse(homeController
-                                  .perMileageFeeController.text) ??
-                              0.0,
-                          perMileFuelController: double.tryParse(
-                                  homeController.perMileFuelController.text) ??
-                              0.0,
-                          perMileDefController: double.tryParse(
-                                  homeController.perMileDefController.text) ??
-                              0.0,
-                          perMileDriverPayController: double.tryParse(
-                                  homeController
-                                      .perMileDriverPayController.text) ??
-                              0.0);
-                    },
-                    child: Text('Mileage Fee'))
-              ],
+            SizedBox(height: 10),
+            const SizedBox(height: 20),
+            Obx(
+              () => homeController.isEditableMilage.value == true
+                  ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColor().primaryAppColor,
+                          foregroundColor: AppColor().appTextColor,
+                          padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * .36)),
+                      onPressed: () {
+                        showSubmitConfirmationDialog();
+                      },
+                      child: Text('Submit'),
+                    )
+                  : Container(),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

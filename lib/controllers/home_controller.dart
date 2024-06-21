@@ -1,39 +1,35 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-
-import '../app_classes/date_utills.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/firebase_services.dart';
 
 class HomeController extends GetxController {
-
   RxBool isLoading = false.obs;
-  RxDouble weeklyFixedCost = 0.0.obs;
-  RxDouble weeklyTruckPayment = 0.0.obs;
-  RxDouble weeklyInsurance = 0.0.obs;
-  RxDouble weeklyTrailerLease = 0.0.obs;
-  RxDouble weeklyEldService = 0.0.obs;
-  RxBool fixedCostCalculated = false.obs;
-  RxDouble weeklyoverHeadAmount = 0.0.obs;
-  RxDouble weeklyOtherCost = 0.0.obs;
+  RxBool updatedIsEditableMilage = false.obs;
+  var weeklyTruckPayment = 0.0.obs;
+  var weeklyInsurance = 0.0.obs;
+  var weeklyTrailerLease = 0.0.obs;
+  var weeklyEldService = 0.0.obs;
+  var weeklyoverHeadAmount = 0.0.obs;
+  var weeklyOtherCost = 0.0.obs;
+  var weeklyFixedCost = 0.0.obs;
+  RxBool isEditable = true.obs;
+  RxBool isEditableMilage = false.obs;
+  RxDouble totalWeeklyFixedCost = 0.0.obs;
+  final tTruckPaymentController = TextEditingController();
+  final tInsuranceController = TextEditingController();
+  final tTrailerLeaseController = TextEditingController();
+  final tEldServicesController = TextEditingController();
+  final tOverHeadController = TextEditingController();
+  final tOtherController = TextEditingController();
 
-  TextEditingController tPaymentController = TextEditingController();
-  TextEditingController tInsuranceController = TextEditingController();
-  TextEditingController tTrailerLeaseController = TextEditingController();
-  TextEditingController tEldServicesController = TextEditingController();
-  TextEditingController tOverHeadController = TextEditingController();
-  TextEditingController tOtherController = TextEditingController();
-
-  TextEditingController perMileageFeeController = TextEditingController();
-  TextEditingController perMileFuelController = TextEditingController();
-  TextEditingController perMileDefController = TextEditingController();
-  TextEditingController perMileDriverPayController = TextEditingController();
-  TextEditingController factoringFeeController = TextEditingController();
+  final perMileageFeeController = TextEditingController();
+  final perMileFuelController = TextEditingController();
+  final perMileDefController = TextEditingController();
+  final perMileDriverPayController = TextEditingController();
+  final factoringFeeController = TextEditingController();
 
   var freightChargeControllers = <TextEditingController>[].obs;
   var dispatchedMilesControllers = <TextEditingController>[].obs;
@@ -41,13 +37,12 @@ class HomeController extends GetxController {
   var otherCostsControllers = <TextEditingController>[].obs;
   RxList<Map<String, dynamic>> historyData = <Map<String, dynamic>>[].obs;
 
+  // Loads controller save value in variables
+  RxDouble freightCharge = 0.0.obs;
+  RxDouble dispatchedMiles = 0.0.obs;
+  RxDouble estimatedTolls = 0.0.obs;
+  RxDouble otherCost = 0.0.obs;
 
-// loads controller save value in variables
- RxDouble freightCharge=0.0.obs;
- RxDouble dispatchedMiles=0.0.obs;
-RxDouble estimatedTolls=0.0.obs;
-RxDouble otherCost=0.0.obs;
- //----------------
   RxDouble totalFrightChargesAndTolls = 0.0.obs;
   RxDouble totalMilageCost = 0.0.obs;
   RxDouble totalProfit = 0.0.obs;
@@ -56,43 +51,52 @@ RxDouble otherCost=0.0.obs;
   RxDouble totalOtherCost = 0.0.obs;
   RxDouble totalFactoringFee = 0.0.obs;
   RxDouble totalDispatchedMiles = 0.0.obs;
-  RxDouble permileageFee = 0.0.obs;
-  RxDouble perMileFuel = 0.0.obs;
-  RxDouble perMileDef = 0.0.obs;
-  RxDouble perMileDriverPay = 0.0.obs;
+
+  var permileageFee = 0.0.obs;
+  var perMileFuel = 0.0.obs;
+  var perMileDef = 0.0.obs;
+  var perMileDriverPay = 0.0.obs;
   Rx<DateTime?> timestamp = Rx<DateTime?>(null);
 
+//--------Truck Payment Fetch Values to Show TextformField In calculator Screen-------
+  RxDouble fTrcukPayment = 0.0.obs;
+  RxDouble fTrcukInsurace = 0.0.obs;
+  RxDouble fTrcukTrailerLease = 0.0.obs;
+  RxDouble fTrcukEldService = 0.0.obs;
+  RxDouble fTrcukOverhead = 0.0.obs;
+  RxDouble fTrcukOther = 0.0.obs;
+  RxDouble fTruckWeeklyPayment = 0.0.obs;
+  RxDouble fTruckWeeklyInsurance = 0.0.obs;
+  RxDouble fTruckWeeklyTrailerLease = 0.0.obs;
+  RxDouble fTruckWeeklyEldServices = 0.0.obs;
+  // ----------- Truck Payment Fetch Values to Show TextformField In Mileage Screen-------
+
+  RxDouble fPermileageFee = 0.0.obs;
+  RxDouble fPerMileFuel = 0.0.obs;
+  RxDouble fPerMileDef = 0.0.obs;
+  RxDouble fPerMileDriverPay = 0.0.obs;
   @override
   void onInit() {
     super.onInit();
-    tPaymentController.addListener(_calculateFixedCost);
+    tTruckPaymentController.addListener(_calculateFixedCost);
     tInsuranceController.addListener(_calculateFixedCost);
     tTrailerLeaseController.addListener(_calculateFixedCost);
     tEldServicesController.addListener(_calculateFixedCost);
     tOverHeadController.addListener(_calculateFixedCost);
     tOtherController.addListener(_calculateFixedCost);
+    weeklyFixedCost.addListener;
 
-    perMileageFeeController.addListener(calculateVariableCosts);
-    perMileFuelController.addListener(calculateVariableCosts);
-    perMileDefController.addListener(calculateVariableCosts);
-    perMileDriverPayController.addListener(calculateVariableCosts);
     addNewLoad(); // Initialize with the first load
-    fetchHistoryData(); // fetch data from firebase
-    fetchResultData();
+    fetchHistoryData(); // Fetch data from Firebase
+    FirebaseServices().fetchPerMileageAmount(); // Fetch per-mile cost
+    FirebaseServices().fetchFixedWeeklyCost(); // Fetch weekly fixed costs
+    loadEditableStateTruckPayment();
+    fetchMileageValues(); //  This Method is Used To fetch Intial Values of Trcuk Per Mileage fee Payments in Mileage Screen
+    fetchTruckPaymentIntialValues(); // This Method is Used To fetch Intial Values of Trcuk monthly Payments in Calculator Screen
   }
 
   @override
   void onClose() {
-    tPaymentController.dispose();
-    tInsuranceController.dispose();
-    tTrailerLeaseController.dispose();
-    tEldServicesController.dispose();
-    tOverHeadController.dispose();
-    tOtherController.dispose();
-    perMileageFeeController.dispose();
-    perMileFuelController.dispose();
-    perMileDefController.dispose();
-    perMileDriverPayController.dispose();
     for (var controller in freightChargeControllers) {
       controller.dispose();
     }
@@ -105,91 +109,32 @@ RxDouble otherCost=0.0.obs;
     for (var controller in otherCostsControllers) {
       controller.dispose();
     }
+
     super.onClose();
   }
 
-// A method to delete data from calculatedValues Collection and transfer to History Collection
-  void transferAndDeleteWeeklyData() async {
-    User? user = FirebaseServices().auth.currentUser;
-    if (user != null) {
-      try {
-        // Get a reference to the user's document
-        DocumentReference userDocRef =
-            FirebaseServices().firestore.collection('users').doc(user.uid);
+  ///------------------> Shared Prefrance for Truck Weekly Fixed payment ------------------
 
-        // Calculate the start and end dates of the current week
-        DateTime now = DateTime.now();
-        DateTime startOfWeek =
-            DateTime(now.year, now.month, now.day - now.weekday);
-        DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
-        print('Current date time : $now');
-        print('Start of the week :$startOfWeek');
-        print('End of the week : $endOfWeek');
-
-        // Query documents in the calculatedValues subcollection within the current week
-        QuerySnapshot querySnapshot = await userDocRef
-            .collection('calculatedValues')
-            .where('timestamp',
-                isGreaterThanOrEqualTo: startOfWeek,
-                isLessThanOrEqualTo: endOfWeek)
-            .get();
-        if (endOfWeek == true) {
-          for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-            await userDocRef.collection('history').doc(doc.id).set(data);
-            await userDocRef
-                .collection('calculatedValues')
-                .doc(doc.id)
-                .delete();
-
-            print(
-                'Specific data transferred to history and original documents deleted successfully.');
-          }
-        }
-
-        // Transfer each document to the history subcollection
-      } catch (e) {
-        print(
-            'Error transferring data to history and deleting original documents: $e');
-      }
-    } else {
-      print('No user signed in');
-    }
+  Future<void> storeEditableTruckPayment() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isEditable', isEditable.value);
   }
 
-  // A method to get data from History Collection
-  Future<List<Map<String, dynamic>>> fetchHistoryDataById() async {
-    final User? user = FirebaseServices().auth.currentUser;
-
-    if (user == null) {
-      print('Error: No user is currently logged in.');
-      return [];
-    }
-
-    try {
-      final QuerySnapshot querySnapshot = await FirebaseServices().firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('history')
-          .get();
-
-      final List<Map<String, dynamic>> documents =
-          querySnapshot.docs.map((doc) {
-        return {
-          'id': doc.id,
-          'data': doc.data() as Map<String, dynamic>,
-        };
-      }).toList();
-
-      print('Fetched ${documents.length} documents.');
-      return documents;
-    } catch (e) {
-      print('Error fetching history data: $e');
-      return [];
-    }
+  Future<void> loadEditableStateTruckPayment() async {
+    final prefs = await SharedPreferences.getInstance();
+    isEditable.value =
+        prefs.getBool('isEditable') ?? true; // Default to true if not set
   }
 
-  void calculateDateTime() {}
+  void toggleEditableStateTruckPayment() async {
+    isEditable.value = !isEditable.value; // Toggle the state
+
+    await storeEditableTruckPayment(); // Store the updated state
+  }
+
+  ///-----------------------------------------------------------------------------------------
+
+  ///-----------------------------------------------------------------------------------------
   String? validateInput(String? value) {
     if (value == null || value.isEmpty) {
       return 'Must be filled!';
@@ -201,7 +146,7 @@ RxDouble otherCost=0.0.obs;
     return null;
   }
 
-  // for non null value only use in other costs and overHead Costs
+  // For non-null value only use in other costs and overhead costs
   String? validateNonNegative(String? value) {
     if (value == null || value.isEmpty) {
       return null; // No validation needed for empty values
@@ -213,17 +158,10 @@ RxDouble otherCost=0.0.obs;
     return null; // No errors
   }
 
-  void _calculateFixedCost() {
-    if (validateInput(tPaymentController.text) != null ||
-        validateInput(tInsuranceController.text) != null ||
-        validateInput(tTrailerLeaseController.text) != null ||
-        validateInput(tEldServicesController.text) != null) {
-      weeklyFixedCost.value =
-          0.0; // Reset to 0 if any required field is invalid
-      return;
-    }
-
-    double truckPaymentAmount = double.tryParse(tPaymentController.text) ?? 0;
+  void _calculateFixedCost() async {
+    // Get the monthly amounts from the input fields
+    double truckPaymentAmount =
+        double.tryParse(tTruckPaymentController.text) ?? 0;
     double truckInsuranceAmount =
         double.tryParse(tInsuranceController.text) ?? 0;
     double trailerLeaseAmount =
@@ -232,34 +170,71 @@ RxDouble otherCost=0.0.obs;
     double overHeadAmount = double.tryParse(tOverHeadController.text) ?? 0;
     double otherAmount = double.tryParse(tOtherController.text) ?? 0;
 
-    calculateFixedWeeklyCost(
-      truckPaymentAmount,
-      truckInsuranceAmount,
-      trailerLeaseAmount,
-      eldService,
-      overHeadAmount,
-      otherAmount,
-    );
-
-    fixedCostCalculated.value = true;
-  }
-
-  void calculateFixedWeeklyCost(
-    double truckPaymentAmount,
-    double truckInsuranceAmount,
-    double trailerLeaseAmount,
-    double eldService,
-    double overHeadAmount,
-    double otherAmount,
-  ) {
+    // Calculate weekly values from monthly amounts
     weeklyTruckPayment.value = (truckPaymentAmount * 12) / 52;
     weeklyInsurance.value = (truckInsuranceAmount * 12) / 52;
     weeklyTrailerLease.value = (trailerLeaseAmount * 12) / 52;
     weeklyEldService.value = (eldService * 12) / 52;
-
     weeklyoverHeadAmount.value = (overHeadAmount * 12) / 52;
     weeklyOtherCost.value = (otherAmount * 12) / 52;
 
+    // Calculate the total weekly fixed cost from the individual weekly costs
+    weeklyFixedCost.value = weeklyTruckPayment.value +
+        weeklyInsurance.value +
+        weeklyTrailerLease.value +
+        weeklyEldService.value +
+        weeklyoverHeadAmount.value +
+        weeklyOtherCost.value;
+
+    // Fetch the fixed weekly costs from Firebase
+    // Map<String, double> weeklyFixedCosts =
+    //     await FirebaseServices().fetchFixedWeeklyCost();
+
+    // // Update the individual weekly costs with the fetched values if they exist
+    // weeklyTruckPayment.value =
+    //     weeklyFixedCosts['truckPayment'] ?? weeklyTruckPayment.value;
+    // weeklyInsurance.value =
+    //     weeklyFixedCosts['truckInsurance'] ?? weeklyInsurance.value;
+    // weeklyTrailerLease.value =
+    //     weeklyFixedCosts['trailerLease'] ?? weeklyTrailerLease.value;
+    // weeklyEldService.value =
+    //     weeklyFixedCosts['eldService'] ?? weeklyEldService.value;
+    // weeklyoverHeadAmount.value =
+    //     weeklyFixedCosts['overheadCost'] ?? weeklyoverHeadAmount.value;
+    // weeklyOtherCost.value =
+    //     weeklyFixedCosts['otherCost'] ?? weeklyOtherCost.value;
+
+    // // Recalculate the total weekly fixed cost after updating with fetched values
+    // weeklyFixedCost.value = weeklyTruckPayment.value +
+    //     weeklyInsurance.value +
+    //     weeklyTrailerLease.value +
+    //     weeklyEldService.value +
+    //     weeklyoverHeadAmount.value +
+    //     weeklyOtherCost.value;
+    // totalWeeklyFixedCost.value =
+    //     weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
+  }
+
+  //------------------->Truck Weekly Fixed Cost Value <----------------------
+  Future<void> updateFixedCosts() async {
+    Map<String, double> weeklyFixedCosts =
+        await FirebaseServices().fetchFixedWeeklyCost();
+
+    weeklyTruckPayment.value =
+        weeklyFixedCosts['monthlyTruckPayment'] ?? weeklyTruckPayment.value;
+    weeklyInsurance.value =
+        weeklyFixedCosts['monthlyTruckInsurance'] ?? weeklyInsurance.value;
+    weeklyTrailerLease.value =
+        weeklyFixedCosts['monthlyTrailerLease'] ?? weeklyTrailerLease.value;
+    weeklyEldService.value =
+        weeklyFixedCosts['monthlyEldService'] ?? weeklyEldService.value;
+    weeklyoverHeadAmount.value =
+        weeklyFixedCosts['monthlyOverheadCost'] ?? weeklyoverHeadAmount.value;
+    weeklyOtherCost.value =
+        weeklyFixedCosts['monthlyOtherCost'] ?? weeklyOtherCost.value;
+
+    totalWeeklyFixedCost.value =
+        weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
     weeklyFixedCost.value = weeklyTruckPayment.value +
         weeklyInsurance.value +
         weeklyTrailerLease.value +
@@ -268,60 +243,71 @@ RxDouble otherCost=0.0.obs;
         weeklyOtherCost.value;
   }
 
-  void calculateVariableCosts() {
+  void calculateVariableCosts() async {
+    // Initialize totals
     totalFreightCharges.value = 0.0;
     totalDispatchedMiles.value = 0.0;
     totalEstimatedTollsCost.value = 0.0;
     totalOtherCost.value = 0.0;
-
+    // Calculate totals from controllers
     for (int i = 0; i < freightChargeControllers.length; i++) {
-       freightCharge.value =
+      freightCharge.value =
           double.tryParse(freightChargeControllers[i].text) ?? 0.0;
-       dispatchedMiles.value =
+      dispatchedMiles.value =
           double.tryParse(dispatchedMilesControllers[i].text) ?? 0.0;
-       estimatedTolls.value =
+      estimatedTolls.value =
           double.tryParse(estimatedTollsControllers[i].text) ?? 0.0;
-       otherCost.value = double.tryParse(otherCostsControllers[i].text) ?? 0.0;
+      otherCost.value = double.tryParse(otherCostsControllers[i].text) ?? 0.0;
 
-      totalFreightCharges.value += freightCharge.value ;
-      totalDispatchedMiles.value += dispatchedMiles.value ;
-      totalEstimatedTollsCost.value += estimatedTolls.value ;
-      totalOtherCost.value += otherCost.value ;
+      totalFreightCharges.value += freightCharge.value;
+      totalDispatchedMiles.value += dispatchedMiles.value;
+      totalEstimatedTollsCost.value += estimatedTolls.value;
+      totalOtherCost.value += otherCost.value;
     }
+    Map<String, dynamic> weeklyFixedCosts =
+        await FirebaseServices().fetchFixedWeeklyCost();
 
-    permileageFee.value =
-        (double.tryParse(perMileageFeeController.text) ?? 0.0) *
-            totalDispatchedMiles.value;
-    print('Permilafee : ${permileageFee.value}');
-    perMileFuel.value = (double.tryParse(perMileFuelController.text) ?? 0.0) *
-        totalDispatchedMiles.value;
+    // Update with fetched values
+    weeklyTruckPayment.value =
+        weeklyFixedCosts['weeklyTruckPayment'] ?? weeklyTruckPayment.value;
+    weeklyInsurance.value =
+        weeklyFixedCosts['weeklyInsurancePayment'] ?? weeklyInsurance.value;
+    weeklyTrailerLease.value =
+        weeklyFixedCosts['weeklyTrailerLease'] ?? weeklyTrailerLease.value;
+    weeklyEldService.value =
+        weeklyFixedCosts['weeklyEldService'] ?? weeklyEldService.value;
+    weeklyoverHeadAmount.value =
+        weeklyFixedCosts['monthlyOverheadCost'] ?? weeklyoverHeadAmount.value;
+    weeklyOtherCost.value =
+        weeklyFixedCosts['monthlyOtherCost'] ?? weeklyOtherCost.value;
+    totalWeeklyFixedCost.value = weeklyFixedCosts['weeklyFixedCost'];
+    // Fetch per-mile costs from Firebase
+    Map<String, double> perMileageCosts =
+        await FirebaseServices().fetchPerMileageAmount();
+    permileageFee.value = perMileageCosts['milageFeePerMile'] ?? 0.0;
+    perMileFuel.value = perMileageCosts['fuelFeePerMile'] ?? 0.0;
+    perMileDef.value = perMileageCosts['defFeePerMile'] ?? 0.0;
+    perMileDriverPay.value = perMileageCosts['driverPayFeePerMile'] ?? 0.0;
 
-    print('perMileFuel : ${perMileFuel.value}');
-    perMileDef.value = (double.tryParse(perMileDefController.text) ?? 0.0) *
-        totalDispatchedMiles.value;
-    print('perMileDef : ${perMileDef.value}');
-    perMileDriverPay.value =
-        ((double.tryParse(perMileDriverPayController.text) ?? 0.0) *
-                totalDispatchedMiles.value) *
-            1.2;
-    print('perMileDriverPay : ${perMileDriverPay.value}');
-
+    // Calculate total factoring fee
     totalFactoringFee.value = (totalFreightCharges.value * 2) / 100;
-    print('totalFactoringFee : ${totalFactoringFee.value}');
 
-    totalMilageCost.value = permileageFee.value +
-        perMileFuel.value +
-        perMileDef.value +
-        perMileDriverPay.value +
+    // Calculate total mileage cost
+    totalMilageCost.value = (permileageFee.value * totalDispatchedMiles.value) +
+        (perMileFuel.value * totalDispatchedMiles.value) +
+        (perMileDef.value * totalDispatchedMiles.value) +
+        ((perMileDriverPay.value * totalDispatchedMiles.value) * 1.2) +
         totalFactoringFee.value;
-    print('totalMilageCost : ${totalMilageCost.value}');
     totalProfit.value = totalFreightCharges.value -
-        weeklyFixedCost.value -
+        totalWeeklyFixedCost.value -
         totalMilageCost.value -
         totalEstimatedTollsCost.value -
         totalOtherCost.value;
-    print('totalProfit : ${totalProfit.value}');
-    totalFrightChargesAndTolls.value = totalFreightCharges.value;
+    print('totalProfit: ${totalProfit.value}');
+    print('totalWeeklyFixedCost: ${totalWeeklyFixedCost.value}');
+    print('totalMilageCost: ${totalMilageCost.value}');
+    print('totalEstimatedTollsCost: ${totalEstimatedTollsCost.value}');
+    print('totalOtherCost: ${totalOtherCost.value}');
   }
 
   void addNewLoad() {
@@ -359,13 +345,11 @@ RxDouble otherCost=0.0.obs;
     }
   }
 
-
-
-
   void fetchHistoryData() async {
     User? user = FirebaseServices().auth.currentUser;
     if (user != null) {
-      QuerySnapshot querySnapshot = await FirebaseServices().firestore
+      QuerySnapshot querySnapshot = await FirebaseServices()
+          .firestore
           .collection('users')
           .doc(user.uid)
           .collection('calculatedValues')
@@ -381,151 +365,106 @@ RxDouble otherCost=0.0.obs;
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchAllEntriesForEditing() async {
-    User? user = FirebaseServices().auth.currentUser;
-    if (user != null) {
-      try {
-        QuerySnapshot querySnapshot = await FirebaseServices().firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('calculatedValues')
-            .get();
+  void fetchTruckPaymentIntialValues() async {
+    Map<String, double> weeklyFixedCosts =
+        await FirebaseServices().fetchFixedWeeklyCost();
+    fTrcukPayment.value =
+        weeklyFixedCosts['monthlyTruckPayment'] ?? fTrcukPayment.value;
+    fTrcukInsurace.value =
+        weeklyFixedCosts['monthlyTruckInsurance'] ?? weeklyInsurance.value;
+    fTrcukTrailerLease.value =
+        weeklyFixedCosts['monthlyTrailerLease'] ?? weeklyTrailerLease.value;
+    fTrcukEldService.value =
+        weeklyFixedCosts['monthlyEldService'] ?? weeklyEldService.value;
+    fTrcukOverhead.value =
+        weeklyFixedCosts['monthlyOverheadCost'] ?? weeklyoverHeadAmount.value;
+    fTrcukOther.value =
+        weeklyFixedCosts['monthlyOtherCost'] ?? weeklyOtherCost.value;
 
-        return querySnapshot.docs.map((doc) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          data['id'] = doc.id; // Include the document ID
-          FirebaseServices().docId = data['id'];
-          print(FirebaseServices().docId);
-          return data;
-        }).toList();
-      } catch (e) {
-        print('Error fetching entries for editing: $e');
-      }
-    }
-    return [];
+    totalWeeklyFixedCost.value =
+        weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
+
+    fTruckWeeklyPayment.value =
+        weeklyFixedCosts['weeklyTruckPayment'] ?? fTruckWeeklyPayment.value;
+    fTruckWeeklyTrailerLease.value = weeklyFixedCosts['weeklyTrailerLease'] ??
+        fTruckWeeklyTrailerLease.value;
+    fTruckWeeklyInsurance.value = weeklyFixedCosts['weeklyInsurancePayment'] ??
+        fTruckWeeklyInsurance.value;
+    fTruckWeeklyEldServices.value =
+        weeklyFixedCosts['weeklyEldService'] ?? fTruckWeeklyEldServices.value;
+    checkTrcukControllerValues();
   }
 
-  void updateEntry(Map<String, dynamic> newData) async {
-    User? user = FirebaseServices().auth.currentUser;
-    FirebaseServices().loadsId = FirebaseServices().docId;
-    if (user != null) {
-      if (FirebaseServices().loadsId == null || FirebaseServices().loadsId!.isEmpty) {
-        print('Error: newDocumentId is null or empty.');
-        return;
-      }
+  // Method To check if Trcuk Monthly Payment Controllers are Empty then show these values
 
-      try {
-        DocumentReference docRef = FirebaseServices().firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('calculatedValues')
-            .doc(FirebaseServices().loadsId);
-        print('Document ID: $FirebaseServices().loadsId');
-
-        // Check if the document exists before updating
-        bool docExists = await docRef.get().then((doc) => doc.exists);
-        if (docExists) {
-          await docRef.update(newData);
-          print('Data to be updated: $newData');
-          fetchHistoryData(); // Refresh history data
-          print('Entry updated successfully');
-        } else {
-          print('Document with ID $FirebaseServices().loadsId does not exist.');
-        }
-      } catch (e) {
-        print('Error updating entry: $e');
-      }
+  void checkTrcukControllerValues() {
+    print('Call Successfully');
+    if (tTruckPaymentController.text.isEmpty ||
+        tEldServicesController.text.isEmpty ||
+        tInsuranceController.text.isEmpty ||
+        tTrailerLeaseController.text.isEmpty ||
+        tOverHeadController.text.isEmpty ||
+        tOtherController.text.isEmpty) {
+      tTruckPaymentController.text = fTrcukPayment.value.toString();
+      tEldServicesController.text = fTrcukEldService.value.toString();
+      tInsuranceController.text = fTrcukInsurace.value.toString();
+      tTrailerLeaseController.text = fTrcukTrailerLease.value.toString();
+      tOverHeadController.text = fTrcukOverhead.value.toString();
+      tOtherController.text = fTrcukOther.value.toString();
     } else {
-      print('Error: No user is currently logged in.');
+      return;
     }
   }
 
-  Future<Map<String, dynamic>?> fetchEntryForEditing(String documentId) async {
-    User? user = FirebaseServices().auth.currentUser;
-    if (user != null) {
-      try {
-        DocumentSnapshot doc = await FirebaseServices().firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('calculatedValues')
-            .doc(documentId)
-            .get();
+  // ---------------------- Fetch Milage Values------------------
 
-        return doc.data() as Map<String, dynamic>?;
-      } catch (e) {
-        print('Error fetching entry for editing: $e');
-      }
-    }
-    return null;
-  }
-
-  void deleteLoad(String? userId, String? documentId, int loadIndex,
-      BuildContext context) async {
+  Future<void> fetchMileageValues() async {
+    isLoading.value = true;
     try {
-      // Fetch the load data that corresponds to the loadIndex
-      final loadToRemove = {
-        'freightCharge': num.parse(freightChargeControllers[loadIndex].text),
-        'dispatchedMiles':
-            num.parse(dispatchedMilesControllers[loadIndex].text),
-        'estimatedTolls': num.parse(estimatedTollsControllers[loadIndex].text),
-        'otherCosts': num.parse(otherCostsControllers[loadIndex].text),
-      };
+      Map<String, double> mileageValues =
+          await FirebaseServices().fetchPerMileageAmount();
+      // Update the Rx variables with the fetched values
+      fPermileageFee.value =
+          mileageValues['milageFeePerMile'] ?? fPermileageFee.value;
+      fPerMileFuel.value =
+          mileageValues['fuelFeePerMile'] ?? fPerMileFuel.value;
+      fPerMileDef.value = mileageValues['defFeePerMile'] ?? fPerMileDef.value;
+      fPerMileDriverPay.value =
+          mileageValues['driverPayFeePerMile'] ?? fPerMileDriverPay.value;
 
-      // Remove the specific load entry from the 'loads' array in Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('calculatedValues')
-          .doc(documentId)
-          .update({
-        'loads': FieldValue.arrayRemove([loadToRemove])
-      });
+      // Update the text controllers with the fetched values
+      perMileageFeeController.text = fPermileageFee.value.toStringAsFixed(2);
+      perMileFuelController.text = fPerMileFuel.value.toStringAsFixed(2);
+      perMileDefController.text = fPerMileDef.value.toStringAsFixed(2);
+      perMileDriverPayController.text =
+          fPerMileDriverPay.value.toStringAsFixed(2);
 
-      // Remove the load from the local state
-      freightChargeControllers.removeAt(loadIndex);
-      dispatchedMilesControllers.removeAt(loadIndex);
-      estimatedTollsControllers.removeAt(loadIndex);
-      otherCostsControllers.removeAt(loadIndex);
-      calculateVariableCosts();
-      print('Load deleted successfully');
-      //  Navigator.of(context).pop();
-    } catch (error) {
-      print('Error deleting load: $error');
-    }
-  }
-
-  // Load ResultScreen Data from Firebase
-  void fetchResultData() async {
-    try {
-      User? user = FirebaseServices().auth.currentUser;
-      if (user != null) {
-        print('Fetching data for user: ${user.uid}'); // Debug print
-        QuerySnapshot querySnapshot = await FirebaseServices().firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('calculatedValues')
-            .orderBy('timestamp', descending: true)
-            .limit(1)
-            .get();
-
-        if (querySnapshot.docs.isNotEmpty) {
-          var data = querySnapshot.docs.first.data() as Map<String, dynamic>;
-          print('Fetched data: $data'); // Debug print
-
-          totalFrightChargesAndTolls.value =
-              (data['totalFreightCharges'] ?? 0) +
-                  (data['totalEstimatedTollsCost'] ?? 0);
-          totalProfit.value = data['totalProfit'] ?? 0;
-          totalDispatchedMiles.value = data['totalDispatchedMiles'] ?? 0;
-        } else {}
-      } else {
-        Get.snackbar('Error', 'No user signed in',
-            snackPosition: SnackPosition.BOTTOM);
-      }
+      print('Mileage Values Fetched and Set:');
+      print('perMileFee: ${fPermileageFee.value}');
+      print('perMileFuel: ${fPerMileFuel.value}');
+      print('perMileDef: ${fPerMileDef.value}');
+      print('perMileDriverPay: ${fPerMileDriverPay.value}');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to fetch data: $e',
-          snackPosition: SnackPosition.BOTTOM);
-      print('Error fetching data: $e'); // Debug print
+      print('Error fetching mileage values: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void checkPerMileageFee() {
+    print('call');
+    if (perMileageFeeController.text.isEmpty) {
+      perMileageFeeController.text = fPermileageFee.value.toString();
+      print(perMileDefController.text);
+    }
+    if (perMileFuelController.text.isEmpty) {
+      perMileFuelController.text = fPerMileFuel.value.toString();
+    }
+    if (perMileDefController.text.isEmpty) {
+      perMileDefController.text = fPerMileDef.value.toString();
+    }
+    if (perMileDriverPayController.text.isEmpty) {
+      perMileDriverPayController.text = fPerMileDriverPay.value.toString();
     }
   }
 }

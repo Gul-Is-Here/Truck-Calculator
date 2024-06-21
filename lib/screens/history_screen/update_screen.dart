@@ -12,18 +12,18 @@ import '../../services/firebase_services.dart';
 class UpdateScreen extends StatelessWidget {
   final HomeController homeController;
   final bool isUpdate;
+
   const UpdateScreen({required this.homeController, required this.isUpdate});
 
   @override
   Widget build(BuildContext context) {
-    print('update screen : $isUpdate');
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: FutureBuilder<List<Map<String, dynamic>>>(
-          future: homeController.fetchAllEntriesForEditing(),
+          future: FirebaseServices().fetchAllEntriesForEditing(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -87,12 +87,14 @@ class UpdateScreen extends StatelessWidget {
                   var time = timestamp != null
                       ? DateFormat('HH:mm:ss').format(timestamp)
                       : 'N/A';
+                  var loadId = load['id'] ??
+                      'Unknown'; // Ensure loadId is fetched properly
                   return DataRow(
                     cells: <DataCell>[
-                      DataCell(Text(FirebaseServices().docId,
+                      DataCell(Text(loadId,
                           style: TextStyle(
                               fontFamily: robotoRegular,
-                              fontSize: 14))), // Assuming all are 'Week 1'
+                              fontSize: 14))), // Using actual load id
                       DataCell(Text(
                         date,
                         style:
@@ -108,7 +110,7 @@ class UpdateScreen extends StatelessWidget {
                               onPressed: () async {
                                 var documentId = load['id'] as String?;
                                 if (documentId != null) {
-                                  var loadData = await homeController
+                                  var loadData = await FirebaseServices()
                                       .fetchEntryForEditing(documentId);
                                   Get.to(() => LoadScreen(
                                         isUpdate: isUpdate,
@@ -121,8 +123,8 @@ class UpdateScreen extends StatelessWidget {
                               child: Text('Edit'),
                             ),
                             ElevatedButton(
-                                onPressed:
-                                    homeController.transferAndDeleteWeeklyData,
+                                onPressed: FirebaseServices()
+                                    .transferAndDeleteWeeklyData,
                                 child: Text('Delete'))
                           ],
                         ),

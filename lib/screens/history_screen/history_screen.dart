@@ -2,12 +2,16 @@ import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_details_screen.dart';
+import 'package:dispatched_calculator_app/services/firebase_services.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:velocity_x/velocity_x.dart';
+
 class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +20,7 @@ class HistoryScreen extends StatelessWidget {
         title: const Text('History'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: HomeController().fetchHistoryDataById(),
+        future: FirebaseServices().fetchHistoryDataById(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -27,7 +31,8 @@ class HistoryScreen extends StatelessWidget {
                   itemCount: 6, // Number of shimmer items to show
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
                       child: Column(
                         children: [
                           Row(
@@ -78,7 +83,8 @@ class HistoryScreen extends StatelessWidget {
 
                 var timestamp = (document['data']['updateTime']);
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                   child: GestureDetector(
                     onTap: () {
                       Get.to(
@@ -102,7 +108,8 @@ class HistoryScreen extends StatelessWidget {
                             Column(
                               children: [
                                 Text(document['id']),
-                                Text(AppClass().formatDateTimeFriendly(timestamp.toDate())),
+                                Text(AppClass().formatDateTimeFriendly(
+                                    timestamp.toDate())),
                               ],
                             ),
                           ],
