@@ -174,7 +174,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                       label: 'Freight Charge (\$)',
                                       hint: 'e.g., \$1000',
                                       validator:
-                                          widget.homeController.validateInput,
+                                          widget.homeController.validateInput, intialValue: null,
                                     ),
                                     buildTextFormField(
                                       controller: widget.homeController
@@ -182,7 +182,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                       label: 'Dispatched Miles',
                                       hint: 'e.g., 2000',
                                       validator:
-                                          widget.homeController.validateInput,
+                                          widget.homeController.validateInput, intialValue: null,
                                     ),
                                     buildTextFormField(
                                       controller: widget.homeController
@@ -190,7 +190,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                       label: 'Estimated Tolls (\$)',
                                       hint: 'e.g., \$50',
                                       validator:
-                                          widget.homeController.validateInput,
+                                          widget.homeController.validateInput, intialValue: null,
                                     ),
                                     buildTextFormField(
                                         controller: widget.homeController
@@ -198,7 +198,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                         label: 'Other Costs (\$)',
                                         hint: 'e.g., \$100',
                                         validator: widget.homeController
-                                            .validateNonNegative),
+                                            .validateNonNegative, intialValue: null, ),
 
                                     Row(
                                       mainAxisAlignment:

@@ -9,10 +9,16 @@ class FirebaseServices {
   String docId = '';
 
   Future<void> storeTruckMonthlyPayments({
+    required double tWeeklyTruckPayment,
+    required double tWeeklyInsurance,
+    required double tWeeklyTrailerLease,
+    required double tWeeklyEldService,
+    // required double tWeeklyOverheadAmount,
+    // required double tWeeklyOtherCost,
     required double weeklyTruckPayment,
-    required double weeklyInsurance,
     required double weeklyTrailerLease,
     required double weeklyEldService,
+    required double weeklyInsurance,
     required double weeklyOverheadAmount,
     required double weeklyOtherCost,
     required double weeklyFixedCost,
@@ -39,13 +45,17 @@ class FirebaseServices {
         }
 
         await docRef.set({
-          'truckPayment': weeklyTruckPayment,
-          'truckInsurance': weeklyInsurance,
-          'trailerLease': weeklyTrailerLease,
-          'eldService': weeklyEldService,
-          'overheadCost': weeklyOverheadAmount,
+          'monthlyTruckPayment': tWeeklyTruckPayment,
+          'monthlyTruckInsurance': tWeeklyInsurance,
+          'monthlyTrailerLease': tWeeklyTrailerLease,
+          'monthlyEldService': tWeeklyEldService,
+          'monthlyOverheadCost': weeklyOverheadAmount,
           'weeklyFixedCost': weeklyFixedCost,
-          'otherCost': weeklyOtherCost,
+          'monthlyOtherCost': weeklyOtherCost,
+          'weeklyTruckPayment': weeklyTruckPayment,
+          'weeklyInsurancePayment': weeklyInsurance,
+          'weeklyTrailerLease': weeklyTrailerLease,
+          'weeklyEldService': weeklyEldService,
         });
 
         print('Truck Payment values stored successfully in Firestore');
@@ -115,8 +125,7 @@ class FirebaseServices {
     }
   }
 
-// Fetch Per Milage Values from Firebase
-  Future<Map<String, double>> perMileageAmountStoreAndFetch() async {
+  Future<Map<String, double>> fetchPerMileageAmount() async {
     User? user = auth.currentUser;
     if (user != null) {
       try {
@@ -137,10 +146,10 @@ class FirebaseServices {
           double perMileDriverPay = data['driverPayFeePerMile'] ?? 0.0;
 
           return {
-            'perMileFee': perMileFee,
-            'perMileFuel': perMileFuel,
-            'perMileDef': perMileDef,
-            'perMileDriverPay': perMileDriverPay,
+            'milageFeePerMile': perMileFee,
+            'fuelFeePerMile': perMileFuel,
+            'defFeePerMile': perMileDef,
+            'driverPayFeePerMile': perMileDriverPay,
           };
         } else {
           print('No document found in Firestore for perMileageCost');
@@ -153,14 +162,59 @@ class FirebaseServices {
     }
 
     return {
-      'perMileFee': 0.0,
-      'perMileFuel': 0.0,
-      'perMileDef': 0.0,
-      'perMileDriverPay': 0.0,
+      'milageFeePerMile': 0.0,
+      'fuelFeePerMile': 0.0,
+      'defFeePerMile': 0.0,
+      'driverPayFeePerMile': 0.0,
     };
   }
 
- Future<void> toggleIsEditabbleMilage() async {
+// Fetch Per Milage Values from Firebase
+  // Future<Map<String, double>> perMileageAmountStoreAndFetch() async {
+  //   User? user = auth.currentUser;
+  //   if (user != null) {
+  //     try {
+  //       QuerySnapshot snapshot = await firestore
+  //           .collection('users')
+  //           .doc(user.uid)
+  //           .collection('perMileageCost')
+  //           .limit(1) // Limit to 1 document
+  //           .get();
+
+  //       if (snapshot.docs.isNotEmpty) {
+  //         // Extract values from the document
+  //         var data = snapshot.docs.first.data() as Map<String, dynamic>;
+
+  //         double perMileFee = data['milageFeePerMile'] ?? 0.0;
+  //         double perMileFuel = data['fuelFeePerMile'] ?? 0.0;
+  //         double perMileDef = data['defFeePerMile'] ?? 0.0;
+  //         double perMileDriverPay = data['driverPayFeePerMile'] ?? 0.0;
+
+  //         return {
+  //           'milageFeePerMile': perMileFee,
+  //           'fuelFeePerMile': perMileFuel,
+  //           'defFeePerMile': perMileDef,
+  //           'driverPayFeePerMile': perMileDriverPay,
+  //         };
+  //       } else {
+  //         print('No document found in Firestore for perMileageCost');
+  //       }
+  //     } catch (e) {
+  //       print('Error fetching values from Firestore: $e');
+  //     }
+  //   } else {
+  //     print('No user signed in');
+  //   }
+
+  //   return {
+  //     'milageFeePerMile': 0.0,
+  //     'fuelFeePerMile': 0.0,
+  //     'defFeePerMile': 0.0,
+  //     'driverPayFeePerMile': 0.0,
+  //   };
+  // }
+
+  Future<void> toggleIsEditabbleMilage() async {
     User? user = auth.currentUser;
     if (user != null) {
       try {
@@ -185,7 +239,8 @@ class FirebaseServices {
             'isEditabbleMilage': updatedIsEditabbleMilage,
           });
 
-          print('isEditabbleMilage updated successfully: $updatedIsEditabbleMilage');
+          print(
+              'isEditabbleMilage updated successfully: $updatedIsEditabbleMilage');
         } else {
           print('No document found for perMileageCost');
         }
@@ -229,13 +284,14 @@ class FirebaseServices {
       return false; // Default to false if no user is signed in
     }
   }
+
   // Example usage to toggle isEditabbleMilage
-void onToggleIsEditabbleMilage() async {
-  await toggleIsEditabbleMilage();
-  // Optionally, fetch and use the updated value
-  bool updatedIsEditabbleMilage = await fetchIsEditabbleMilage();
-  // Use updatedIsEditabbleMilage as needed
-}
+  void onToggleIsEditabbleMilage() async {
+    await toggleIsEditabbleMilage();
+    // Optionally, fetch and use the updated value
+    bool updatedIsEditabbleMilage = await fetchIsEditabbleMilage();
+    // Use updatedIsEditabbleMilage as needed
+  }
 
   ///----------------> Fetch Total Fixed Weekly Cost From Firebase <---------------------
 
@@ -254,13 +310,17 @@ void onToggleIsEditabbleMilage() async {
           // Extract values from the document
           var data = snapshot.docs.first.data() as Map<String, dynamic>;
 
-          double truckPayment = data['truckPayment'] ?? 0.0;
-          double truckInsurance = data['truckInsurance'] ?? 0.0;
-          double trailerLease = data['trailerLease'] ?? 0.0;
-          double eldService = data['eldService'] ?? 0.0;
-          double overheadCost = data['overheadCost'] ?? 0.0;
-          double otherCost = data['otherCost'] ?? 0.0;
+          double truckPayment = data['monthlyTruckPayment'] ?? 0.0;
+          double truckInsurance = data['monthlyTruckInsurance'] ?? 0.0;
+          double trailerLease = data['monthlyTrailerLease'] ?? 0.0;
+          double eldService = data['monthlyEldService'] ?? 0.0;
+          double overheadCost = data['monthlyOverheadCost'] ?? 0.0;
+          double otherCost = data['monthlyOtherCost'] ?? 0.0;
           double weeklyFixedCost = data['weeklyFixedCost'] ?? 0.0;
+          double weeklyTruckPayment = data['weeklyTruckPayment'] ?? 0.0;
+          double weeklyTrailerLease = data['weeklyTrailerLease'] ?? 0.0;
+          double weeklyInsurancePayment = data['weeklyInsurancePayment'] ?? 0.0;
+          double weeklyEldService = data['weeklyEldService'] ?? 0.0;
 
           // Debug prints for verification
           print('Fetching weekly fixed costs:');
@@ -273,13 +333,17 @@ void onToggleIsEditabbleMilage() async {
           print('weeklyFixedCost: $weeklyFixedCost');
 
           return {
-            'truckPayment': truckPayment,
-            'truckInsurance': truckInsurance,
-            'trailerLease': trailerLease,
-            'eldService': eldService,
-            'overheadCost': overheadCost,
-            'otherCost': otherCost,
+            'monthlyTruckPayment': truckPayment,
+            'monthlyTruckInsurance': truckInsurance,
+            'monthlyTrailerLease': trailerLease,
+            'monthlyEldService': eldService,
+            'monthlyOverheadCost': overheadCost,
+            'monthlyOtherCost': otherCost,
             'weeklyFixedCost': weeklyFixedCost,
+            'weeklyTruckPayment': weeklyTruckPayment,
+            'weeklyTrailerLease': weeklyTrailerLease,
+            'weeklyInsurancePayment': weeklyInsurancePayment,
+            'weeklyEldService': weeklyEldService,
           };
         } else {
           print('No document found in Firestore for WeeklyFixedCost');
@@ -293,13 +357,17 @@ void onToggleIsEditabbleMilage() async {
 
     // Return an empty map or default values in case of error or no data found
     return {
-      'truckPayment': 0.0,
-      'truckInsurance': 0.0,
-      'trailerLease': 0.0,
-      'eldService': 0.0,
-      'overheadCost': 0.0,
-      'otherCost': 0.0,
+      'monthlyTruckPayment': 0.0,
+      'monthlyTruckInsurance': 0.0,
+      'monthlyTrailerLease': 0.0,
+      'monthlyEldService': 0.0,
+      'monthlyOverheadCost': 0.0,
+      'monthlyOtherCost': 0.0,
       'weeklyFixedCost': 0.0,
+      'weeklyTruckPayment': 0.0,
+      'weeklyTrailerLease': 0.0,
+      'weeklyInsurancePayment': 0.0,
+      'weeklyEldService': 0.0
     };
   }
 

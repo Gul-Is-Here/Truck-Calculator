@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/services/firebase_services.dart';
-import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
-import '../../constants/fonts_strings.dart';
-import '../../widgets/customized_row_label_widget.dart';
+
 import '../../constants/colors.dart';
+import '../../constants/fonts_strings.dart';
+import '../../controllers/home_controller.dart';
+import '../../services/firebase_services.dart';
+import '../../widgets/customized_row_label_widget.dart';
+import '../../widgets/customized_row_mileage.dart';
+import '../../widgets/my_drawer_widget.dart';
 
 class MileageFeSection extends StatelessWidget {
   final HomeController homeController;
@@ -20,7 +22,7 @@ class MileageFeSection extends StatelessWidget {
 
     void _submitForm() async {
       if (formKey1.currentState!.validate()) {
-        FirebaseServices().storePerMileageAmount(
+        await FirebaseServices().storePerMileageAmount(
           isEditabbleMilage: homeController.isEditableMilage.value,
           perMileFee:
               double.tryParse(homeController.perMileageFeeController.text) ??
@@ -33,7 +35,6 @@ class MileageFeSection extends StatelessWidget {
               double.tryParse(homeController.perMileDriverPayController.text) ??
                   0.0,
         );
-        // After submitting, hide the submit button
         homeController.isEditableMilage.value = false;
         await FirebaseServices().toggleIsEditabbleMilage();
         bool updatedIsEditableMilage =
@@ -55,8 +56,11 @@ class MileageFeSection extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true);
                 _submitForm();
+                homeController.updatedIsEditableMilage.value = false;
+                homeController.isEditableMilage.value =
+                    homeController.updatedIsEditableMilage.value;
+                Navigator.of(context).pop(true);
               },
               child: Text('Yes'),
             ),
@@ -78,13 +82,12 @@ class MileageFeSection extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                homeController.isEditableMilage.value = true;
                 await FirebaseServices().toggleIsEditabbleMilage();
-                // After toggling, update UI based on the new value
                 homeController.updatedIsEditableMilage.value =
                     await FirebaseServices().fetchIsEditabbleMilage();
-                homeController.updatedIsEditableMilage.value =
-                    homeController.isEditableMilage.value;
+
+                homeController.isEditableMilage.value =
+                    homeController.updatedIsEditableMilage.value;
 
                 Navigator.of(context).pop(true);
               },
@@ -95,6 +98,20 @@ class MileageFeSection extends StatelessWidget {
       );
     }
 
+    void initializeControllers() async {
+      var fetchedValues = await FirebaseServices().fetchPerMileageAmount();
+      homeController.perMileageFeeController.text =
+          fetchedValues['milageFeePerMile'].toString();
+      homeController.perMileFuelController.text =
+          fetchedValues['fuelFeePerMile'].toString();
+      homeController.perMileDefController.text =
+          fetchedValues['defFeePerMile'].toString();
+      homeController.perMileDriverPayController.text =
+          fetchedValues['driverPayFeePerMile'].toString();
+    }
+
+    initializeControllers();
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
@@ -102,143 +119,101 @@ class MileageFeSection extends StatelessWidget {
       body: Obx(
         () => Column(
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Form(
-                  key: formKey1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Mileage Fee',
-                              style: TextStyle(
-                                fontFamily: robotoRegular,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
+            SingleChildScrollView(
+              child: Form(
+                key: formKey1,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Mileage Fee',
+                            style: TextStyle(
+                              fontFamily: robotoRegular,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
                             ),
-                            SizedBox(width: 10),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: IconButton(
-                                onPressed: () {
-                                  showEditConfirmationDialog();
-                                },
-                                icon: Icon(Icons.edit),
-                              ),
+                          ),
+                          SizedBox(width: 10),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: IconButton(
+                              onPressed: () {
+                                showEditConfirmationDialog();
+                              },
+                              icon: Icon(Icons.edit),
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        buildRowWithLabel(
-                          label: 'Mileage Fee (\$/mile)',
-                          hint: 'e.g., \$0.50',
-                          controller: homeController.perMileageFeeController,
-                          value: homeController.permileageFee.obs,
-                          validator: homeController.validateInput,
-                          isEnable:
-                              homeController.updatedIsEditableMilage.value,
-                        ),
-                        buildRowWithLabel(
-                          label: 'Fuel (\$/mile)',
-                          hint: 'e.g., \$0.20',
-                          controller: homeController.perMileFuelController,
-                          value: homeController.perMileFuel.obs,
-                          validator: homeController.validateInput,
-                          isEnable:
-                              homeController.updatedIsEditableMilage.value,
-                        ),
-                        buildRowWithLabel(
-                          label: 'DEF (\$/mile)',
-                          hint: 'e.g., \$0.05',
-                          controller: homeController.perMileDefController,
-                          value: homeController.perMileDef.obs,
-                          validator: homeController.validateInput,
-                          isEnable:
-                              homeController.updatedIsEditableMilage.value,
-                        ),
-                        buildRowWithLabel(
-                          label: 'Driver Pay (\$/mile)',
-                          hint: 'e.g., \$0.30',
-                          controller: homeController.perMileDriverPayController,
-                          value: homeController.perMileDriverPay.obs,
-                          validator: homeController.validateInput,
-                          isEnable:
-                              homeController.updatedIsEditableMilage.value,
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPermileageFee.value.toString(),
+                        label: 'Mileage Fee (\$/mile)',
+                        hint: 'e.g., \$0.50',
+                        controller: homeController.perMileageFeeController,
+                        value: homeController.fPermileageFee,
+                        validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
+                      ),
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPerMileFuel.value.toString(),
+                        label: 'Fuel (\$/mile)',
+                        hint: 'e.g., \$0.20',
+                        controller: homeController.perMileFuelController,
+                        value: homeController.fPerMileFuel,
+                        validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
+                      ),
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPerMileDef.value.toString(),
+                        label: 'DEF (\$/mile)',
+                        hint: 'e.g., \$0.05',
+                        controller: homeController.perMileDefController,
+                        value: homeController.fPerMileDef,
+                        validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
+                      ),
+                      buildRowForMileage(
+                        intialValue:
+                            homeController.fPerMileDriverPay.value.toString(),
+                        label: 'Driver Pay (\$/mile)',
+                        hint: 'e.g., \$0.30',
+                        controller: homeController.perMileDriverPayController,
+                        value: homeController.fPerMileDriverPay,
+                        validator: homeController.validateInput,
+                        isEnable: homeController.updatedIsEditableMilage.value,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
             SizedBox(height: 10),
             const SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: AppColor().primaryAppColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.elliptical(45, 25),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Total',
-                            style: TextStyle(
-                              color: AppColor().appTextColor,
-                              fontFamily: robotoRegular,
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(width: 5),
-                          Tooltip(
-                            triggerMode: TooltipTriggerMode.tap,
-                            message:
-                                'Factoring fee is the 2% of total freight charges ${(homeController.totalFreightCharges.value * 2) / 100}',
-                            child: Icon(
-                              Icons.info_outline,
-                              color: AppColor().appTextColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Obx(() => Text(
-                            '\$${homeController.totalMilageCost.value.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              color: AppColor().appTextColor,
-                              fontFamily: robotoRegular,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )),
-                    ],
-                  ),
-                  Obx(
-                    () => homeController.updatedIsEditableMilage.value
-                        ? ElevatedButton(
-                            onPressed: () {
-                              showSubmitConfirmationDialog();
-                            },
-                            child: Text('Submit'),
-                          )
-                        : Container(),
-                  ),
-                ],
-              ),
+            Obx(
+              () => homeController.isEditableMilage.value == true
+                  ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColor().primaryAppColor,
+                          foregroundColor: AppColor().appTextColor,
+                          padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * .36)),
+                      onPressed: () {
+                        showSubmitConfirmationDialog();
+                      },
+                      child: Text('Submit'),
+                    )
+                  : Container(),
             ),
           ],
         ),

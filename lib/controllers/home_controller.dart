@@ -16,7 +16,7 @@ class HomeController extends GetxController {
   var weeklyOtherCost = 0.0.obs;
   var weeklyFixedCost = 0.0.obs;
   RxBool isEditable = true.obs;
-  RxBool isEditableMilage = true.obs;
+  RxBool isEditableMilage = false.obs;
   RxDouble totalWeeklyFixedCost = 0.0.obs;
   final tTruckPaymentController = TextEditingController();
   final tInsuranceController = TextEditingController();
@@ -25,11 +25,11 @@ class HomeController extends GetxController {
   final tOverHeadController = TextEditingController();
   final tOtherController = TextEditingController();
 
-  TextEditingController perMileageFeeController = TextEditingController();
-  TextEditingController perMileFuelController = TextEditingController();
-  TextEditingController perMileDefController = TextEditingController();
-  TextEditingController perMileDriverPayController = TextEditingController();
-  TextEditingController factoringFeeController = TextEditingController();
+  final perMileageFeeController = TextEditingController();
+  final perMileFuelController = TextEditingController();
+  final perMileDefController = TextEditingController();
+  final perMileDriverPayController = TextEditingController();
+  final factoringFeeController = TextEditingController();
 
   var freightChargeControllers = <TextEditingController>[].obs;
   var dispatchedMilesControllers = <TextEditingController>[].obs;
@@ -52,12 +52,29 @@ class HomeController extends GetxController {
   RxDouble totalFactoringFee = 0.0.obs;
   RxDouble totalDispatchedMiles = 0.0.obs;
 
-  double permileageFee = 0.0;
-  double perMileFuel = 0.0;
-  double perMileDef = 0.0;
-  double perMileDriverPay = 0.0;
+  var permileageFee = 0.0.obs;
+  var perMileFuel = 0.0.obs;
+  var perMileDef = 0.0.obs;
+  var perMileDriverPay = 0.0.obs;
   Rx<DateTime?> timestamp = Rx<DateTime?>(null);
 
+//--------Truck Payment Fetch Values to Show TextformField In calculator Screen-------
+  RxDouble fTrcukPayment = 0.0.obs;
+  RxDouble fTrcukInsurace = 0.0.obs;
+  RxDouble fTrcukTrailerLease = 0.0.obs;
+  RxDouble fTrcukEldService = 0.0.obs;
+  RxDouble fTrcukOverhead = 0.0.obs;
+  RxDouble fTrcukOther = 0.0.obs;
+  RxDouble fTruckWeeklyPayment = 0.0.obs;
+  RxDouble fTruckWeeklyInsurance = 0.0.obs;
+  RxDouble fTruckWeeklyTrailerLease = 0.0.obs;
+  RxDouble fTruckWeeklyEldServices = 0.0.obs;
+  // ----------- Truck Payment Fetch Values to Show TextformField In Mileage Screen-------
+
+  RxDouble fPermileageFee = 0.0.obs;
+  RxDouble fPerMileFuel = 0.0.obs;
+  RxDouble fPerMileDef = 0.0.obs;
+  RxDouble fPerMileDriverPay = 0.0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -71,20 +88,15 @@ class HomeController extends GetxController {
 
     addNewLoad(); // Initialize with the first load
     fetchHistoryData(); // Fetch data from Firebase
-    FirebaseServices().perMileageAmountStoreAndFetch(); // Fetch per-mile cost
+    FirebaseServices().fetchPerMileageAmount(); // Fetch per-mile cost
     FirebaseServices().fetchFixedWeeklyCost(); // Fetch weekly fixed costs
     loadEditableStateTruckPayment();
+    fetchMileageValues(); //  This Method is Used To fetch Intial Values of Trcuk Per Mileage fee Payments in Mileage Screen
+    fetchTruckPaymentIntialValues(); // This Method is Used To fetch Intial Values of Trcuk monthly Payments in Calculator Screen
   }
 
   @override
   void onClose() {
-    tTruckPaymentController.dispose();
-    tInsuranceController.dispose();
-    tTrailerLeaseController.dispose();
-    tEldServicesController.dispose();
-    tOverHeadController.dispose();
-    tOtherController.dispose();
-
     for (var controller in freightChargeControllers) {
       controller.dispose();
     }
@@ -209,17 +221,17 @@ class HomeController extends GetxController {
         await FirebaseServices().fetchFixedWeeklyCost();
 
     weeklyTruckPayment.value =
-        weeklyFixedCosts['truckPayment'] ?? weeklyTruckPayment.value;
+        weeklyFixedCosts['monthlyTruckPayment'] ?? weeklyTruckPayment.value;
     weeklyInsurance.value =
-        weeklyFixedCosts['truckInsurance'] ?? weeklyInsurance.value;
+        weeklyFixedCosts['monthlyTruckInsurance'] ?? weeklyInsurance.value;
     weeklyTrailerLease.value =
-        weeklyFixedCosts['trailerLease'] ?? weeklyTrailerLease.value;
+        weeklyFixedCosts['monthlyTrailerLease'] ?? weeklyTrailerLease.value;
     weeklyEldService.value =
-        weeklyFixedCosts['eldService'] ?? weeklyEldService.value;
+        weeklyFixedCosts['monthlyEldService'] ?? weeklyEldService.value;
     weeklyoverHeadAmount.value =
-        weeklyFixedCosts['overheadCost'] ?? weeklyoverHeadAmount.value;
+        weeklyFixedCosts['monthlyOverheadCost'] ?? weeklyoverHeadAmount.value;
     weeklyOtherCost.value =
-        weeklyFixedCosts['otherCost'] ?? weeklyOtherCost.value;
+        weeklyFixedCosts['monthlyOtherCost'] ?? weeklyOtherCost.value;
 
     totalWeeklyFixedCost.value =
         weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
@@ -257,34 +269,34 @@ class HomeController extends GetxController {
 
     // Update with fetched values
     weeklyTruckPayment.value =
-        weeklyFixedCosts['truckPayment'] ?? weeklyTruckPayment.value;
+        weeklyFixedCosts['weeklyTruckPayment'] ?? weeklyTruckPayment.value;
     weeklyInsurance.value =
-        weeklyFixedCosts['truckInsurance'] ?? weeklyInsurance.value;
+        weeklyFixedCosts['weeklyInsurancePayment'] ?? weeklyInsurance.value;
     weeklyTrailerLease.value =
-        weeklyFixedCosts['trailerLease'] ?? weeklyTrailerLease.value;
+        weeklyFixedCosts['weeklyTrailerLease'] ?? weeklyTrailerLease.value;
     weeklyEldService.value =
-        weeklyFixedCosts['eldService'] ?? weeklyEldService.value;
+        weeklyFixedCosts['weeklyEldService'] ?? weeklyEldService.value;
     weeklyoverHeadAmount.value =
-        weeklyFixedCosts['overheadCost'] ?? weeklyoverHeadAmount.value;
+        weeklyFixedCosts['monthlyOverheadCost'] ?? weeklyoverHeadAmount.value;
     weeklyOtherCost.value =
-        weeklyFixedCosts['otherCost'] ?? weeklyOtherCost.value;
+        weeklyFixedCosts['monthlyOtherCost'] ?? weeklyOtherCost.value;
     totalWeeklyFixedCost.value = weeklyFixedCosts['weeklyFixedCost'];
     // Fetch per-mile costs from Firebase
     Map<String, double> perMileageCosts =
-        await FirebaseServices().perMileageAmountStoreAndFetch();
-    permileageFee = perMileageCosts['perMileFee'] ?? 0.0;
-    perMileFuel = perMileageCosts['perMileFuel'] ?? 0.0;
-    perMileDef = perMileageCosts['perMileDef'] ?? 0.0;
-    perMileDriverPay = perMileageCosts['perMileDriverPay'] ?? 0.0;
+        await FirebaseServices().fetchPerMileageAmount();
+    permileageFee.value = perMileageCosts['milageFeePerMile'] ?? 0.0;
+    perMileFuel.value = perMileageCosts['fuelFeePerMile'] ?? 0.0;
+    perMileDef.value = perMileageCosts['defFeePerMile'] ?? 0.0;
+    perMileDriverPay.value = perMileageCosts['driverPayFeePerMile'] ?? 0.0;
 
     // Calculate total factoring fee
     totalFactoringFee.value = (totalFreightCharges.value * 2) / 100;
 
     // Calculate total mileage cost
-    totalMilageCost.value = (permileageFee * totalDispatchedMiles.value) +
-        (perMileFuel * totalDispatchedMiles.value) +
-        (perMileDef * totalDispatchedMiles.value) +
-        ((perMileDriverPay * totalDispatchedMiles.value) * 1.2) +
+    totalMilageCost.value = (permileageFee.value * totalDispatchedMiles.value) +
+        (perMileFuel.value * totalDispatchedMiles.value) +
+        (perMileDef.value * totalDispatchedMiles.value) +
+        ((perMileDriverPay.value * totalDispatchedMiles.value) * 1.2) +
         totalFactoringFee.value;
     totalProfit.value = totalFreightCharges.value -
         totalWeeklyFixedCost.value -
@@ -350,6 +362,109 @@ class HomeController extends GetxController {
       print('Fetched ${documents.length} documents.');
     } else {
       print('Error: No user is currently logged in.');
+    }
+  }
+
+  void fetchTruckPaymentIntialValues() async {
+    Map<String, double> weeklyFixedCosts =
+        await FirebaseServices().fetchFixedWeeklyCost();
+    fTrcukPayment.value =
+        weeklyFixedCosts['monthlyTruckPayment'] ?? fTrcukPayment.value;
+    fTrcukInsurace.value =
+        weeklyFixedCosts['monthlyTruckInsurance'] ?? weeklyInsurance.value;
+    fTrcukTrailerLease.value =
+        weeklyFixedCosts['monthlyTrailerLease'] ?? weeklyTrailerLease.value;
+    fTrcukEldService.value =
+        weeklyFixedCosts['monthlyEldService'] ?? weeklyEldService.value;
+    fTrcukOverhead.value =
+        weeklyFixedCosts['monthlyOverheadCost'] ?? weeklyoverHeadAmount.value;
+    fTrcukOther.value =
+        weeklyFixedCosts['monthlyOtherCost'] ?? weeklyOtherCost.value;
+
+    totalWeeklyFixedCost.value =
+        weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
+
+    fTruckWeeklyPayment.value =
+        weeklyFixedCosts['weeklyTruckPayment'] ?? fTruckWeeklyPayment.value;
+    fTruckWeeklyTrailerLease.value = weeklyFixedCosts['weeklyTrailerLease'] ??
+        fTruckWeeklyTrailerLease.value;
+    fTruckWeeklyInsurance.value = weeklyFixedCosts['weeklyInsurancePayment'] ??
+        fTruckWeeklyInsurance.value;
+    fTruckWeeklyEldServices.value =
+        weeklyFixedCosts['weeklyEldService'] ?? fTruckWeeklyEldServices.value;
+    checkTrcukControllerValues();
+  }
+
+  // Method To check if Trcuk Monthly Payment Controllers are Empty then show these values
+
+  void checkTrcukControllerValues() {
+    print('Call Successfully');
+    if (tTruckPaymentController.text.isEmpty ||
+        tEldServicesController.text.isEmpty ||
+        tInsuranceController.text.isEmpty ||
+        tTrailerLeaseController.text.isEmpty ||
+        tOverHeadController.text.isEmpty ||
+        tOtherController.text.isEmpty) {
+      tTruckPaymentController.text = fTrcukPayment.value.toString();
+      tEldServicesController.text = fTrcukEldService.value.toString();
+      tInsuranceController.text = fTrcukInsurace.value.toString();
+      tTrailerLeaseController.text = fTrcukTrailerLease.value.toString();
+      tOverHeadController.text = fTrcukOverhead.value.toString();
+      tOtherController.text = fTrcukOther.value.toString();
+    } else {
+      return;
+    }
+  }
+
+  // ---------------------- Fetch Milage Values------------------
+
+  Future<void> fetchMileageValues() async {
+    isLoading.value = true;
+    try {
+      Map<String, double> mileageValues =
+          await FirebaseServices().fetchPerMileageAmount();
+      // Update the Rx variables with the fetched values
+      fPermileageFee.value =
+          mileageValues['milageFeePerMile'] ?? fPermileageFee.value;
+      fPerMileFuel.value =
+          mileageValues['fuelFeePerMile'] ?? fPerMileFuel.value;
+      fPerMileDef.value = mileageValues['defFeePerMile'] ?? fPerMileDef.value;
+      fPerMileDriverPay.value =
+          mileageValues['driverPayFeePerMile'] ?? fPerMileDriverPay.value;
+
+      // Update the text controllers with the fetched values
+      perMileageFeeController.text = fPermileageFee.value.toStringAsFixed(2);
+      perMileFuelController.text = fPerMileFuel.value.toStringAsFixed(2);
+      perMileDefController.text = fPerMileDef.value.toStringAsFixed(2);
+      perMileDriverPayController.text =
+          fPerMileDriverPay.value.toStringAsFixed(2);
+
+      print('Mileage Values Fetched and Set:');
+      print('perMileFee: ${fPermileageFee.value}');
+      print('perMileFuel: ${fPerMileFuel.value}');
+      print('perMileDef: ${fPerMileDef.value}');
+      print('perMileDriverPay: ${fPerMileDriverPay.value}');
+    } catch (e) {
+      print('Error fetching mileage values: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void checkPerMileageFee() {
+    print('call');
+    if (perMileageFeeController.text.isEmpty) {
+      perMileageFeeController.text = fPermileageFee.value.toString();
+      print(perMileDefController.text);
+    }
+    if (perMileFuelController.text.isEmpty) {
+      perMileFuelController.text = fPerMileFuel.value.toString();
+    }
+    if (perMileDefController.text.isEmpty) {
+      perMileDefController.text = fPerMileDef.value.toString();
+    }
+    if (perMileDriverPayController.text.isEmpty) {
+      perMileDriverPayController.text = fPerMileDriverPay.value.toString();
     }
   }
 }
