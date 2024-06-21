@@ -8,9 +8,6 @@ class FirebaseServices {
   final FirebaseAuth auth = FirebaseAuth.instance;
   String docId = '';
 
-
- 
-
   Future<void> storeTruckMonthlyPayments({
     required double weeklyTruckPayment,
     required double weeklyInsurance,
@@ -36,7 +33,7 @@ class FirebaseServices {
           docRef = snapshot.docs.first.reference;
         } else {
           // If no document exists, create a new one with a generated ID
-        String truckMonthlyPaymentsID =
+          String truckMonthlyPaymentsID =
               DateTime.now().millisecondsSinceEpoch.toString();
           docRef = truckPaymentCollection.doc(truckMonthlyPaymentsID);
         }
@@ -61,6 +58,7 @@ class FirebaseServices {
   }
 
   Future<void> storePerMileageAmount({
+    required bool isEditabbleMilage,
     required double perMileFee,
     required double perMileFuel,
     required double perMileDef,
@@ -82,6 +80,7 @@ class FirebaseServices {
           // Update existing document
           DocumentReference existingDocRef = existingDocs.docs.first.reference;
           await existingDocRef.update({
+            'isEditabbleMilage': isEditabbleMilage,
             'milageFeePerMile': perMileFee,
             'fuelFeePerMile': perMileFuel,
             'defFeePerMile': perMileDef,
@@ -99,6 +98,7 @@ class FirebaseServices {
               .doc(perMileageId);
 
           await newValuesDocRef.set({
+            'isEditabbleMilage': isEditabbleMilage,
             'milageFeePerMile': perMileFee,
             'fuelFeePerMile': perMileFuel,
             'defFeePerMile': perMileDef,
@@ -159,6 +159,83 @@ class FirebaseServices {
       'perMileDriverPay': 0.0,
     };
   }
+
+ Future<void> toggleIsEditabbleMilage() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        // Fetch current value of isEditabbleMilage
+        QuerySnapshot querySnapshot = await firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('perMileageCost')
+            .limit(1) // Limit to 1 document
+            .get();
+
+        // Check if there is an existing document
+        if (querySnapshot.docs.isNotEmpty) {
+          DocumentSnapshot doc = querySnapshot.docs.first;
+          bool currentIsEditabbleMilage = doc['isEditabbleMilage'];
+
+          // Toggle the value
+          bool updatedIsEditabbleMilage = !currentIsEditabbleMilage;
+
+          // Update Firestore with the new value
+          await doc.reference.update({
+            'isEditabbleMilage': updatedIsEditabbleMilage,
+          });
+
+          print('isEditabbleMilage updated successfully: $updatedIsEditabbleMilage');
+        } else {
+          print('No document found for perMileageCost');
+        }
+      } catch (e) {
+        print('Error toggling isEditabbleMilage: $e');
+      }
+    } else {
+      print('No user signed in');
+    }
+  }
+
+  Future<bool> fetchIsEditabbleMilage() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        // Fetch the document containing perMileageCost
+        QuerySnapshot querySnapshot = await firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('perMileageCost')
+            .limit(1) // Limit to 1 document
+            .get();
+
+        // Check if there is an existing document
+        if (querySnapshot.docs.isNotEmpty) {
+          DocumentSnapshot doc = querySnapshot.docs.first;
+          bool isEditabbleMilage = doc['isEditabbleMilage'];
+
+          print('Fetched isEditabbleMilage: $isEditabbleMilage');
+          return isEditabbleMilage;
+        } else {
+          print('No document found for perMileageCost');
+          return false; // Default to false if document doesn't exist
+        }
+      } catch (e) {
+        print('Error fetching isEditabbleMilage: $e');
+        return false; // Default to false on error
+      }
+    } else {
+      print('No user signed in');
+      return false; // Default to false if no user is signed in
+    }
+  }
+  // Example usage to toggle isEditabbleMilage
+void onToggleIsEditabbleMilage() async {
+  await toggleIsEditabbleMilage();
+  // Optionally, fetch and use the updated value
+  bool updatedIsEditabbleMilage = await fetchIsEditabbleMilage();
+  // Use updatedIsEditabbleMilage as needed
+}
 
   ///----------------> Fetch Total Fixed Weekly Cost From Firebase <---------------------
 

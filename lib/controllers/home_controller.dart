@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/firebase_services.dart';
 
 class HomeController extends GetxController {
   RxBool isLoading = false.obs;
+  RxBool updatedIsEditableMilage = false.obs;
   var weeklyTruckPayment = 0.0.obs;
   var weeklyInsurance = 0.0.obs;
   var weeklyTrailerLease = 0.0.obs;
@@ -16,6 +16,7 @@ class HomeController extends GetxController {
   var weeklyOtherCost = 0.0.obs;
   var weeklyFixedCost = 0.0.obs;
   RxBool isEditable = true.obs;
+  RxBool isEditableMilage = true.obs;
   RxDouble totalWeeklyFixedCost = 0.0.obs;
   final tTruckPaymentController = TextEditingController();
   final tInsuranceController = TextEditingController();
@@ -67,10 +68,12 @@ class HomeController extends GetxController {
     tOverHeadController.addListener(_calculateFixedCost);
     tOtherController.addListener(_calculateFixedCost);
     weeklyFixedCost.addListener;
+
     addNewLoad(); // Initialize with the first load
     fetchHistoryData(); // Fetch data from Firebase
     FirebaseServices().perMileageAmountStoreAndFetch(); // Fetch per-mile cost
     FirebaseServices().fetchFixedWeeklyCost(); // Fetch weekly fixed costs
+    loadEditableStateTruckPayment();
   }
 
   @override
@@ -98,6 +101,28 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
+  ///------------------> Shared Prefrance for Truck Weekly Fixed payment ------------------
+
+  Future<void> storeEditableTruckPayment() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isEditable', isEditable.value);
+  }
+
+  Future<void> loadEditableStateTruckPayment() async {
+    final prefs = await SharedPreferences.getInstance();
+    isEditable.value =
+        prefs.getBool('isEditable') ?? true; // Default to true if not set
+  }
+
+  void toggleEditableStateTruckPayment() async {
+    isEditable.value = !isEditable.value; // Toggle the state
+
+    await storeEditableTruckPayment(); // Store the updated state
+  }
+
+  ///-----------------------------------------------------------------------------------------
+
+  ///-----------------------------------------------------------------------------------------
   String? validateInput(String? value) {
     if (value == null || value.isEmpty) {
       return 'Must be filled!';

@@ -13,21 +13,22 @@ import '../../services/firebase_services.dart';
 import '../../widgets/custome_textFormField.dart';
 import '../../widgets/customized_row_label_widget.dart';
 
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
+
 class CalculatorScreen extends StatelessWidget {
   CalculatorScreen({super.key});
 
   final HomeController homeController = Get.put(HomeController());
-
-  final AuthController authController = Get.put(AuthController());
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   void _submitForm() async {
     if (formKey.currentState!.validate()) {
       // Perform form submission
-      
       await FirebaseServices().storeTruckMonthlyPayments(
-        
         weeklyTruckPayment:
             double.tryParse(homeController.tTruckPaymentController.text) ?? 0.0,
         weeklyInsurance:
@@ -44,6 +45,7 @@ class CalculatorScreen extends StatelessWidget {
       );
 
       homeController.isEditable.value = false;
+      await homeController.storeEditableTruckPayment(); // Save the updated state
     }
   }
 
@@ -67,7 +69,7 @@ class CalculatorScreen extends StatelessWidget {
     );
 
     if (shouldEdit == true) {
-      homeController.isEditable.value = true;
+      homeController.toggleEditableStateTruckPayment();
     }
   }
 
