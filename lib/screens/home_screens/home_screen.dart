@@ -2,8 +2,6 @@ import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/screens/calculator_screen/calculator_screen.dart';
-import 'package:dispatched_calculator_app/screens/history_screen/history_details_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/update_screen.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
 import 'package:dispatched_calculator_app/widgets/card_widget.dart';
