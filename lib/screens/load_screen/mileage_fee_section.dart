@@ -5,7 +5,6 @@ import '../../constants/colors.dart';
 import '../../constants/fonts_strings.dart';
 import '../../controllers/home_controller.dart';
 import '../../services/firebase_services.dart';
-import '../../widgets/customized_row_label_widget.dart';
 import '../../widgets/customized_row_mileage.dart';
 import '../../widgets/my_drawer_widget.dart';
 
@@ -20,7 +19,7 @@ class MileageFeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final formKey1 = GlobalKey<FormState>();
 
-    void _submitForm() async {
+    void submitForm() async {
       if (formKey1.currentState!.validate()) {
         await FirebaseServices().storePerMileageAmount(
           isEditabbleMilage: homeController.isEditableMilage.value,
@@ -56,7 +55,7 @@ class MileageFeSection extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                _submitForm();
+                submitForm();
                 homeController.updatedIsEditableMilage.value = false;
                 homeController.isEditableMilage.value =
                     homeController.updatedIsEditableMilage.value;

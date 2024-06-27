@@ -1,13 +1,14 @@
-import 'package:dispatched_calculator_app/constants/colors.dart';
-import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
+import 'package:dispatched_calculator_app/widgets/custome_textFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import '../../constants/colors.dart';
 import '../../constants/fonts_strings.dart';
+import '../../controllers/home_controller.dart';
 import '../../services/firebase_services.dart';
-import '../../widgets/custome_textFormField.dart';
 import '../../widgets/customized_row_label_widget.dart';
+import '../../widgets/my_drawer_widget.dart';
 
 class CalculatorScreen extends StatelessWidget {
   CalculatorScreen({super.key});
@@ -15,10 +16,32 @@ class CalculatorScreen extends StatelessWidget {
   final HomeController homeController = Get.put(HomeController());
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  void _submitForm() async {
+  void initializeControllers() async {
+    var fetchedValues = await FirebaseServices().fetchFixedWeeklyCost();
+    homeController.tTruckPaymentController.text =
+        fetchedValues['monthlyTruckPayment'].toString();
+    homeController.tInsuranceController.text =
+        fetchedValues['monthlyTruckInsurance'].toString();
+    homeController.tTrailerLeaseController.text =
+        fetchedValues['monthlyTrailerLease'].toString();
+    homeController.tEldServicesController.text =
+        fetchedValues['monthlyEldService'].toString();
+    homeController.tOverHeadController.text =
+        fetchedValues['monthlyOverheadCost'].toString();
+    homeController.tOtherController.text =
+        fetchedValues['monthlyOtherCost'].toString();
+        homeController.fTruckWeeklyPayment.value=fetchedValues['weeklyTruckPayment']!;
+        homeController.fTruckWeeklyTrailerLease.value=fetchedValues['weeklyTrailerLease']!;
+        homeController.fTruckWeeklyInsurance.value=fetchedValues['weeklyInsurancePayment']!;
+        homeController.fTruckWeeklyEldServices.value=fetchedValues['weeklyEldService']!;
+     
+  }
+
+  void _submitForm(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       // Perform form submission
       await FirebaseServices().storeTruckMonthlyPayments(
+        isEditableTruckPayment: homeController.isEditableTruckPayment.value,
         weeklyTruckPayment: double.tryParse(
                 homeController.weeklyTruckPayment.value.toString()) ??
             0.0,
@@ -45,10 +68,19 @@ class CalculatorScreen extends StatelessWidget {
         tWeeklyEldService:
             double.tryParse(homeController.tEldServicesController.text) ?? 0.0,
       );
-
-      homeController.isEditable!.value = false;
-      await homeController
-          .storeEditableTruckPayment(); // Save the updated state
+      
+      homeController.isEditableTruckPayment.value = false;
+      await FirebaseServices().toggleIsEditabbleTruckPayment();
+      bool updatedIsEditableTruckPayment =
+          await FirebaseServices().fetchIsEditabbleTruckPayment();
+      homeController.isEditableTruckPayment.value = updatedIsEditableTruckPayment;
+      initializeControllers();
+     
+      
+      // Show a snackbar or any other feedback to confirm submission
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Form submitted successfully')),
+      );
     }
   }
 
@@ -56,24 +88,29 @@ class CalculatorScreen extends StatelessWidget {
     bool? shouldEdit = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirm Edit'),
-        content: Text('Are you sure you want to edit?'),
+        title: const Text('Confirm Edit'),
+        content: const Text('Are you sure you want to edit?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+            child: const Text('No'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Yes'),
+            onPressed: () async {
+              await FirebaseServices().toggleIsEditabbleTruckPayment();
+              homeController.updatedIsEditableTruckPayment.value =
+                  await FirebaseServices().fetchIsEditabbleTruckPayment();
+
+              homeController.isEditableTruckPayment.value =
+                  homeController.updatedIsEditableTruckPayment.value;
+
+              Navigator.of(context).pop(true);
+            },
+            child: const Text('Yes'),
           ),
         ],
       ),
     );
-
-    if (shouldEdit == true) {
-      homeController.toggleEditableStateTruckPayment();
-    }
   }
 
   void _showConfirmationDialog(BuildContext context) {
@@ -81,22 +118,20 @@ class CalculatorScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Submit Amount'),
-          content: Text('Are you sure you want to submit the amount?'),
+          title: const Text('Submit Amount'),
+          content: const Text('Are you sure you want to submit the amount?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
             ),
             TextButton(
-              child: Text('Yes'),
+              child: const Text('Yes'),
               onPressed: () {
-                // Perform the action
-                _submitForm();
-
-                Navigator.of(context).pop(); // Close the dialog
+                _submitForm(context);
+                 Navigator.of(context).pop();
               },
             ),
           ],
@@ -107,6 +142,8 @@ class CalculatorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initializeControllers();
+
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
@@ -127,7 +164,7 @@ class CalculatorScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Text(
+                            const Text(
                               'Truck Monthly Cost',
                               style: TextStyle(
                                 fontFamily: robotoRegular,
@@ -136,57 +173,47 @@ class CalculatorScreen extends StatelessWidget {
                               ),
                             ),
                             10.widthBox,
-                            IconButton.filledTonal(
+                            IconButton(
                               onPressed: () {
                                 toggleEditMode(context);
                               },
-                              icon: Icon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
-
-                        // Truck Payment TextFormField
+                        const SizedBox(height: 20),
                         buildRowWithLabel(
                           label: 'Truck Payment',
                           hint: 'e.g., \$2000',
                           controller: homeController.tTruckPaymentController,
                           value: homeController.fTruckWeeklyPayment,
                           validator: homeController.validateInput,
-                          isEnable: homeController.isEditable!.value,
+                          isEnable: homeController.isEditableTruckPayment.value,
                         ),
-
-                        // Truck Insurance TextFormField
                         buildRowWithLabel(
                           label: 'Insurance',
                           hint: 'e.g., \$400',
                           controller: homeController.tInsuranceController,
                           value: homeController.fTruckWeeklyInsurance,
                           validator: homeController.validateInput,
-                          isEnable: homeController.isEditable!.value,
+                          isEnable: homeController.isEditableTruckPayment.value,
                         ),
-
-                        // Truck Trailer Lease TextFormField
                         buildRowWithLabel(
                           label: 'Trailer lease',
                           hint: 'e.g., \$300',
                           controller: homeController.tTrailerLeaseController,
                           value: homeController.fTruckWeeklyTrailerLease,
                           validator: homeController.validateInput,
-                          isEnable: homeController.isEditable!.value,
+                          isEnable: homeController.isEditableTruckPayment.value,
                         ),
-
-                        // Truck ELD Service TextFormField
                         buildRowWithLabel(
                           label: 'ELD Service',
                           hint: 'e.g., \$100',
                           controller: homeController.tEldServicesController,
                           value: homeController.fTruckWeeklyEldServices,
                           validator: homeController.validateInput,
-                          isEnable: homeController.isEditable!.value,
+                          isEnable: homeController.isEditableTruckPayment.value,
                         ),
-
-                        // Truck Overhead Cost TextFormField
                         Row(
                           children: [
                             Expanded(
@@ -195,20 +222,18 @@ class CalculatorScreen extends StatelessWidget {
                                 label: 'Overhead',
                                 hint: 'e.g., \$50',
                                 validator: homeController.validateNonNegative,
-                                isEnable: homeController.isEditable!.value,
+                                isEnable: homeController.isEditableTruckPayment.value,
                                 intialValue: homeController.fTrcukOverhead,
                               ),
                             ),
-
-                            // Truck Other Cost TextFormField
                             Expanded(
                               child: buildTextFormField(
                                 controller: homeController.tOtherController,
                                 label: 'Other',
                                 hint: 'e.g., \$200',
                                 validator: homeController.validateNonNegative,
-                                isEnable: homeController.isEditable!.value,
-                                intialValue: homeController.fTrcukOther,
+                                isEnable: homeController.isEditableTruckPayment.value,
+                                 intialValue: homeController.fTrcukOther,
                               ),
                             ),
                           ],
@@ -221,10 +246,10 @@ class CalculatorScreen extends StatelessWidget {
             ),
             // Fixed Footer
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 color: AppColor().primaryAppColor,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.elliptical(40, 40),
                 ),
               ),
@@ -254,12 +279,13 @@ class CalculatorScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (homeController.isEditable!.value)
+                  if (homeController.isEditableTruckPayment.value)
                     ElevatedButton(
                       onPressed: () {
                         _showConfirmationDialog(context);
+                       
                       },
-                      child: Text('Submit'),
+                                          child: const Text('Submit'),
                     ),
                 ],
               ),
@@ -270,3 +296,4 @@ class CalculatorScreen extends StatelessWidget {
     );
   }
 }
+
