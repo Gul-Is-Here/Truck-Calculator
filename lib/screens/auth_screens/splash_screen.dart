@@ -3,7 +3,6 @@ import 'package:dispatched_calculator_app/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/login_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
