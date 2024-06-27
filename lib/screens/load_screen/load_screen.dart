@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/result_screen.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/widgets/addLoad_dialogBox.dart';
@@ -12,7 +10,7 @@ import '../../constants/colors.dart';
 import '../../constants/fonts_strings.dart';
 import '../../services/firebase_services.dart';
 import '../../widgets/custome_textFormField.dart';
-import 'mileage_fee_section.dart';
+
 
 class LoadScreen extends StatefulWidget {
   final HomeController homeController;
@@ -366,8 +364,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                               .homeController
                                               .totalMilageCost
                                               .value,
-                                          'totalProfit': widget
-                                              .homeController.totalProfit.value,
+                                         
                                           'timestamp':
                                               FieldValue.serverTimestamp(),
                                           'updateTime': DateTime.now(),
@@ -409,8 +406,15 @@ class _LoadScreenState extends State<LoadScreen> {
                                               };
                                             },
                                           ),
+                                           'totalProfit': widget
+                                              .homeController.totalProfit.value,
                                         },
+                                        
+                                        
+
                                       );
+                                       widget.homeController
+                                          .calculateVariableCosts();
                                       Navigator.of(context)
                                           .pop(); // Close the dialog
                                       Get.to(() => ResultsScreen(

@@ -5,7 +5,6 @@ import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/screens/calculator_screen/calculator_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
-import 'package:dispatched_calculator_app/screens/history_screen/update_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/mileage_fee_section.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +61,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => HistoryScreen());
+                    Get.to(() => CalculatorScreen());
                   },
                 ),
                 ListTile(
@@ -93,7 +92,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => CalculatorScreen());
+                    Get.to(() => HistoryScreen());
                   },
                 ),
                 ListTile(

@@ -63,35 +63,35 @@ class HistoryDetailsScreen extends StatelessWidget {
                 ),
               ),
               10.heightBox,
-              CustomeRowWidget(
-                textHeading: 'Truck Payment',
-                values: data['truckPayment'].toStringAsFixed(2),
-              ),
-              10.heightBox,
-              CustomeRowWidget(
-                textHeading: 'Insurance',
-                values: data['truckInsurance'].toStringAsFixed(2),
-              ),
-              10.heightBox,
-              CustomeRowWidget(
-                textHeading: 'Trailer lease',
-                values: data['trailerLease'].toStringAsFixed(2),
-              ),
-              10.heightBox,
-              CustomeRowWidget(
-                textHeading: 'ELD Service',
-                values: data['EldService'].toStringAsFixed(2),
-              ),
-              10.heightBox,
-              CustomeRowWidget(
-                textHeading: 'Overhead',
-                values: data['overheadCost'].toStringAsFixed(2),
-              ),
-              10.heightBox,
-              CustomeRowWidget(
-                textHeading: 'Other',
-                values: data['tOtherCost'].toStringAsFixed(2),
-              ),
+              // CustomeRowWidget(
+              //   textHeading: 'Truck Payment',
+              //   values: data['monthlyTruckPayment'].toStringAsFixed(2),
+              // ),
+              // 10.heightBox,
+              // CustomeRowWidget(
+              //   textHeading: 'Insurance',
+              //   values: data['monthlyTruckInsurance'].toStringAsFixed(2),
+              // ),
+              // 10.heightBox,
+              // CustomeRowWidget(
+              //   textHeading: 'Trailer lease',
+              //   values: data['monthlyTrailerLease'].toStringAsFixed(2),
+              // ),
+              // 10.heightBox,
+              // CustomeRowWidget(
+              //   textHeading: 'ELD Service',
+              //   values: data['monthlyEldService'].toStringAsFixed(2),
+              // ),
+              // 10.heightBox,
+              // CustomeRowWidget(
+              //   textHeading: 'Overhead',
+              //   values: data['monthlyOverheadCost'].toStringAsFixed(2),
+              // ),
+              // 10.heightBox,
+              // CustomeRowWidget(
+              //   textHeading: 'Other',
+              //   values: data['monthlyOtherCost'].toStringAsFixed(2),
+              // ),
               10.heightBox,
               const Divider(
                 thickness: 2,

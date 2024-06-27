@@ -8,6 +8,7 @@ import '../services/firebase_services.dart';
 class HomeController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool updatedIsEditableMilage = false.obs;
+  RxBool updatedIsEditableTruckPayment = false.obs;
   var weeklyTruckPayment = 0.0.obs;
   var weeklyInsurance = 0.0.obs;
   var weeklyTrailerLease = 0.0.obs;
@@ -16,6 +17,7 @@ class HomeController extends GetxController {
   var weeklyOtherCost = 0.0.obs;
   var weeklyFixedCost = 0.0.obs;
   RxBool isEditable = true.obs;
+  RxBool isEditableTruckPayment=false.obs;
   RxBool isEditableMilage = false.obs;
   RxDouble totalWeeklyFixedCost = 0.0.obs;
   final tTruckPaymentController = TextEditingController();
@@ -126,11 +128,7 @@ class HomeController extends GetxController {
         prefs.getBool('isEditable') ?? true; // Default to true if not set
   }
 
-  void toggleEditableStateTruckPayment() async {
-    isEditable.value = !isEditable.value; // Toggle the state
-
-    await storeEditableTruckPayment(); // Store the updated state
-  }
+  
 
   ///-----------------------------------------------------------------------------------------
 

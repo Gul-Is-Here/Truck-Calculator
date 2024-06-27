@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/auth_screens/login_screen.dart';
 import '../screens/auth_screens/otp_verification_screen.dart';
 import '../screens/auth_screens/otpverification_login.dart';
@@ -179,7 +180,12 @@ class AuthController extends GetxController {
     phoneController.clear();
     emailController.clear();
     nameController.clear();
+      await SharedPreferences.getInstance();
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
+  
     try {
+
       await _auth.signOut();
       Get.offAll(() => LoginScreen());
     } catch (e) {
