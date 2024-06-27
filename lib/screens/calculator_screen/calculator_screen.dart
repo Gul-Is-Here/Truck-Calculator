@@ -2,7 +2,6 @@ import 'package:dispatched_calculator_app/widgets/custome_textFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
-
 import '../../constants/colors.dart';
 import '../../constants/fonts_strings.dart';
 import '../../controllers/home_controller.dart';
