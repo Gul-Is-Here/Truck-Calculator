@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../constants/colors.dart';
 import '../../constants/fonts_strings.dart';
 import '../../controllers/home_controller.dart';
@@ -8,109 +7,103 @@ import '../../services/firebase_services.dart';
 import '../../widgets/customized_row_mileage.dart';
 import '../../widgets/my_drawer_widget.dart';
 
-class MileageFeSection extends StatelessWidget {
+class MileageFeSection extends StatefulWidget {
   final HomeController homeController;
   final bool isUpdate;
 
-  const MileageFeSection(
-      {Key? key, required this.homeController, required this.isUpdate});
+  MileageFeSection({Key? key, required this.homeController, required this.isUpdate}) : super(key: key);
+
+  @override
+  _MileageFeSectionState createState() => _MileageFeSectionState();
+}
+
+class _MileageFeSectionState extends State<MileageFeSection> {
+  final formKey1 = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeControllers();
+  }
+
+  void initializeControllers() async {
+    var fetchedValues = await FirebaseServices().fetchPerMileageAmount();
+    widget.homeController.perMileageFeeController.text = fetchedValues['milageFeePerMile'].toString();
+    widget.homeController.perMileFuelController.text = fetchedValues['fuelFeePerMile'].toString();
+    widget.homeController.perMileDefController.text = fetchedValues['defFeePerMile'].toString();
+    widget.homeController.perMileDriverPayController.text = fetchedValues['driverPayFeePerMile'].toString();
+  }
+
+  void submitForm() async {
+    if (formKey1.currentState!.validate()) {
+      await FirebaseServices().storePerMileageAmount(
+        isEditabbleMilage: widget.homeController.isEditableMilage.value,
+        perMileFee: double.tryParse(widget.homeController.perMileageFeeController.text) ?? 0.0,
+        perMileFuel: double.tryParse(widget.homeController.perMileFuelController.text) ?? 0.0,
+        perMileDef: double.tryParse(widget.homeController.perMileDefController.text) ?? 0.0,
+        perMileDriverPay: double.tryParse(widget.homeController.perMileDriverPayController.text) ?? 0.0,
+      );
+      widget.homeController.isEditableMilage.value = false;
+      await FirebaseServices().toggleIsEditabbleMilage();
+      bool updatedIsEditableMilage = await FirebaseServices().fetchIsEditabbleMilage();
+      widget.homeController.isEditableMilage.value = updatedIsEditableMilage;
+      initializeControllers();
+    }
+  }
+
+  Future<void> showSubmitConfirmationDialog(BuildContext context) async {
+    bool? shouldSubmit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirm Submission'),
+        content: Text('Are you sure you want to submit the data?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              submitForm();
+              widget.homeController.updatedIsEditableMilage.value = false;
+              widget.homeController.isEditableMilage.value = widget.homeController.updatedIsEditableMilage.value;
+              Navigator.of(context).pop(true);
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> showEditConfirmationDialog(BuildContext context) async {
+    bool? shouldEdit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirm Edit'),
+        content: Text('Are you sure you want to edit?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () async {
+               widget.homeController.isEditableMilage.value=false;
+              await FirebaseServices().toggleIsEditabbleMilage();
+              widget.homeController.updatedIsEditableMilage.value = await FirebaseServices().fetchIsEditabbleMilage();
+              widget.homeController.isEditableMilage.value = widget.homeController.updatedIsEditableMilage.value;
+              Navigator.of(context).pop(true);
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final formKey1 = GlobalKey<FormState>();
-
-    void submitForm() async {
-      if (formKey1.currentState!.validate()) {
-        await FirebaseServices().storePerMileageAmount(
-          isEditabbleMilage: homeController.isEditableMilage.value,
-          perMileFee:
-              double.tryParse(homeController.perMileageFeeController.text) ??
-                  0.0,
-          perMileFuel:
-              double.tryParse(homeController.perMileFuelController.text) ?? 0.0,
-          perMileDef:
-              double.tryParse(homeController.perMileDefController.text) ?? 0.0,
-          perMileDriverPay:
-              double.tryParse(homeController.perMileDriverPayController.text) ??
-                  0.0,
-        );
-        homeController.isEditableMilage.value = false;
-        await FirebaseServices().toggleIsEditabbleMilage();
-        bool updatedIsEditableMilage =
-            await FirebaseServices().fetchIsEditabbleMilage();
-        homeController.isEditableMilage.value = updatedIsEditableMilage;
-      }
-    }
-
-    Future<void> showSubmitConfirmationDialog() async {
-      bool? shouldSubmit = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Confirm Submission'),
-          content: Text('Are you sure you want to submit the data?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text('No'),
-            ),
-            TextButton(
-              onPressed: () {
-                submitForm();
-                homeController.updatedIsEditableMilage.value = false;
-                homeController.isEditableMilage.value =
-                    homeController.updatedIsEditableMilage.value;
-                Navigator.of(context).pop(true);
-              },
-              child: Text('Yes'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    Future<void> showEditConfirmationDialog() async {
-      bool? shouldEdit = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Confirm Edit'),
-          content: Text('Are you sure you want to edit?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text('No'),
-            ),
-            TextButton(
-              onPressed: () async {
-                await FirebaseServices().toggleIsEditabbleMilage();
-                homeController.updatedIsEditableMilage.value =
-                    await FirebaseServices().fetchIsEditabbleMilage();
-
-                homeController.isEditableMilage.value =
-                    homeController.updatedIsEditableMilage.value;
-
-                Navigator.of(context).pop(true);
-              },
-              child: Text('Yes'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    void initializeControllers() async {
-      var fetchedValues = await FirebaseServices().fetchPerMileageAmount();
-      homeController.perMileageFeeController.text =
-          fetchedValues['milageFeePerMile'].toString();
-      homeController.perMileFuelController.text =
-          fetchedValues['fuelFeePerMile'].toString();
-      homeController.perMileDefController.text =
-          fetchedValues['defFeePerMile'].toString();
-      homeController.perMileDriverPayController.text =
-          fetchedValues['driverPayFeePerMile'].toString();
-    }
-
-    initializeControllers();
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
@@ -130,7 +123,7 @@ class MileageFeSection extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Mileage Fee',
                             style: TextStyle(
                               fontFamily: robotoRegular,
@@ -143,7 +136,7 @@ class MileageFeSection extends StatelessWidget {
                             padding: const EdgeInsets.all(8.0),
                             child: IconButton(
                               onPressed: () {
-                                showEditConfirmationDialog();
+                                showEditConfirmationDialog(context);
                               },
                               icon: Icon(Icons.edit),
                             ),
@@ -152,44 +145,40 @@ class MileageFeSection extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       buildRowForMileage(
-                        intialValue:
-                            homeController.fPermileageFee.value.toString(),
+                        intialValue: widget.homeController.fPermileageFee.value.toString(),
                         label: 'Mileage Fee (\$/mile)',
                         hint: 'e.g., \$0.50',
-                        controller: homeController.perMileageFeeController,
-                        value: homeController.fPermileageFee,
-                        validator: homeController.validateInput,
-                        isEnable: homeController.updatedIsEditableMilage.value,
+                        controller: widget.homeController.perMileageFeeController,
+                        value: widget.homeController.fPermileageFee,
+                        validator: widget.homeController.validateInput,
+                        isEnable: widget.homeController.updatedIsEditableMilage.value,
                       ),
                       buildRowForMileage(
-                        intialValue:
-                            homeController.fPerMileFuel.value.toString(),
+                        intialValue: widget.homeController.fPerMileFuel.value.toString(),
                         label: 'Fuel (\$/mile)',
                         hint: 'e.g., \$0.20',
-                        controller: homeController.perMileFuelController,
-                        value: homeController.fPerMileFuel,
-                        validator: homeController.validateInput,
-                        isEnable: homeController.updatedIsEditableMilage.value,
+                        controller: widget.homeController.perMileFuelController,
+                        value: widget.homeController.fPerMileFuel,
+                        validator: widget.homeController.validateInput,
+                        isEnable: widget.homeController.updatedIsEditableMilage.value,
                       ),
                       buildRowForMileage(
-                        intialValue:
-                            homeController.fPerMileDef.value.toString(),
+                        intialValue: widget.homeController.fPerMileDef.value.toString(),
                         label: 'DEF (\$/mile)',
                         hint: 'e.g., \$0.05',
-                        controller: homeController.perMileDefController,
-                        value: homeController.fPerMileDef,
-                        validator: homeController.validateInput,
-                        isEnable: homeController.updatedIsEditableMilage.value,
+                        controller: widget.homeController.perMileDefController,
+                        value: widget.homeController.fPerMileDef,
+                        validator: widget.homeController.validateInput,
+                        isEnable: widget.homeController.updatedIsEditableMilage.value,
                       ),
                       buildRowForMileage(
-                        intialValue:
-                            homeController.fPerMileDriverPay.value.toString(),
+                        intialValue: widget.homeController.fPerMileDriverPay.value.toString(),
                         label: 'Driver Pay (\$/mile)',
                         hint: 'e.g., \$0.30',
-                        controller: homeController.perMileDriverPayController,
-                        value: homeController.fPerMileDriverPay,
-                        validator: homeController.validateInput,
-                        isEnable: homeController.updatedIsEditableMilage.value,
+                        controller: widget.homeController.perMileDriverPayController,
+                        value: widget.homeController.fPerMileDriverPay,
+                        validator: widget.homeController.validateInput,
+                        isEnable: widget.homeController.updatedIsEditableMilage.value,
                       ),
                     ],
                   ),
@@ -199,16 +188,15 @@ class MileageFeSection extends StatelessWidget {
             SizedBox(height: 10),
             const SizedBox(height: 20),
             Obx(
-              () => homeController.isEditableMilage.value == true
+              () => widget.homeController.isEditableMilage.value
                   ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColor().primaryAppColor,
-                          foregroundColor: AppColor().appTextColor,
-                          padding: EdgeInsets.symmetric(
-                              horizontal:
-                                  MediaQuery.of(context).size.width * .36)),
+                        backgroundColor: AppColor().primaryAppColor,
+                        foregroundColor: AppColor().appTextColor,
+                        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .36),
+                      ),
                       onPressed: () {
-                        showSubmitConfirmationDialog();
+                        showSubmitConfirmationDialog(context);
                       },
                       child: Text('Submit'),
                     )
