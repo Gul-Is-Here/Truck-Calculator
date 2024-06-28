@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,7 @@ class FirebaseServices {
         }
 
         await docRef.set({
-          'isEditableTruckPayment':isEditableTruckPayment,
+          'isEditableTruckPayment': isEditableTruckPayment,
           'monthlyTruckPayment': tWeeklyTruckPayment,
           'monthlyTruckInsurance': tWeeklyInsurance,
           'monthlyTrailerLease': tWeeklyTrailerLease,
@@ -169,38 +170,33 @@ class FirebaseServices {
       'driverPayFeePerMile': 0.0,
     };
   }
+
   Future<void> toggleIsEditabbleMilage() async {
     User? user = auth.currentUser;
     if (user != null) {
       try {
-        // Fetch current value of isEditabbleMilage
         QuerySnapshot querySnapshot = await firestore
             .collection('users')
             .doc(user.uid)
             .collection('perMileageCost')
-            .limit(1) // Limit to 1 document
+            .limit(1)
             .get();
 
-        // Check if there is an existing document
         if (querySnapshot.docs.isNotEmpty) {
           DocumentSnapshot doc = querySnapshot.docs.first;
-          bool currentIsEditabbleMilage = doc['isEditabbleMilage'];
+          bool currentIsEditableMileage = doc['isEditabbleMilage'];
 
-          // Toggle the value
-          bool updatedIsEditabbleMilage = !currentIsEditabbleMilage;
-
-          // Update Firestore with the new value
           await doc.reference.update({
-            'isEditabbleMilage': updatedIsEditabbleMilage,
+            'isEditabbleMilage': !currentIsEditableMileage,
           });
 
           print(
-              'isEditabbleMilage updated successfully: $updatedIsEditabbleMilage');
+              'isEditableMileage updated successfully: ${!currentIsEditableMileage}');
         } else {
           print('No document found for perMileageCost');
         }
       } catch (e) {
-        print('Error toggling isEditabbleMilage: $e');
+        print('Error toggling isEditableMileage: $e');
       }
     } else {
       print('No user signed in');
@@ -211,40 +207,49 @@ class FirebaseServices {
     User? user = auth.currentUser;
     if (user != null) {
       try {
-        // Fetch the document containing perMileageCost
         QuerySnapshot querySnapshot = await firestore
             .collection('users')
             .doc(user.uid)
             .collection('perMileageCost')
-            .limit(1) // Limit to 1 document
+            .limit(1)
             .get();
 
-        // Check if there is an existing document
+        if (querySnapshot.docs.isEmpty) {
+          await firestore
+              .collection('users')
+              .doc(user.uid)
+              .collection('perMileageCost')
+              .doc()
+              .set({'isEditabbleMilage': false});
+
+          print(
+              'No document found, created new document with default isEditableMileage: false');
+          return false;
+        }
+
         if (querySnapshot.docs.isNotEmpty) {
           DocumentSnapshot doc = querySnapshot.docs.first;
-          bool isEditabbleMilage = doc['isEditabbleMilage'];
+          bool isEditableMileage = doc['isEditabbleMilage'];
 
-          print('Fetched isEditabbleMilage: $isEditabbleMilage');
-          return isEditabbleMilage;
+          print('Fetched isEditableMileage: $isEditableMileage');
+          return isEditableMileage;
         } else {
           print('No document found for perMileageCost');
-          return false; // Default to false if document doesn't exist
+          return false;
         }
       } catch (e) {
-        print('Error fetching isEditabbleMilage: $e');
-        return false; // Default to false on error
+        print('Error fetching isEditableMileage: $e');
+        return false;
       }
     } else {
       print('No user signed in');
-      return false; // Default to false if no user is signed in
+      return false;
     }
   }
 
+  //------------------------ Truck is Edit able
 
-
-  //------------------------ Truck is Edit able 
-
-   Future<void> toggleIsEditabbleTruckPayment() async {
+  Future<void> toggleIsEditabbleTruckPayment() async {
     User? user = auth.currentUser;
     if (user != null) {
       try {
@@ -272,7 +277,7 @@ class FirebaseServices {
           print(
               'isEditabbleMilage updated successfully: $updateisEditableTruckPayment');
         } else {
-          print('No document found for perMileageCost');
+          print('No document found for truckPaymentCollection');
         }
       } catch (e) {
         print('Error toggling isEditabbleMilage: $e');
@@ -281,7 +286,6 @@ class FirebaseServices {
       print('No user signed in');
     }
   }
-
 
   Future<bool> fetchIsEditabbleTruckPayment() async {
     User? user = auth.currentUser;
@@ -294,7 +298,18 @@ class FirebaseServices {
             .collection('truckPaymentCollection')
             .limit(1) // Limit to 1 document
             .get();
+        if (querySnapshot.docs.isEmpty) {
+          await firestore
+              .collection('users')
+              .doc(user.uid)
+              .collection('truckPaymentCollection')
+              .doc()
+              .set({'isEditableTruckPayment': false});
 
+          print(
+              'No document found, created new document with default isEditableMileage: false');
+          return false;
+        }
         // Check if there is an existing document
         if (querySnapshot.docs.isNotEmpty) {
           DocumentSnapshot doc = querySnapshot.docs.first;
@@ -557,8 +572,9 @@ class FirebaseServices {
 
   // A method to delete data from calculatedValues Collection and transfer to History Collection
 
-  void transferAndDeleteWeeklyData() async {
+  Future<void> transferAndDeleteWeeklyData() async {
     User? user = auth.currentUser;
+
     if (user != null) {
       try {
         // Get a reference to the user's document
@@ -571,7 +587,7 @@ class FirebaseServices {
             DateTime(now.year, now.month, now.day - now.weekday);
         DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
         print('Current date time : $now');
-        print('Start of the week :$startOfWeek');
+        print('Start of the week : $startOfWeek');
         print('End of the week : $endOfWeek');
 
         // Query documents in the calculatedValues subcollection within the current week
@@ -581,25 +597,37 @@ class FirebaseServices {
                 isGreaterThanOrEqualTo: startOfWeek,
                 isLessThanOrEqualTo: endOfWeek)
             .get();
+
         // Transfer each document to the history subcollection and delete from calculatedValues
         for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          await userDocRef.collection('history').doc(doc.id).set(data);
-          await userDocRef.collection('calculatedValues').doc(doc.id).delete();
+          try {
+            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-          print(
-              'Specific data transferred to history and original document deleted successfully.');
+            // Set a new document in the history collection with a unique ID
+            await userDocRef.collection('history').doc(doc.id).set(data);
+
+            // Delete the document from the calculatedValues collection
+            await userDocRef
+                .collection('calculatedValues')
+                .doc(doc.id)
+                .delete();
+
+            print(
+                'Document transferred to history and original document deleted successfully.');
+          } catch (e) {
+            print('Error processing document with ID ${doc.id}: $e');
+          }
         }
 
+        print('Weekly data transfer and deletion completed.');
       } catch (e) {
-        print('Error transferring data to history and deleting original documents: $e');
+        print(
+            'Error transferring data to history and deleting original documents: $e');
       }
     } else {
       print('No user signed in');
     }
   }
-
-
 
   // A method to get data from History Collection
   Future<List<Map<String, dynamic>>> fetchHistoryDataById() async {

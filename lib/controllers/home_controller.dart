@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../services/firebase_services.dart';
 
 class HomeController extends GetxController {
@@ -17,7 +16,7 @@ class HomeController extends GetxController {
   var weeklyOtherCost = 0.0.obs;
   var weeklyFixedCost = 0.0.obs;
   RxBool isEditable = true.obs;
-  RxBool isEditableTruckPayment=false.obs;
+  RxBool isEditableTruckPayment = false.obs;
   RxBool isEditableMilage = false.obs;
   RxDouble totalWeeklyFixedCost = 0.0.obs;
   final tTruckPaymentController = TextEditingController();
@@ -92,7 +91,6 @@ class HomeController extends GetxController {
     fetchHistoryData(); // Fetch data from Firebase
     FirebaseServices().fetchPerMileageAmount(); // Fetch per-mile cost
     FirebaseServices().fetchFixedWeeklyCost(); // Fetch weekly fixed costs
-    loadEditableStateTruckPayment();
     fetchMileageValues(); //  This Method is Used To fetch Intial Values of Trcuk Per Mileage fee Payments in Mileage Screen
     fetchTruckPaymentIntialValues(); // This Method is Used To fetch Intial Values of Trcuk monthly Payments in Calculator Screen
   }
@@ -114,23 +112,6 @@ class HomeController extends GetxController {
 
     super.onClose();
   }
-
-  ///------------------> Shared Prefrance for Truck Weekly Fixed payment ------------------
-
-  Future<void> storeEditableTruckPayment() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isEditable', isEditable.value);
-  }
-
-  Future<void> loadEditableStateTruckPayment() async {
-    final prefs = await SharedPreferences.getInstance();
-    isEditable.value =
-        prefs.getBool('isEditable') ?? true; // Default to true if not set
-  }
-
-  
-
-  ///-----------------------------------------------------------------------------------------
 
   ///-----------------------------------------------------------------------------------------
   String? validateInput(String? value) {
@@ -301,12 +282,9 @@ class HomeController extends GetxController {
         totalMilageCost.value -
         totalEstimatedTollsCost.value -
         totalOtherCost.value;
-    print('totalProfit: ${totalProfit.value}');
-    print('totalWeeklyFixedCost: ${totalWeeklyFixedCost.value}');
-    print('totalMilageCost: ${totalMilageCost.value}');
-    print('totalEstimatedTollsCost: ${totalEstimatedTollsCost.value}');
-    print('totalOtherCost: ${totalOtherCost.value}');
   }
+
+
 
   void addNewLoad() {
     var freightChargeController = TextEditingController();
@@ -436,12 +414,6 @@ class HomeController extends GetxController {
       perMileDefController.text = fPerMileDef.value.toStringAsFixed(2);
       perMileDriverPayController.text =
           fPerMileDriverPay.value.toStringAsFixed(2);
-
-      print('Mileage Values Fetched and Set:');
-      print('perMileFee: ${fPermileageFee.value}');
-      print('perMileFuel: ${fPerMileFuel.value}');
-      print('perMileDef: ${fPerMileDef.value}');
-      print('perMileDriverPay: ${fPerMileDriverPay.value}');
     } catch (e) {
       print('Error fetching mileage values: $e');
     } finally {

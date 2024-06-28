@@ -96,6 +96,7 @@ class CalculatorScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
+              homeController.isEditableTruckPayment.value=true;
               await FirebaseServices().toggleIsEditabbleTruckPayment();
               homeController.updatedIsEditableTruckPayment.value =
                   await FirebaseServices().fetchIsEditabbleTruckPayment();
