@@ -86,6 +86,8 @@ class HomeController extends GetxController {
     tOverHeadController.addListener(_calculateFixedCost);
     tOtherController.addListener(_calculateFixedCost);
     weeklyFixedCost.addListener;
+    fTrcukPayment.addListener;
+    fPermileageFee.addListener;
 
     addNewLoad(); // Initialize with the first load
     fetchHistoryData(); // Fetch data from Firebase
@@ -283,8 +285,6 @@ class HomeController extends GetxController {
         totalEstimatedTollsCost.value -
         totalOtherCost.value;
   }
-
-
 
   void addNewLoad() {
     var freightChargeController = TextEditingController();

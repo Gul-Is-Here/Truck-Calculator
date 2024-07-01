@@ -49,37 +49,37 @@ class MyDrawerWidget extends StatelessWidget {
                         transition: Transition.cupertino);
                   },
                 ),
-                ListTile(
-                  leading: Icon(
-                    Icons.history,
-                    color: AppColor().secondaryAppColor,
-                    size: 30,
-                  ),
-                  title: Text('Truck Monthly Payment',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: robotoRegular,
-                          color: AppColor().primaryAppColor)),
-                  onTap: () {
-                    Get.to(() => CalculatorScreen());
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.travel_explore,
-                    color: AppColor().secondaryAppColor,
-                    size: 30,
-                  ),
-                  title: Text('Mileage',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: robotoRegular,
-                          color: AppColor().primaryAppColor)),
-                  onTap: () {
-                    Get.to(() => MileageFeSection(
-                        homeController: homeController, isUpdate: true));
-                  },
-                ),
+                // ListTile(
+                //   leading: Icon(
+                //     Icons.history,
+                //     color: AppColor().secondaryAppColor,
+                //     size: 30,
+                //   ),
+                //   title: Text('Truck Monthly Payment',
+                //       style: TextStyle(
+                //           fontSize: 18,
+                //           fontFamily: robotoRegular,
+                //           color: AppColor().primaryAppColor)),
+                //   onTap: () {
+                //     Get.to(() => CalculatorScreen());
+                //   },
+                // ),
+                // ListTile(
+                //   leading: Icon(
+                //     Icons.travel_explore,
+                //     color: AppColor().secondaryAppColor,
+                //     size: 30,
+                //   ),
+                //   title: Text('Mileage',
+                //       style: TextStyle(
+                //           fontSize: 18,
+                //           fontFamily: robotoRegular,
+                //           color: AppColor().primaryAppColor)),
+                //   onTap: () {
+                //     Get.to(() => MileageFeSection(
+                //         homeController: homeController, isUpdate: true));
+                //   },
+                // ),
                 ListTile(
                   leading: Icon(
                     Icons.calculate,

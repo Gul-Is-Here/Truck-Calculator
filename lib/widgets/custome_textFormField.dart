@@ -34,7 +34,7 @@ Widget buildTextFormField({
         ),
         5.heightBox,
         SizedBox(
-          height: 70,
+          // height: 70,
           child: TextFormField(
             initialValue: initialValue,
             enabled: isEnable,

@@ -29,11 +29,14 @@ class CalculatorScreen extends StatelessWidget {
         fetchedValues['monthlyOverheadCost'].toString();
     homeController.tOtherController.text =
         fetchedValues['monthlyOtherCost'].toString();
-        homeController.fTruckWeeklyPayment.value=fetchedValues['weeklyTruckPayment']!;
-        homeController.fTruckWeeklyTrailerLease.value=fetchedValues['weeklyTrailerLease']!;
-        homeController.fTruckWeeklyInsurance.value=fetchedValues['weeklyInsurancePayment']!;
-        homeController.fTruckWeeklyEldServices.value=fetchedValues['weeklyEldService']!;
-     
+    homeController.fTruckWeeklyPayment.value =
+        fetchedValues['weeklyTruckPayment']!;
+    homeController.fTruckWeeklyTrailerLease.value =
+        fetchedValues['weeklyTrailerLease']!;
+    homeController.fTruckWeeklyInsurance.value =
+        fetchedValues['weeklyInsurancePayment']!;
+    homeController.fTruckWeeklyEldServices.value =
+        fetchedValues['weeklyEldService']!;
   }
 
   void _submitForm(BuildContext context) async {
@@ -67,19 +70,14 @@ class CalculatorScreen extends StatelessWidget {
         tWeeklyEldService:
             double.tryParse(homeController.tEldServicesController.text) ?? 0.0,
       );
-      
+
       homeController.isEditableTruckPayment.value = false;
       await FirebaseServices().toggleIsEditabbleTruckPayment();
       bool updatedIsEditableTruckPayment =
           await FirebaseServices().fetchIsEditabbleTruckPayment();
-      homeController.isEditableTruckPayment.value = updatedIsEditableTruckPayment;
+      homeController.isEditableTruckPayment.value =
+          updatedIsEditableTruckPayment;
       initializeControllers();
-     
-      
-      // Show a snackbar or any other feedback to confirm submission
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Form submitted successfully')),
-      );
     }
   }
 
@@ -96,14 +94,14 @@ class CalculatorScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              homeController.isEditableTruckPayment.value=true;
+              homeController.isEditableTruckPayment.value = true;
               await FirebaseServices().toggleIsEditabbleTruckPayment();
               homeController.updatedIsEditableTruckPayment.value =
                   await FirebaseServices().fetchIsEditabbleTruckPayment();
 
               homeController.isEditableTruckPayment.value =
                   homeController.updatedIsEditableTruckPayment.value;
-
+              Future.delayed((Duration(seconds: 3)));
               Navigator.of(context).pop(true);
             },
             child: const Text('Yes'),
@@ -131,7 +129,8 @@ class CalculatorScreen extends StatelessWidget {
               child: const Text('Yes'),
               onPressed: () {
                 _submitForm(context);
-                 Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -165,7 +164,7 @@ class CalculatorScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             const Text(
-                              'Truck Monthly Cost',
+                              'Fixed Cost',
                               style: TextStyle(
                                 fontFamily: robotoRegular,
                                 fontSize: 30,
@@ -222,7 +221,8 @@ class CalculatorScreen extends StatelessWidget {
                                 label: 'Overhead',
                                 hint: 'e.g., \$50',
                                 validator: homeController.validateNonNegative,
-                                isEnable: homeController.isEditableTruckPayment.value,
+                                isEnable:
+                                    homeController.isEditableTruckPayment.value,
                                 intialValue: homeController.fTrcukOverhead,
                               ),
                             ),
@@ -232,8 +232,9 @@ class CalculatorScreen extends StatelessWidget {
                                 label: 'Other',
                                 hint: 'e.g., \$200',
                                 validator: homeController.validateNonNegative,
-                                isEnable: homeController.isEditableTruckPayment.value,
-                                 intialValue: homeController.fTrcukOther,
+                                isEnable:
+                                    homeController.isEditableTruckPayment.value,
+                                intialValue: homeController.fTrcukOther,
                               ),
                             ),
                           ],
@@ -283,9 +284,8 @@ class CalculatorScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         _showConfirmationDialog(context);
-                       
                       },
-                                          child: const Text('Submit'),
+                      child: const Text('Submit'),
                     ),
                 ],
               ),
@@ -296,4 +296,3 @@ class CalculatorScreen extends StatelessWidget {
     );
   }
 }
-
