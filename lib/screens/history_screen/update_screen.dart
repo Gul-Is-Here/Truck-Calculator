@@ -35,7 +35,7 @@ class UpdateScreen extends StatelessWidget {
 
             var data = snapshot.data ?? [];
             if (data.isEmpty) {
-              return Center(child: Text('No history data available.'));
+              return Center(child: Text('No update data available.'));
             }
 
             return SingleChildScrollView(

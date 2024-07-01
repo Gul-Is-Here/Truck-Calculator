@@ -30,26 +30,40 @@ Widget buildRowWithLabel({
       const SizedBox(
           width: 10), // Adjust spacing between TextFormField and Container
       Expanded(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 22),
-          child: Container(
-            width: 70,
-            height: 50, // Ensure the height matches the TextFormField's height
-            decoration: BoxDecoration(
-              color: AppColor().secondaryAppColor.withOpacity(.15),
-              borderRadius: BorderRadius.circular(4),
+        child: Column(
+          children: [
+            const Text(
+              '\$/week',
+              style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                  letterSpacing: 1.5,
+                  fontFamily: robotoRegular,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
             ),
-            child: Center(
-              child: Obx(() => Text(
-                    '\$${value.value.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontFamily: robotoRegular,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Container(
+                width: 70,
+                height:
+                    50, // Ensure the height matches the TextFormField's height
+                decoration: BoxDecoration(
+                  color: AppColor().secondaryAppColor.withOpacity(.15),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Center(
+                  child: Obx(() => Text(
+                        '\$${value.value.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontFamily: robotoRegular,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     ],

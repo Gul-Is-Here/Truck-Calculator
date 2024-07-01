@@ -1,5 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 class AppClass {
+  final GlobalKey mileageButtonKey = GlobalKey();
+  final GlobalKey truckPaymentButtonKey = GlobalKey();
+  final GlobalKey calculatorCardKey = GlobalKey();
   // Greeting Method
   String getGreeting() {
     final hour = DateTime.now().hour;
@@ -17,6 +22,7 @@ String formatDateTimeFriendly(DateTime dateTime) {
   final DateFormat formatter = DateFormat('EEEE, MMM d, yyyy h:mm a');
   return formatter.format(dateTime);
 }
+
 
 
 }

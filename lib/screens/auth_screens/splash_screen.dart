@@ -1,3 +1,4 @@
+// import 'package:background_fetch/background_fetch.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/services/firebase_services.dart';
 import 'package:flutter/material.dart';
@@ -22,16 +23,39 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _navigateToNextScreen();
-    
+
     FirebaseServices().transferAndDeleteWeeklyData();
-   
   }
+
+  // void initBackgroundFetch() {
+  //   BackgroundFetch.configure(
+  //     BackgroundFetchConfig(
+  //       minimumFetchInterval: 1440, // Daily fetch interval (1440 minutes)
+  //       startOnBoot: true,
+  //       stopOnTerminate: false,
+  //       enableHeadless: true,
+  //     ),
+  //     (String taskId) async {
+  //       DateTime now = DateTime.now();
+  //       // Check if today is Monday
+  //       if (now.weekday == DateTime.monday) {
+  //         await FirebaseServices().transferAndDeleteWeeklyData();
+  //       }
+  //       BackgroundFetch.finish(taskId);
+  //     },
+  //   ).then((int status) {
+  //     print('BackgroundFetch configure success: $status');
+  //   }).catchError((e) {
+  //     print('BackgroundFetch configure error: $e');
+  //   });
+  // }
 
   Future<void> _navigateToNextScreen() async {
     await Future.delayed(const Duration(seconds: 3));
     User? user = _auth.currentUser;
     if (user != null) {
-      Get.offAll(() => HomeScreen()); // User is signed in, navigate to home screen
+      Get.offAll(
+          () => HomeScreen()); // User is signed in, navigate to home screen
     } else {
       Get.offAll(() =>
           LoginScreen()); // No user is signed in, navigate to login screen

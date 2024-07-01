@@ -573,7 +573,8 @@ class FirebaseServices {
   // A method to delete data from calculatedValues Collection and transfer to History Collection
 
   Future<void> transferAndDeleteWeeklyData() async {
-    User? user = auth.currentUser;
+    User? user = FirebaseAuth.instance.currentUser;
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     if (user != null) {
       try {
@@ -628,7 +629,6 @@ class FirebaseServices {
       print('No user signed in');
     }
   }
-
   // A method to get data from History Collection
   Future<List<Map<String, dynamic>>> fetchHistoryDataById() async {
     final User? user = FirebaseServices().auth.currentUser;
