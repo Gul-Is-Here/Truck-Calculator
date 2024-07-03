@@ -17,6 +17,7 @@ class UpdateScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseServices().fetchAllEntriesForEditing();
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(),

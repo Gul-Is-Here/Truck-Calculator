@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../constants/colors.dart';
@@ -79,7 +80,10 @@ class _MileageFeSectionState extends State<MileageFeSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+            child: Text(
+              'No',
+              style: TextStyle(color: Colors.red, fontFamily: robotoRegular),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -90,7 +94,11 @@ class _MileageFeSectionState extends State<MileageFeSection> {
 
               Navigator.of(context).pop(true);
             },
-            child: Text('Yes'),
+            child: Text(
+              'Yes',
+              style: TextStyle(
+                  color: AppColor().primaryAppColor, fontFamily: robotoRegular),
+            ),
           ),
         ],
       ),
@@ -106,10 +114,21 @@ class _MileageFeSectionState extends State<MileageFeSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+            child: Text(
+              'No',
+              style: TextStyle(color: Colors.red, fontFamily: robotoRegular),
+            ),
           ),
           TextButton(
             onPressed: () async {
+              bool documentExists = await FirebaseServices()
+                  .checkIfCalculatedValuesDocumentExists();
+
+              if (documentExists) {
+                await FirebaseServices().transferAndDeleteWeeklyData();
+              }
+              // Call transfer method here before allowing edit
+
               widget.homeController.isEditableMilage.value = false;
               await FirebaseServices().toggleIsEditabbleMilage();
               widget.homeController.updatedIsEditableMilage.value =
@@ -119,7 +138,11 @@ class _MileageFeSectionState extends State<MileageFeSection> {
               Future.delayed((Duration(seconds: 3)));
               Navigator.of(context).pop(true);
             },
-            child: Text('Yes'),
+            child: Text(
+              'Yes',
+              style: TextStyle(
+                  color: AppColor().primaryAppColor, fontFamily: robotoRegular),
+            ),
           ),
         ],
       ),

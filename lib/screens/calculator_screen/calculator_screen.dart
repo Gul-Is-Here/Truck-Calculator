@@ -103,14 +103,21 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
+            child: const Text(
+              'No',
+              style: TextStyle(color: Colors.red, fontFamily: robotoRegular),
+            ),
           ),
           TextButton(
             onPressed: () {
               _submitForm();
               Navigator.of(context).pop(true);
             },
-            child: const Text('Yes'),
+            child: Text(
+              'Yes',
+              style: TextStyle(
+                  color: AppColor().primaryAppColor, fontFamily: robotoRegular),
+            ),
           ),
         ],
       ),
@@ -126,20 +133,36 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
+            child: const Text(
+              'No',
+              style: TextStyle(color: Colors.red, fontFamily: robotoRegular),
+            ),
           ),
           TextButton(
             onPressed: () async {
+              bool documentExists = await FirebaseServices()
+                  .checkIfCalculatedValuesDocumentExists();
+
+              if (documentExists) {
+                await FirebaseServices().transferAndDeleteWeeklyData();
+              }
               homeController.isEditableTruckPayment.value = true;
               await FirebaseServices().toggleIsEditabbleTruckPayment();
               homeController.updatedIsEditableTruckPayment.value =
                   await FirebaseServices().fetchIsEditabbleTruckPayment();
               homeController.isEditableTruckPayment.value =
                   homeController.updatedIsEditableTruckPayment.value;
-              if (!mounted) return;
-              // Navigator.of(context).pop(true);
+              if (!mounted) {
+                Navigator.of(context).pop(true);
+                return;
+              }
+              Get.back();
             },
-            child: const Text('Yes'),
+            child: Text(
+              'Yes',
+              style: TextStyle(
+                  color: AppColor().primaryAppColor, fontFamily: robotoRegular),
+            ),
           ),
         ],
       ),

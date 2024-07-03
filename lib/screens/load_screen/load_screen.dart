@@ -114,7 +114,6 @@ class _LoadScreenState extends State<LoadScreen> {
   Widget build(BuildContext context) {
     print(widget.homeController.totalMilageCost.value);
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       drawer: MyDrawerWidget(),
       appBar: AppBar(
           // title: Text('Additional Costs'),
@@ -639,6 +638,8 @@ class _LoadScreenState extends State<LoadScreen> {
                                               .map((controller) =>
                                                   controller.text)
                                               .toList(),
+                                          context: context,
+                                          homeController: widget.homeController,
                                         );
 
                                         Get.snackbar('Success',
@@ -704,7 +705,9 @@ class _LoadScreenState extends State<LoadScreen> {
                                           dispatchedMilesControllers:
                                               widget.homeController.dispatchedMilesControllers.map((controller) => controller.text).toList(),
                                           estimatedTollsControllers: widget.homeController.estimatedTollsControllers.map((controller) => controller.text).toList(),
-                                          otherCostsControllers: widget.homeController.otherCostsControllers.map((controller) => controller.text).toList());
+                                          otherCostsControllers: widget.homeController.otherCostsControllers.map((controller) => controller.text).toList(),
+                                          context: context,
+                                          homeController: widget.homeController);
 
                                       Get.snackbar('Success',
                                           'Data submitted successfully',

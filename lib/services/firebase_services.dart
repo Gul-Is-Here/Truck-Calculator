@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../screens/load_screen/load_screen.dart';
 
 class FirebaseServices {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -189,7 +192,7 @@ class FirebaseServices {
           await doc.reference.update({
             'isEditabbleMilage': !currentIsEditableMileage,
           });
-
+         
           print(
               'isEditableMileage updated successfully: ${!currentIsEditableMileage}');
         } else {
@@ -220,7 +223,7 @@ class FirebaseServices {
               .doc(user.uid)
               .collection('perMileageCost')
               .doc()
-              .set({'isEditabbleMilage': true});
+              .set({'isEditabbleMilage': false});
 
           print(
               'No document found, created new document with default isEditableMileage: false');
@@ -304,7 +307,7 @@ class FirebaseServices {
               .doc(user.uid)
               .collection('truckPaymentCollection')
               .doc()
-              .set({'isEditableTruckPayment': true});
+              .set({'isEditableTruckPayment': false});
 
           print(
               'No document found, created new document with default isEditableMileage: false');
@@ -419,45 +422,95 @@ class FirebaseServices {
     required List<String> dispatchedMilesControllers,
     required List<String> estimatedTollsControllers,
     required List<String> otherCostsControllers,
+    required BuildContext context, // Add context for navigation
+    required HomeController homeController, // Add controller for navigation
   }) async {
     User? user = auth.currentUser;
     if (user != null) {
       try {
-        String loadsId = DateTime.now().millisecondsSinceEpoch.toString();
-        DocumentReference newValuesDocRef = firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection('calculatedValues')
-            .doc(loadsId);
+        bool documentExists = await checkIfCalculatedValuesDocumentExists();
 
-        await newValuesDocRef.set({
-          'totalFactoringFee': totalFactoringFee,
-          'totalFreightCharges': totalFreightCharges,
-          'totalDispatchedMiles': totalDispatchedMiles,
-          'totalMileageCost': totalMileageCost,
-          'totalProfit': totalProfit,
-          'timestamp': FieldValue.serverTimestamp(),
-          'updateTime': DateTime.now(),
-          'loads': List.generate(freightChargeControllers.length, (index) {
-            return {
-              'freightCharge':
-                  double.tryParse(freightChargeControllers[index]) ?? 0.0,
-              'dispatchedMiles':
-                  double.tryParse(dispatchedMilesControllers[index]) ?? 0.0,
-              'estimatedTolls':
-                  double.tryParse(estimatedTollsControllers[index]) ?? 0.0,
-              'otherCosts':
-                  double.tryParse(otherCostsControllers[index]) ?? 0.0,
-            };
-          }),
-        });
+        if (documentExists) {
+          // Document exists, navigate to the update screen
+          QuerySnapshot existingDocsSnapshot = await firestore
+              .collection('users')
+              .doc(user.uid)
+              .collection('calculatedValues')
+              .limit(1)
+              .get();
+          String existingDocId = existingDocsSnapshot.docs.first.id;
+          var loadData =
+              await FirebaseServices().fetchEntryForEditing(existingDocId);
 
-        print('Loads values stored successfully in Firestore');
+          Get.to(
+            () => LoadScreen(
+              isUpdate: true,
+              documentId: existingDocId,
+              homeController: homeController,
+              loadData: loadData,
+            ),
+          );
+        } else {
+          // No document exists, create a new one
+          String loadsId = DateTime.now().millisecondsSinceEpoch.toString();
+          DocumentReference newValuesDocRef = firestore
+              .collection('users')
+              .doc(user.uid)
+              .collection('calculatedValues')
+              .doc(loadsId);
+
+          await newValuesDocRef.set({
+            'totalFactoringFee': totalFactoringFee,
+            'totalFreightCharges': totalFreightCharges,
+            'totalDispatchedMiles': totalDispatchedMiles,
+            'totalMileageCost': totalMileageCost,
+            'totalProfit': totalProfit,
+            'timestamp': FieldValue.serverTimestamp(),
+            'updateTime': DateTime.now(),
+            'loads': List.generate(freightChargeControllers.length, (index) {
+              return {
+                'freightCharge':
+                    double.tryParse(freightChargeControllers[index]) ?? 0.0,
+                'dispatchedMiles':
+                    double.tryParse(dispatchedMilesControllers[index]) ?? 0.0,
+                'estimatedTolls':
+                    double.tryParse(estimatedTollsControllers[index]) ?? 0.0,
+                'otherCosts':
+                    double.tryParse(otherCostsControllers[index]) ?? 0.0,
+              };
+            }),
+          });
+
+          print('Loads values stored successfully in Firestore');
+        }
       } catch (e) {
         print('Error storing values in Firestore: $e');
       }
     } else {
       print('No user signed in');
+    }
+  }
+
+  Future<bool> checkIfCalculatedValuesDocumentExists() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        // Check if a document already exists
+        QuerySnapshot existingDocsSnapshot = await firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('calculatedValues')
+            .limit(1) // Limit to 1 for efficiency
+            .get();
+
+        return existingDocsSnapshot.docs.isNotEmpty;
+      } catch (e) {
+        print('Error checking if document exists: $e');
+        return false;
+      }
+    } else {
+      print('No user signed in');
+      return false;
     }
   }
 

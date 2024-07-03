@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
@@ -13,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
+import '../../services/firebase_services.dart';
 import '../calculator_screen/calculator_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,10 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final homeController = Get.put(HomeController());
 
   final GlobalKey mileageButtonKey = GlobalKey();
-
   final GlobalKey truckPaymentButtonKey = GlobalKey();
 
-  final GlobalKey calculatorCardKey = GlobalKey();
+  @override
+  void initState() {
+    super.initState();
+    FirebaseServices().fetchIsEditabbleTruckPayment();
+    FirebaseServices().fetchIsEditabbleMilage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +103,33 @@ class _HomeScreenState extends State<HomeScreen> {
               if (homeController.fTrcukPayment.value != 0.0 &&
                   homeController.fPermileageFee.value != 0.0)
                 CardWidget(
-                  key: calculatorCardKey,
-                  onTap: () {
-                    Get.to(() => LoadScreen(
-                          homeController: homeController,
-                          isUpdate: false,
-                        ));
+                  onTap: () async {
+                    bool documentExists = await FirebaseServices()
+                        .checkIfCalculatedValuesDocumentExists();
+
+                    if (documentExists) {
+                      // Document exists, navigate to the update screen
+                      QuerySnapshot existingDocsSnapshot =
+                          await FirebaseServices()
+                              .firestore
+                              .collection('users')
+                              .doc(FirebaseServices().auth.currentUser!.uid)
+                              .collection('calculatedValues')
+                              .limit(1)
+                              .get();
+                      // String existingDocId = existingDocsSnapshot.docs.first.id;
+                      // var loadData = await FirebaseServices()
+                      //     .fetchEntryForEditing(existingDocId);
+
+                      Get.to(() => UpdateScreen(
+                          homeController: homeController, isUpdate: true));
+                    } else {
+                      // No document exists, create a new one
+                      Get.to(() => LoadScreen(
+                            homeController: homeController,
+                            isUpdate: false,
+                          ));
+                    }
                   },
                   butonText: 'Calculate',
                   cardText:
@@ -122,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           if (homeController.fPermileageFee.value == 0.0)
                             Text(
-                              "1 - Please add 'cost per mile' value.",
+                              "1 - Please add 'Cost Per Mile' value.",
                               style: TextStyle(
                                 fontFamily: robotoRegular,
                                 fontSize: 16,
@@ -133,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           if (homeController.fTrcukPayment.value == 0.0)
                             Text(
-                              "2 - Please add 'fixed payment'.",
+                              "2 - Please add 'Fixed Payment'.",
                               style: TextStyle(
                                 fontFamily: robotoRegular,
                                 fontSize: 16,
@@ -179,12 +206,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void showTutorial(BuildContext context) {
     TutorialCoachMark(
+      useSafeArea: true,
       targets: _createTargets(),
       colorShadow: Colors.black,
       textSkip: "SKIP",
-      paddingFocus: 10,
+      paddingFocus: 0,
       opacityShadow: 0.8,
-    ).show(context: context);
+    ).show(context: context, rootOverlay: true);
   }
 
   List<TargetFocus> _createTargets() {
@@ -192,12 +220,15 @@ class _HomeScreenState extends State<HomeScreen> {
       TargetFocus(
         identify: "MileageButton",
         keyTarget: mileageButtonKey,
+        shape: ShapeLightFocus.RRect,
+        radius: 5,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
             child: Text(
-              "Tap here to add Mileage values",
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              "Step 1: Please add cost per mile",
+              style: TextStyle(
+                  color: Colors.white, fontSize: 15, fontFamily: robotoRegular),
             ),
           ),
         ],
@@ -205,25 +236,15 @@ class _HomeScreenState extends State<HomeScreen> {
       TargetFocus(
         identify: "TruckPaymentButton",
         keyTarget: truckPaymentButtonKey,
+        shape: ShapeLightFocus.RRect,
+        radius: 5,
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
             child: Text(
-              "Tap here to add Truck Payment",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-        ],
-      ),
-      TargetFocus(
-        identify: "CalculatorCard",
-        keyTarget: calculatorCardKey,
-        contents: [
-          TargetContent(
-            align: ContentAlign.bottom,
-            child: Text(
-              "Tap here to use the Calculator",
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              "Step 2: Please add fixed payment",
+              style: TextStyle(
+                  color: Colors.white, fontSize: 15, fontFamily: robotoRegular),
             ),
           ),
         ],

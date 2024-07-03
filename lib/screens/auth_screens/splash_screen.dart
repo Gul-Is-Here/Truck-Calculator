@@ -1,4 +1,3 @@
-// import 'package:background_fetch/background_fetch.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/services/firebase_services.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +21,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    FirebaseServices().fetchIsEditabbleTruckPayment();
+    FirebaseServices().fetchIsEditabbleMilage();
+    // initBackgroundFetch();
     _navigateToNextScreen();
 
     // FirebaseServices().transferAndDeleteWeeklyData();
