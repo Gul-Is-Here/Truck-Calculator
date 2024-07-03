@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     _navigateToNextScreen();
 
-    FirebaseServices().transferAndDeleteWeeklyData();
+    // FirebaseServices().transferAndDeleteWeeklyData();
   }
 
   // void initBackgroundFetch() {

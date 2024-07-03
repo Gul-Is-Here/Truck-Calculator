@@ -9,11 +9,22 @@ import '../../services/firebase_services.dart';
 import '../../widgets/customized_row_label_widget.dart';
 import '../../widgets/my_drawer_widget.dart';
 
-class CalculatorScreen extends StatelessWidget {
+class CalculatorScreen extends StatefulWidget {
   CalculatorScreen({super.key});
 
+  @override
+  _CalculatorScreenState createState() => _CalculatorScreenState();
+}
+
+class _CalculatorScreenState extends State<CalculatorScreen> {
   final HomeController homeController = Get.put(HomeController());
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeControllers();
+  }
 
   void initializeControllers() async {
     var fetchedValues = await FirebaseServices().fetchFixedWeeklyCost();
@@ -39,9 +50,8 @@ class CalculatorScreen extends StatelessWidget {
         fetchedValues['weeklyEldService']!;
   }
 
-  void _submitForm(BuildContext context) async {
+  Future<void> _submitForm() async {
     if (formKey.currentState!.validate()) {
-      // Perform form submission
       await FirebaseServices().storeTruckMonthlyPayments(
         isEditableTruckPayment: homeController.isEditableTruckPayment.value,
         weeklyTruckPayment: double.tryParse(
@@ -75,13 +85,39 @@ class CalculatorScreen extends StatelessWidget {
       await FirebaseServices().toggleIsEditabbleTruckPayment();
       bool updatedIsEditableTruckPayment =
           await FirebaseServices().fetchIsEditabbleTruckPayment();
+      if (!mounted) return;
       homeController.isEditableTruckPayment.value =
           updatedIsEditableTruckPayment;
       initializeControllers();
+      if (!mounted) return;
+      Navigator.pop(context, true); // Pass a result indicating success
     }
   }
 
-  void toggleEditMode(BuildContext context) async {
+  Future<void> showSubmitConfirmationDialog(BuildContext context) async {
+    bool? shouldSubmit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Submission'),
+        content: const Text('Are you sure you want to submit the data?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              _submitForm();
+              Navigator.of(context).pop(true);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> showEditConfirmationDialog(BuildContext context) async {
     bool? shouldEdit = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -98,11 +134,10 @@ class CalculatorScreen extends StatelessWidget {
               await FirebaseServices().toggleIsEditabbleTruckPayment();
               homeController.updatedIsEditableTruckPayment.value =
                   await FirebaseServices().fetchIsEditabbleTruckPayment();
-
               homeController.isEditableTruckPayment.value =
                   homeController.updatedIsEditableTruckPayment.value;
-              Future.delayed((Duration(seconds: 3)));
-              Navigator.of(context).pop(true);
+              if (!mounted) return;
+              // Navigator.of(context).pop(true);
             },
             child: const Text('Yes'),
           ),
@@ -111,38 +146,8 @@ class CalculatorScreen extends StatelessWidget {
     );
   }
 
-  void _showConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Submit Amount'),
-          content: const Text('Are you sure you want to submit the amount?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: const Text('Yes'),
-              onPressed: () {
-                _submitForm(context);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    initializeControllers();
-
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
@@ -174,7 +179,7 @@ class CalculatorScreen extends StatelessWidget {
                             10.widthBox,
                             IconButton(
                               onPressed: () {
-                                toggleEditMode(context);
+                                showEditConfirmationDialog(context);
                               },
                               icon: const Icon(Icons.edit),
                             ),
@@ -283,7 +288,7 @@ class CalculatorScreen extends StatelessWidget {
                   if (homeController.isEditableTruckPayment.value)
                     ElevatedButton(
                       onPressed: () {
-                        _showConfirmationDialog(context);
+                        showSubmitConfirmationDialog(context);
                       },
                       child: const Text('Submit'),
                     ),

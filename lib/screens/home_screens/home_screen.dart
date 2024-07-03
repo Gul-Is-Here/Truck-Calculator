@@ -33,14 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('State Updated');
-    setState(() {
-      homeController.fetchMileageValues();
-      homeController.fetchTruckPaymentIntialValues();
-      homeController.permileageFee.value;
-      homeController.fTrcukPayment.value;
-    });
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final prefs = await SharedPreferences.getInstance();
       final isFirstLogin = prefs.getBool('isFirstLogin') ?? true;
@@ -75,12 +67,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     key: mileageButtonKey,
                     onPressed: () async {
-                      await Get.to(() => MileageFeSection(
+                      final result = await Get.to(() => MileageFeSection(
                             homeController: homeController,
                             isUpdate: true,
                           ));
-                      homeController.fetchMileageValues();
-                      homeController.fetchTruckPaymentIntialValues();
+                      if (result == true) {
+                        setState(() {
+                          homeController.fetchMileageValues();
+                        });
+                      }
                     },
                     child: Text('Cost Per Mile'),
                   ),
@@ -88,9 +83,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: truckPaymentButtonKey,
                     onPressed: () async {
                       final result = await Get.to(() => CalculatorScreen());
-                      if (result == true) {
-                        homeController.fetchTruckPaymentIntialValues();
-                      }
+                      setState(() {
+                        if (result == true) {
+                          homeController.fetchTruckPaymentIntialValues();
+                        }
+                      });
                     },
                     child: Text('Fixed Payment'),
                   ),

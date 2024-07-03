@@ -20,7 +20,7 @@ class CustomeHistoryCardWidget extends StatelessWidget {
             textHeading,
             style: TextStyle(
               fontFamily: robotoRegular,
-              fontSize: 14,
+              fontSize: 16,
             ),
           ),
           10.widthBox,
@@ -28,7 +28,7 @@ class CustomeHistoryCardWidget extends StatelessWidget {
             '\$$values',
             style: TextStyle(
               fontFamily: robotoRegular,
-              fontSize: 14,
+              fontSize: 16,
             ),
           )
         ],

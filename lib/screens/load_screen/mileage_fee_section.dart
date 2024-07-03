@@ -1,4 +1,3 @@
-import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../constants/colors.dart';
@@ -40,7 +39,6 @@ class _MileageFeSectionState extends State<MileageFeSection> {
         fetchedValues['defFeePerMile'].toString();
     widget.homeController.perMileDriverPayController.text =
         fetchedValues['driverPayFeePerMile'].toString();
-        
   }
 
   Future<void> submitForm() async {
@@ -68,7 +66,7 @@ class _MileageFeSectionState extends State<MileageFeSection> {
       widget.homeController.isEditableMilage.value = updatedIsEditableMilage;
       initializeControllers();
       if (!mounted) return;
-      Navigator.pop(context, true); // Pass a result
+      Navigator.pop(context, true); // Pass a result indicating success
     }
   }
 
@@ -89,10 +87,8 @@ class _MileageFeSectionState extends State<MileageFeSection> {
               widget.homeController.updatedIsEditableMilage.value = false;
               widget.homeController.isEditableMilage.value =
                   widget.homeController.updatedIsEditableMilage.value;
-              Future.delayed((Duration(seconds: 3)));
-              Navigator.of(context).pop(true);
 
-              Get.off(() => HomeScreen());
+              Navigator.of(context).pop(true);
             },
             child: Text('Yes'),
           ),

@@ -15,7 +15,7 @@ class HomeController extends GetxController {
   var weeklyoverHeadAmount = 0.0.obs;
   var weeklyOtherCost = 0.0.obs;
   var weeklyFixedCost = 0.0.obs;
-  RxBool isEditable = true.obs;
+  // RxBool isEditable = true.obs;
   RxBool isEditableTruckPayment = false.obs;
   RxBool isEditableMilage = false.obs;
   RxDouble totalWeeklyFixedCost = 0.0.obs;
@@ -284,6 +284,11 @@ class HomeController extends GetxController {
         totalMilageCost.value -
         totalEstimatedTollsCost.value -
         totalOtherCost.value;
+    print('total freight ${totalFreightCharges.value}');
+    print('total totalWeeklyFixedCost ${totalWeeklyFixedCost.value}');
+    print('total totalMilageCost ${totalMilageCost.value}');
+    print('total totalEstimatedTollsCost ${totalEstimatedTollsCost.value}');
+    print('total totalOtherCost ${totalOtherCost.value}');
   }
 
   void addNewLoad() {
@@ -414,6 +419,7 @@ class HomeController extends GetxController {
       perMileDefController.text = fPerMileDef.value.toStringAsFixed(2);
       perMileDriverPayController.text =
           fPerMileDriverPay.value.toStringAsFixed(2);
+      checkPerMileageFee();
     } catch (e) {
       print('Error fetching mileage values: $e');
     } finally {

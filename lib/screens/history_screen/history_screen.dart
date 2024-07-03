@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_details_screen.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -31,7 +33,7 @@ class HistoryScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 20),
+                          horizontal: 10, vertical: 10),
                       child: Column(
                         children: [
                           Row(
@@ -49,7 +51,6 @@ class HistoryScreen extends StatelessWidget {
                                     height: 20,
                                     color: Colors.white,
                                   ),
-                                  SizedBox(height: 10),
                                   Container(
                                     width: 150,
                                     height: 20,
@@ -61,7 +62,6 @@ class HistoryScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 10),
                           Divider(),
-                          SizedBox(height: 10),
                         ],
                       ),
                     );
@@ -75,15 +75,32 @@ class HistoryScreen extends StatelessWidget {
             return const Center(child: Text('No history data found.'));
           } else {
             var historyData = snapshot.data!;
+
             return ListView.builder(
               itemCount: historyData.length,
               itemBuilder: (context, index) {
                 Map<String, dynamic> document = historyData[index];
+                var timestamp = document['data']['updateTime'];
+           
 
-                var timestamp = (document['data']['updateTime']);
+                DateTime dateTime;
+                if (timestamp != null) {
+                  if (timestamp is Timestamp) {
+                    dateTime = timestamp.toDate();
+                  } else if (timestamp is DateTime) {
+                    dateTime = timestamp;
+                  } else {
+                    dateTime = DateTime
+                        .now(); // Fallback if the timestamp is not recognized
+                  }
+                } else {
+                  dateTime =
+                      DateTime.now(); // Fallback if the timestamp is null
+                }
+
                 return Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: GestureDetector(
                     onTap: () {
                       Get.to(
@@ -107,15 +124,14 @@ class HistoryScreen extends StatelessWidget {
                             Column(
                               children: [
                                 Text(document['id']),
-                                Text(AppClass().formatDateTimeFriendly(
-                                    timestamp.toDate())),
+                                Text(AppClass()
+                                    .formatDateTimeFriendly(dateTime)),
                               ],
                             ),
                           ],
                         ),
                         10.heightBox,
                         Divider(),
-                        10.heightBox,
                       ],
                     ),
                   ),
