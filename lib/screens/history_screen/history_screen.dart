@@ -81,7 +81,6 @@ class HistoryScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 Map<String, dynamic> document = historyData[index];
                 var timestamp = document['data']['updateTime'];
-           
 
                 DateTime dateTime;
                 if (timestamp != null) {

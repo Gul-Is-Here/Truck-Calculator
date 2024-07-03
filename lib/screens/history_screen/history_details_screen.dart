@@ -183,25 +183,23 @@ class HistoryDetailsScreen extends StatelessWidget {
                                           10.heightBox,
                                           CustomeRowWidget(
                                             textHeading: 'Fuel',
-                                            values: getValue(
-                                                    data['truckPayment'][index]
-                                                        ['monthlyEldService'])
+                                            values: getValue(data['mileageFee']
+                                                    [index]['fuelFeePerMile'])
                                                 .toStringAsFixed(2),
                                           ),
                                           10.heightBox,
                                           CustomeRowWidget(
                                             textHeading: 'DEF',
-                                            values: getValue(
-                                                    data['truckPayment'][index]
-                                                        ['monthlyTrailerLease'])
+                                            values: getValue(data['mileageFee']
+                                                    [index]['defFeePerMile'])
                                                 .toStringAsFixed(2),
                                           ),
                                           10.heightBox,
                                           CustomeRowWidget(
                                             textHeading: 'Driver Pay',
-                                            values: getValue(data[
-                                                        'truckPayment'][index]
-                                                    ['monthlyTruckInsurance'])
+                                            values: getValue(data['mileageFee']
+                                                        [index]
+                                                    ['driverPayFeePerMile'])
                                                 .toStringAsFixed(2),
                                           ),
                                         ],
@@ -223,12 +221,15 @@ class HistoryDetailsScreen extends StatelessWidget {
                           ),
                           10.heightBox,
                           SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.2,
+                            height: MediaQuery.of(context).size.height * 0.25,
                             child: ListView(
                               physics: const BouncingScrollPhysics(),
                               scrollDirection: Axis.horizontal,
                               children: List.generate(
-                                  data['calculatedValues'].length, (index) {
+                                  data['calculatedValues'][index]['loads']
+                                      .length, (loadIndex) {
+                                var load = data['calculatedValues'][index]
+                                    ['loads'][loadIndex];
                                 return SizedBox(
                                   width: MediaQuery.of(context).size.width * .8,
                                   child: Padding(
@@ -261,9 +262,7 @@ class HistoryDetailsScreen extends StatelessWidget {
                                           ),
                                           CustomeHistoryCardWidget(
                                             textHeading: 'Dispatched Miles',
-                                            values: data['calculatedValues'][0]
-                                                        ['loads'][index]
-                                                    ['dispatchedMiles']
+                                            values: load['dispatchedMiles']
                                                 .toStringAsFixed(2),
                                           ),
                                           10.heightBox,
