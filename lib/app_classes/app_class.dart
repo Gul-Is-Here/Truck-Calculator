@@ -18,10 +18,10 @@ class AppClass {
     }
   }
 
-String formatDateTimeFriendly(DateTime dateTime) {
-  final DateFormat formatter = DateFormat('EEEE, MMM d, yyyy h:mm a');
-  return formatter.format(dateTime);
-}
+ String formatDateTimeFriendly(DateTime dateTime) {
+    final DateFormat formatter = DateFormat('EEEE, MMM d, yyyy h:mm a');
+    return formatter.format(dateTime);
+  }
 
 
 

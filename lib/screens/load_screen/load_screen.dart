@@ -532,7 +532,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                                 .homeController
                                                 .totalDispatchedMiles
                                                 .value,
-                                            'totalMilageCost': widget
+                                            'totalMileageCost': widget
                                                 .homeController
                                                 .totalMilageCost
                                                 .value,
@@ -577,6 +577,10 @@ class _LoadScreenState extends State<LoadScreen> {
                                                 };
                                               },
                                             ),
+                                            'totalFactoringFee': widget
+                                                .homeController
+                                                .totalFactoringFee
+                                                .value,
                                             'totalProfit': widget.homeController
                                                 .totalProfit.value,
                                           },

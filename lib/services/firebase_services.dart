@@ -220,7 +220,7 @@ class FirebaseServices {
               .doc(user.uid)
               .collection('perMileageCost')
               .doc()
-              .set({'isEditabbleMilage': false});
+              .set({'isEditabbleMilage': true});
 
           print(
               'No document found, created new document with default isEditableMileage: false');
@@ -304,7 +304,7 @@ class FirebaseServices {
               .doc(user.uid)
               .collection('truckPaymentCollection')
               .doc()
-              .set({'isEditableTruckPayment': false});
+              .set({'isEditableTruckPayment': true});
 
           print(
               'No document found, created new document with default isEditableMileage: false');
@@ -572,6 +572,64 @@ class FirebaseServices {
 
   // A method to delete data from calculatedValues Collection and transfer to History Collection
 
+  // Future<void> transferAndDeleteWeeklyData() async {
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  //   if (user != null) {
+  //     try {
+  //       // Get a reference to the user's document
+  //       DocumentReference userDocRef =
+  //           firestore.collection('users').doc(user.uid);
+
+  //       // Calculate the start and end dates of the current week
+  //       DateTime now = DateTime.now();
+  //       DateTime startOfWeek =
+  //           DateTime(now.year, now.month, now.day - now.weekday);
+  //       DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+  //       print('Current date time : $now');
+  //       print('Start of the week : $startOfWeek');
+  //       print('End of the week : $endOfWeek');
+
+  //       // Query documents in the calculatedValues subcollection within the current week
+  //       QuerySnapshot querySnapshot = await userDocRef
+  //           .collection('calculatedValues')
+  //           .where('timestamp',
+  //               isGreaterThanOrEqualTo: startOfWeek,
+  //               isLessThanOrEqualTo: endOfWeek)
+  //           .get();
+
+  //       // Transfer each document to the history subcollection and delete from calculatedValues
+  //       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+  //         try {
+  //           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+  //           // Set a new document in the history collection with a unique ID
+  //           await userDocRef.collection('history').doc(doc.id).set(data);
+
+  //           // Delete the document from the calculatedValues collection
+  //           await userDocRef
+  //               .collection('calculatedValues')
+  //               .doc(doc.id)
+  //               .delete();
+
+  //           print(
+  //               'Document transferred to history and original document deleted successfully.');
+  //         } catch (e) {
+  //           print('Error processing document with ID ${doc.id}: $e');
+  //         }
+  //       }
+
+  //       print('Weekly data transfer and deletion completed.');
+  //     } catch (e) {
+  //       print(
+  //           'Error transferring data to history and deleting original documents: $e');
+  //     }
+  //   } else {
+  //     print('No user signed in');
+  //   }
+  // }
+
   Future<void> transferAndDeleteWeeklyData() async {
     User? user = FirebaseAuth.instance.currentUser;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -592,43 +650,61 @@ class FirebaseServices {
         print('End of the week : $endOfWeek');
 
         // Query documents in the calculatedValues subcollection within the current week
-        QuerySnapshot querySnapshot = await userDocRef
+        QuerySnapshot calculatedValuesSnapshot = await userDocRef
             .collection('calculatedValues')
             .where('timestamp',
                 isGreaterThanOrEqualTo: startOfWeek,
                 isLessThanOrEqualTo: endOfWeek)
             .get();
 
-        // Transfer each document to the history subcollection and delete from calculatedValues
-        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-          try {
-            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        // Query the mileage fee collection
+        QuerySnapshot mileageFeeSnapshot =
+            await userDocRef.collection('perMileageCost').get();
 
-            // Set a new document in the history collection with a unique ID
-            await userDocRef.collection('history').doc(doc.id).set(data);
+        // Query the truck payment collection
+        QuerySnapshot truckPaymentSnapshot =
+            await userDocRef.collection('truckPaymentCollection').get();
 
-            // Delete the document from the calculatedValues collection
-            await userDocRef
-                .collection('calculatedValues')
-                .doc(doc.id)
-                .delete();
+        // Prepare data to be transferred
+        Map<String, dynamic> combinedData = {
+          'calculatedValues': [],
+          'mileageFee': [],
+          'truckPayment': []
+        };
 
-            print(
-                'Document transferred to history and original document deleted successfully.');
-          } catch (e) {
-            print('Error processing document with ID ${doc.id}: $e');
-          }
+        // Add calculated values data
+        for (QueryDocumentSnapshot doc in calculatedValuesSnapshot.docs) {
+          combinedData['calculatedValues'].add(doc.data());
+          // Delete the document from the calculatedValues collection
+          await doc.reference.delete();
         }
 
-        print('Weekly data transfer and deletion completed.');
+        // Add mileage fee data without deleting
+        for (QueryDocumentSnapshot doc in mileageFeeSnapshot.docs) {
+          combinedData['mileageFee'].add(doc.data());
+        }
+
+        // Add truck payment data without deleting
+        for (QueryDocumentSnapshot doc in truckPaymentSnapshot.docs) {
+          combinedData['truckPayment'].add(doc.data());
+        }
+
+        // Set a new document in the history collection with a unique ID
+        String historyDocId =
+            firestore.collection('users').doc().id; // Generate a unique ID
+        DocumentReference newHistoryDoc =
+            userDocRef.collection('history').doc(historyDocId);
+        await newHistoryDoc.set(combinedData);
+
+        print('Weekly data transfer completed.');
       } catch (e) {
-        print(
-            'Error transferring data to history and deleting original documents: $e');
+        print('Error transferring data to history: $e');
       }
     } else {
       print('No user signed in');
     }
   }
+
   // A method to get data from History Collection
   Future<List<Map<String, dynamic>>> fetchHistoryDataById() async {
     final User? user = FirebaseServices().auth.currentUser;
