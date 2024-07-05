@@ -1,10 +1,10 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/widgets/custome_row_widget.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '../../widgets/custome_history_card_widget.dart';
 
@@ -49,29 +49,77 @@ class HistoryDetailsScreen extends StatelessWidget {
                       data['calculatedValues'].length,
                       (index) => Column(
                         children: [
-                          CustomeRowWidget(
-                            textHeading: getValue(data['calculatedValues']
-                                        [index]['totalProfit']) <=
-                                    0
-                                ? 'Loss'
-                                : 'Profit',
-                            values: getValue(data['calculatedValues'][index]
-                                    ['totalProfit'])
-                                .toStringAsFixed(2),
-                          ),
-                          10.heightBox,
-                          CustomeRowWidget(
-                            textHeading: 'Total Freight Charges',
-                            values: getValue(data['calculatedValues'][index]
-                                    ['totalFreightCharges'])
-                                .toStringAsFixed(2),
-                          ),
-                          10.heightBox,
-                          CustomeRowWidget(
-                            textHeading: 'Total Miles',
-                            values: getValue(data['calculatedValues'][index]
-                                    ['totalDispatchedMiles'])
-                                .toStringAsFixed(2),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: ListTile(
+                                  title: Text(
+                                    'Total Miles',
+                                    style: TextStyle(
+                                        fontFamily: robotoRegular,
+                                        fontSize: 13,
+                                        color: AppColor().secondaryAppColor),
+                                  ),
+                                  subtitle: Text(
+                                    getValue(data['calculatedValues'][index]
+                                            ['totalDispatchedMiles'])
+                                        .toStringAsFixed(2),
+                                    style: TextStyle(
+                                        fontFamily: robotoRegular,
+                                        fontSize: 13,
+                                        color: AppColor().secondaryAppColor),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: ListTile(
+                                  title: Text(
+                                    getValue(data['calculatedValues'][index]
+                                                ['totalProfit']) <=
+                                            0
+                                        ? 'Loss'
+                                        : 'Profit',
+                                    style: TextStyle(
+                                        fontFamily: robotoRegular,
+                                        fontSize: 13,
+                                        color: AppColor().secondaryAppColor),
+                                  ),
+                                  subtitle: Text(
+                                    getValue(data['calculatedValues'][index]
+                                            ['totalProfit'])
+                                        .toStringAsFixed(2),
+                                    style: TextStyle(
+                                        fontFamily: robotoRegular,
+                                        fontSize: 13,
+                                        color: AppColor().secondaryAppColor),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: ListTile(
+                                  title: Text(
+                                    'Total Freight',
+                                    style: TextStyle(
+                                        fontFamily: robotoRegular,
+                                        fontSize: 13,
+                                        color: AppColor().secondaryAppColor),
+                                  ),
+                                  subtitle: Text(
+                                    getValue(data['calculatedValues'][index]
+                                            ['totalFreightCharges'])
+                                        .toStringAsFixed(2),
+                                    style: TextStyle(
+                                        fontFamily: robotoRegular,
+                                        fontSize: 13,
+                                        color: AppColor().secondaryAppColor),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           10.heightBox,
                           const Divider(
@@ -79,90 +127,92 @@ class HistoryDetailsScreen extends StatelessWidget {
                           ),
                           10.heightBox,
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Text(
-                                'Fixed Cost',
-                                style: TextStyle(
-                                  fontFamily: robotoRegular,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Text(
-                                'Cost Per Mile',
-                                style: TextStyle(
-                                  fontFamily: robotoRegular,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
                             children: [
                               Expanded(
                                   child: Card(
                                 child: Column(
                                   children: List.generate(
                                       data['truckPayment'].length,
-                                      (index) => Column(
-                                            children: [
-                                              10.heightBox,
-                                              CustomeRowWidget(
-                                                textHeading: 'Truck Payment',
-                                                values: getValue(data[
-                                                                'truckPayment']
-                                                            [index][
-                                                        'monthlyTruckInsurance'])
-                                                    .toStringAsFixed(2),
+                                      (index) => SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                .3,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4,
+                                                      vertical: 8),
+                                              child: Column(
+                                                children: [
+                                                  const Text(
+                                                    'Fixed Cost',
+                                                    style: TextStyle(
+                                                      fontFamily: robotoRegular,
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  10.heightBox,
+                                                  CustomeRowWidget(
+                                                    textHeading:
+                                                        'Truck Payment',
+                                                    values: getValue(data[
+                                                                    'truckPayment']
+                                                                [index][
+                                                            'monthlyTruckInsurance'])
+                                                        .toStringAsFixed(2),
+                                                  ),
+                                                  10.heightBox,
+                                                  CustomeRowWidget(
+                                                    textHeading: 'ELD Service',
+                                                    values: getValue(data[
+                                                                    'truckPayment']
+                                                                [index][
+                                                            'monthlyEldService'])
+                                                        .toStringAsFixed(2),
+                                                  ),
+                                                  10.heightBox,
+                                                  CustomeRowWidget(
+                                                    textHeading:
+                                                        'Trailer Lease',
+                                                    values: getValue(data[
+                                                                    'truckPayment']
+                                                                [index][
+                                                            'monthlyTrailerLease'])
+                                                        .toStringAsFixed(2),
+                                                  ),
+                                                  10.heightBox,
+                                                  CustomeRowWidget(
+                                                    textHeading: 'Insurance',
+                                                    values: getValue(data[
+                                                                    'truckPayment']
+                                                                [index][
+                                                            'monthlyTruckInsurance'])
+                                                        .toStringAsFixed(2),
+                                                  ),
+                                                  10.heightBox,
+                                                  CustomeRowWidget(
+                                                    textHeading: 'Overhead',
+                                                    values: getValue(data[
+                                                                    'truckPayment']
+                                                                [index][
+                                                            'monthlyOverheadCost'])
+                                                        .toStringAsFixed(2),
+                                                  ),
+                                                  10.heightBox,
+                                                  CustomeRowWidget(
+                                                    textHeading: 'Other',
+                                                    values: getValue(data[
+                                                                    'truckPayment']
+                                                                [index][
+                                                            'monthlyOtherCost'])
+                                                        .toStringAsFixed(2),
+                                                  ),
+                                                ],
                                               ),
-                                              10.heightBox,
-                                              CustomeRowWidget(
-                                                textHeading: 'ELD Service',
-                                                values: getValue(data[
-                                                                'truckPayment']
-                                                            [index]
-                                                        ['monthlyEldService'])
-                                                    .toStringAsFixed(2),
-                                              ),
-                                              10.heightBox,
-                                              CustomeRowWidget(
-                                                textHeading: 'Trailer Lease',
-                                                values: getValue(data[
-                                                                'truckPayment']
-                                                            [index]
-                                                        ['monthlyTrailerLease'])
-                                                    .toStringAsFixed(2),
-                                              ),
-                                              10.heightBox,
-                                              CustomeRowWidget(
-                                                textHeading: 'Insurance',
-                                                values: getValue(data[
-                                                                'truckPayment']
-                                                            [index][
-                                                        'monthlyTruckInsurance'])
-                                                    .toStringAsFixed(2),
-                                              ),
-                                              10.heightBox,
-                                              CustomeRowWidget(
-                                                textHeading: 'Overhead',
-                                                values: getValue(data[
-                                                                'truckPayment']
-                                                            [index]
-                                                        ['monthlyOverheadCost'])
-                                                    .toStringAsFixed(2),
-                                              ),
-                                              10.heightBox,
-                                              CustomeRowWidget(
-                                                textHeading: 'Other',
-                                                values: getValue(data[
-                                                                'truckPayment']
-                                                            [index]
-                                                        ['monthlyOtherCost'])
-                                                    .toStringAsFixed(2),
-                                              ),
-                                            ],
+                                            ),
                                           )),
                                 ),
                               )),
@@ -171,38 +221,59 @@ class HistoryDetailsScreen extends StatelessWidget {
                                   child: Column(
                                     children: List.generate(
                                       data['mileageFee'].length,
-                                      (index) => Column(
-                                        children: [
-                                          10.heightBox,
-                                          CustomeRowWidget(
-                                            textHeading: 'Mileage Fee',
-                                            values: getValue(data['mileageFee']
-                                                    [index]['milageFeePerMile'])
-                                                .toStringAsFixed(3),
+                                      (index) => SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                .3,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                              const Text(
+                                                'Cost Per Mile',
+                                                style: TextStyle(
+                                                  fontFamily: robotoRegular,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              10.heightBox,
+                                              CustomeRowWidget(
+                                                textHeading: 'Mileage Fee',
+                                                values: getValue(data[
+                                                            'mileageFee'][index]
+                                                        ['milageFeePerMile'])
+                                                    .toStringAsFixed(3),
+                                              ),
+                                              10.heightBox,
+                                              CustomeRowWidget(
+                                                textHeading: 'Fuel',
+                                                values: getValue(
+                                                        data['mileageFee']
+                                                                [index]
+                                                            ['fuelFeePerMile'])
+                                                    .toStringAsFixed(2),
+                                              ),
+                                              10.heightBox,
+                                              CustomeRowWidget(
+                                                textHeading: 'DEF',
+                                                values: getValue(
+                                                        data['mileageFee']
+                                                                [index]
+                                                            ['defFeePerMile'])
+                                                    .toStringAsFixed(2),
+                                              ),
+                                              10.heightBox,
+                                              CustomeRowWidget(
+                                                textHeading: 'Driver Pay',
+                                                values: getValue(data[
+                                                            'mileageFee'][index]
+                                                        ['driverPayFeePerMile'])
+                                                    .toStringAsFixed(2),
+                                              ),
+                                            ],
                                           ),
-                                          10.heightBox,
-                                          CustomeRowWidget(
-                                            textHeading: 'Fuel',
-                                            values: getValue(data['mileageFee']
-                                                    [index]['fuelFeePerMile'])
-                                                .toStringAsFixed(2),
-                                          ),
-                                          10.heightBox,
-                                          CustomeRowWidget(
-                                            textHeading: 'DEF',
-                                            values: getValue(data['mileageFee']
-                                                    [index]['defFeePerMile'])
-                                                .toStringAsFixed(2),
-                                          ),
-                                          10.heightBox,
-                                          CustomeRowWidget(
-                                            textHeading: 'Driver Pay',
-                                            values: getValue(data['mileageFee']
-                                                        [index]
-                                                    ['driverPayFeePerMile'])
-                                                .toStringAsFixed(2),
-                                          ),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -246,17 +317,24 @@ class HistoryDetailsScreen extends StatelessWidget {
                                       elevation: 5,
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.end,
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8),
-                                            child: Text(
-                                              '${index + 1}',
-                                              style: const TextStyle(
-                                                fontFamily: robotoRegular,
-                                                fontSize: 19,
-                                                fontWeight: FontWeight.bold,
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: AppColor()
+                                                    .secondaryAppColor),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8),
+                                              child: Text(
+                                                '${loadIndex + 1}',
+                                                style: TextStyle(
+                                                  fontFamily: robotoRegular,
+                                                  fontSize: 19,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                           ),
