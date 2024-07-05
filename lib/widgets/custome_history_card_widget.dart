@@ -13,24 +13,32 @@ class CustomeHistoryCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          Text(
-            textHeading,
-            style: TextStyle(
-              fontFamily: robotoRegular,
-              fontSize: 16,
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                textHeading,
+                style: TextStyle(
+                  fontFamily: robotoRegular,
+                  fontSize: 13,
+                ),
+              ),
+              10.widthBox,
+              Column(
+                children: [
+                  Text(
+                    '\$$values',
+                    style: TextStyle(
+                      fontFamily: robotoRegular,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              )
+            ],
           ),
-          10.widthBox,
-          Text(
-            '\$$values',
-            style: TextStyle(
-              fontFamily: robotoRegular,
-              fontSize: 16,
-            ),
-          )
         ],
       ),
     );
