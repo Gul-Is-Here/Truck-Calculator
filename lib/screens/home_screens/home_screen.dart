@@ -18,14 +18,12 @@ import '../../services/firebase_services.dart';
 import '../calculator_screen/calculator_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
-
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final homeController = Get.put(HomeController());
+  final HomeController homeController = Get.put(HomeController());
 
   final GlobalKey mileageButtonKey = GlobalKey();
   final GlobalKey truckPaymentButtonKey = GlobalKey();
@@ -33,8 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    FirebaseServices().fetchIsEditabbleTruckPayment();
+    homeController.fetchMileageValues();
+    homeController.fetchTruckPaymentIntialValues();
     FirebaseServices().fetchIsEditabbleMilage();
+    FirebaseServices().fetchIsEditabbleTruckPayment();
   }
 
   @override
@@ -47,15 +47,14 @@ class _HomeScreenState extends State<HomeScreen> {
         await prefs.setBool('isFirstLogin', false);
       }
     });
-
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: SafeArea(
-        child: Obx(
-          () => Column(
+        child: Obx(() {
+          return Column(
             children: [
-              20.heightBox,
+              SizedBox(height: 20),
               Center(
                 child: Text(
                   AppClass().getGreeting(),
@@ -66,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              20.heightBox,
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -78,9 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             isUpdate: true,
                           ));
                       if (result == true) {
-                        setState(() {
-                          homeController.fetchMileageValues();
-                        });
+                        homeController.fetchMileageValues();
                       }
                     },
                     child: Text('Cost Per Mile'),
@@ -89,26 +86,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     key: truckPaymentButtonKey,
                     onPressed: () async {
                       final result = await Get.to(() => CalculatorScreen());
-                      setState(() {
-                        if (result == true) {
-                          homeController.fetchTruckPaymentIntialValues();
-                        }
-                      });
+                      if (result == true) {
+                        homeController.fetchTruckPaymentIntialValues();
+                      }
                     },
                     child: Text('Fixed Payment'),
                   ),
                 ],
               ),
-              10.heightBox,
+              SizedBox(height: 10),
               if (homeController.fTrcukPayment.value != 0.0 &&
                   homeController.fPermileageFee.value != 0.0)
                 CardWidget(
                   onTap: () async {
                     bool documentExists = await FirebaseServices()
                         .checkIfCalculatedValuesDocumentExists();
-
                     if (documentExists) {
-                      // Document exists, navigate to the update screen
                       QuerySnapshot existingDocsSnapshot =
                           await FirebaseServices()
                               .firestore
@@ -117,18 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               .collection('calculatedValues')
                               .limit(1)
                               .get();
-                      // String existingDocId = existingDocsSnapshot.docs.first.id;
-                      // var loadData = await FirebaseServices()
-                      //     .fetchEntryForEditing(existingDocId);
-
                       Get.to(() => UpdateScreen(
                           homeController: homeController, isUpdate: true));
                     } else {
-                      // No document exists, create a new one
                       Get.to(() => LoadScreen(
-                            homeController: homeController,
-                            isUpdate: false,
-                          ));
+                          homeController: homeController, isUpdate: false));
                     }
                   },
                   butonText: 'Calculate',
@@ -174,32 +160,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              10.heightBox,
+              SizedBox(height: 10),
               CardWidget(
                 onTap: () {
                   Get.to(() => UpdateScreen(
-                        homeController: homeController,
-                        isUpdate: true,
-                      ));
+                      homeController: homeController, isUpdate: true));
                 },
                 butonText: 'Update',
                 cardText:
                     'This is a calculator where you can calculate your expanses',
                 cardColor: AppColor().primaryAppColor,
               ),
-              10.heightBox,
-              // CardWidget(
-              //   onTap: () {
-              //     // print(homeController.newDocumentId);
-              //     Get.to(() => HistoryScreen(), transition: Transition.fadeIn);
-              //   },
-              //   butonText: 'History',
-              //   cardText: 'This is a calculator where you can calculate your expanses',
-              //   cardColor: AppColor().primaryAppColor,
-              // ),
+              SizedBox(height: 10),
             ],
-          ),
-        ),
+          );
+        }),
       ),
     );
   }

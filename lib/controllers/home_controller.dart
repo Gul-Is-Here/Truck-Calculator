@@ -95,7 +95,14 @@ class HomeController extends GetxController {
     FirebaseServices().fetchFixedWeeklyCost(); // Fetch weekly fixed costs
     fetchMileageValues(); //  This Method is Used To fetch Intial Values of Trcuk Per Mileage fee Payments in Mileage Screen
     fetchTruckPaymentIntialValues(); // This Method is Used To fetch Intial Values of Trcuk monthly Payments in Calculator Screen
+    FirebaseServices().fetchIsEditabbleMilage();
+    FirebaseServices().fetchIsEditabbleTruckPayment();
   }
+
+  // void fetchInitialValues() async {
+  //   fTrcukPayment.value =  fetchMileageValues() as double;
+  //   fPermileageFee.value = await FirebaseServices().fetchMileageValues();
+  // }
 
   @override
   void onClose() {
@@ -443,4 +450,6 @@ class HomeController extends GetxController {
       perMileDriverPayController.text = fPerMileDriverPay.value.toString();
     }
   }
+
+  void fetchSomeValues() {}
 }

@@ -1,4 +1,5 @@
 import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import '../screens/auth_screens/login_screen.dart';
 import '../screens/auth_screens/otp_verification_screen.dart';
 import '../screens/auth_screens/otpverification_login.dart';
 import '../screens/home_screens/home_screen.dart';
+import '../services/firebase_services.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -18,7 +20,6 @@ class AuthController extends GetxController {
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
-
   // Ensure the phone number is in the correct format with the country code +1 for USA
   String _formatPhoneNumber(String phone) {
     return '+1$phone';
@@ -28,7 +29,6 @@ class AuthController extends GetxController {
     String name = nameController.text.trim();
     String email = emailController.text.trim();
     String phone = phoneController.text.trim();
-    
 
     if (name.isEmpty || email.isEmpty || phone.isEmpty) {
       Get.snackbar('Error', 'Please fill all fields',
@@ -114,6 +114,7 @@ class AuthController extends GetxController {
             this.verificationId.value = verificationId;
           },
         );
+
       } else {
         Get.snackbar('Error', 'Phone number does not exist',
             snackPosition: SnackPosition.BOTTOM);
@@ -178,9 +179,8 @@ class AuthController extends GetxController {
     phoneController.clear();
     emailController.clear();
     nameController.clear();
-  
-    try {
 
+    try {
       await _auth.signOut();
       Get.offAll(() => LoginScreen());
     } catch (e) {
