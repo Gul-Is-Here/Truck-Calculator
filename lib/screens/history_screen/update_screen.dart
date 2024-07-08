@@ -9,11 +9,24 @@ import 'package:intl/intl.dart';
 
 import '../../services/firebase_services.dart';
 
-class UpdateScreen extends StatelessWidget {
+class UpdateScreen extends StatefulWidget {
   final HomeController homeController;
   final bool isUpdate;
 
   const UpdateScreen({required this.homeController, required this.isUpdate});
+
+  @override
+  _UpdateScreenState createState() => _UpdateScreenState();
+}
+
+class _UpdateScreenState extends State<UpdateScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,100 +52,103 @@ class UpdateScreen extends StatelessWidget {
               return Center(child: Text('No update data available.'));
             }
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: const <DataColumn>[
-                  DataColumn(
-                    label: Text(
-                      'id',
-                      style: TextStyle(
-                          fontFamily: robotoRegular,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Date',
-                      style: TextStyle(
-                          fontFamily: robotoRegular,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Time',
-                      style: TextStyle(
-                          fontFamily: robotoRegular,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Action',
-                      style: TextStyle(
-                          fontFamily: robotoRegular,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-                rows: data.map<DataRow>((load) {
-                  var timestamp = (load['timestamp'] as Timestamp?)?.toDate();
-                  var date = timestamp != null
-                      ? DateFormat('yyyy-MM-dd').format(timestamp)
-                      : 'N/A';
-                  var time = timestamp != null
-                      ? DateFormat('HH:mm:ss').format(timestamp)
-                      : 'N/A';
-                  var loadId = load['id'] ??
-                      'Unknown'; // Ensure loadId is fetched properly
-                  return DataRow(
-                    cells: <DataCell>[
-                      DataCell(Text(loadId,
-                          style: TextStyle(
-                              fontFamily: robotoRegular,
-                              fontSize: 14))), // Using actual load id
-                      DataCell(Text(
-                        date,
-                        style:
-                            TextStyle(fontFamily: robotoRegular, fontSize: 14),
-                      )),
-                      DataCell(Text(time,
-                          style: TextStyle(
-                              fontFamily: robotoRegular, fontSize: 14))),
-                      DataCell(
-                        Row(
-                          children: [
-                            TextButton(
-                              onPressed: () async {
-                                var documentId = load['id'] as String?;
-                                if (documentId != null) {
-                                  var loadData = await FirebaseServices()
-                                      .fetchEntryForEditing(documentId);
-                                  Get.to(() => LoadScreen(
-                                        isUpdate: isUpdate,
-                                        documentId: documentId,
-                                        homeController: homeController,
-                                        loadData: loadData,
-                                      ));
-                                }
-                              },
-                              child: Text('Edit'),
-                            ),
-                            ElevatedButton(
-                                onPressed: FirebaseServices()
-                                    .transferAndDeleteWeeklyData,
-                                child: Text('Delete'))
-                          ],
-                        ),
+            return Scrollbar(
+              controller: _scrollController,
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                child: DataTable(
+                  columns: const <DataColumn>[
+                    DataColumn(
+                      label: Text(
+                        'ID',
+                        style: TextStyle(
+                            fontFamily: robotoRegular,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  );
-                }).toList(),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Date',
+                        style: TextStyle(
+                            fontFamily: robotoRegular,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Time',
+                        style: TextStyle(
+                            fontFamily: robotoRegular,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Action',
+                        style: TextStyle(
+                            fontFamily: robotoRegular,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                  rows: data.map<DataRow>((load) {
+                    var timestamp = (load['timestamp'] as Timestamp?)?.toDate();
+                    var date = timestamp != null
+                        ? DateFormat('yyyy-MM-dd').format(timestamp)
+                        : 'N/A';
+                    var time = timestamp != null
+                        ? DateFormat('HH:mm:ss').format(timestamp)
+                        : 'N/A';
+                    var loadId = load['id'] ?? 'Unknown';
+                    return DataRow(
+                      cells: <DataCell>[
+                        DataCell(Text(loadId,
+                            style: TextStyle(
+                                fontFamily: robotoRegular, fontSize: 14))),
+                        DataCell(Text(
+                          date,
+                          style: TextStyle(
+                              fontFamily: robotoRegular, fontSize: 14),
+                        )),
+                        DataCell(Text(time,
+                            style: TextStyle(
+                                fontFamily: robotoRegular, fontSize: 14))),
+                        DataCell(
+                          Row(
+                            children: [
+                              TextButton(
+                                onPressed: () async {
+                                  var documentId = load['id'] as String?;
+                                  if (documentId != null) {
+                                    var loadData = await FirebaseServices()
+                                        .fetchEntryForEditing(documentId);
+                                    Get.to(() => LoadScreen(
+                                          isUpdate: widget.isUpdate,
+                                          documentId: documentId,
+                                          homeController: widget.homeController,
+                                          loadData: loadData,
+                                        ));
+                                  }
+                                },
+                                child: Text('Edit'),
+                              ),
+                              ElevatedButton(
+                                  onPressed: FirebaseServices()
+                                      .transferAndDeleteWeeklyData,
+                                  child: Text('Delete'))
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
               ),
             );
           },

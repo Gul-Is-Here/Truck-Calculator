@@ -10,6 +10,7 @@ import 'package:dispatched_calculator_app/widgets/card_widget.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
@@ -24,6 +25,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HomeController homeController = Get.put(HomeController());
+  late BannerAd bannerAd;
+  bool isAdloaded = false;
+  var addUit = 'ca-app-pub-3940256099942544/9214589741';
 
   final GlobalKey mileageButtonKey = GlobalKey();
   final GlobalKey truckPaymentButtonKey = GlobalKey();
@@ -31,10 +35,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    initBannerAd();
     homeController.fetchMileageValues();
     homeController.fetchTruckPaymentIntialValues();
     FirebaseServices().fetchIsEditabbleMilage();
     FirebaseServices().fetchIsEditabbleTruckPayment();
+  }
+
+  initBannerAd() {
+    bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: addUit,
+        listener: BannerAdListener(onAdLoaded: (ad) {
+          setState(() {
+            isAdloaded = true;
+          });
+        }, onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          print(error);
+        }),
+        request: AdRequest());
+    bannerAd.load();
   }
 
   @override
@@ -48,6 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     return Scaffold(
+      bottomNavigationBar: isAdloaded
+          ? SizedBox(
+              height: bannerAd.size.height.toDouble(),
+              width: bannerAd.size.width.toDouble(),
+              child: AdWidget(ad: bannerAd),
+            )
+          : SizedBox(),
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: SafeArea(
@@ -60,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   AppClass().getGreeting(),
                   style: TextStyle(
                     fontFamily: robotoRegular,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                    // fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -70,6 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor().secondaryAppColor,
+                        foregroundColor: Colors.white),
                     key: mileageButtonKey,
                     onPressed: () async {
                       final result = await Get.to(() => MileageFeSection(
@@ -83,6 +114,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Cost Per Mile'),
                   ),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor().secondaryAppColor,
+                        foregroundColor: Colors.white),
                     key: truckPaymentButtonKey,
                     onPressed: () async {
                       final result = await Get.to(() => CalculatorScreen());
@@ -94,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               if (homeController.fTrcukPayment.value != 0.0 &&
                   homeController.fPermileageFee.value != 0.0)
                 CardWidget(
@@ -102,14 +136,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     bool documentExists = await FirebaseServices()
                         .checkIfCalculatedValuesDocumentExists();
                     if (documentExists) {
-                      QuerySnapshot existingDocsSnapshot =
-                          await FirebaseServices()
-                              .firestore
-                              .collection('users')
-                              .doc(FirebaseServices().auth.currentUser!.uid)
-                              .collection('calculatedValues')
-                              .limit(1)
-                              .get();
+                      await FirebaseServices()
+                          .firestore
+                          .collection('users')
+                          .doc(FirebaseServices().auth.currentUser!.uid)
+                          .collection('calculatedValues')
+                          .limit(1)
+                          .get();
                       Get.to(() => UpdateScreen(
                           homeController: homeController, isUpdate: true));
                     } else {
@@ -161,17 +194,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               SizedBox(height: 10),
-              CardWidget(
-                onTap: () {
-                  Get.to(() => UpdateScreen(
-                      homeController: homeController, isUpdate: true));
-                },
-                butonText: 'Update',
-                cardText:
-                    'This is a calculator where you can calculate your expanses',
-                cardColor: AppColor().primaryAppColor,
-              ),
-              SizedBox(height: 10),
+              // CardWidget(
+              //   onTap: () {
+              //     Get.to(() => UpdateScreen(
+              //         homeController: homeController, isUpdate: true));
+              //   },
+              //   butonText: 'Update',
+              //   cardText:
+              //       'This is a calculator where you can calculate your expanses',
+              //   cardColor: AppColor().primaryAppColor,
+              // ),
+              // SizedBox(height: 10),
             ],
           );
         }),

@@ -3,10 +3,9 @@ import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/screens/calculator_screen/calculator_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
+import 'package:dispatched_calculator_app/screens/history_screen/youtube_vedio_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -39,7 +38,7 @@ class MyDrawerWidget extends StatelessWidget {
                     color: AppColor().secondaryAppColor,
                     size: 30,
                   ),
-                  title: Text('Home Screen',
+                  title: Text('Dashboard',
                       style: TextStyle(
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor,
@@ -49,21 +48,7 @@ class MyDrawerWidget extends StatelessWidget {
                         transition: Transition.cupertino);
                   },
                 ),
-                // ListTile(
-                //   leading: Icon(
-                //     Icons.history,
-                //     color: AppColor().secondaryAppColor,
-                //     size: 30,
-                //   ),
-                //   title: Text('Truck Monthly Payment',
-                //       style: TextStyle(
-                //           fontSize: 18,
-                //           fontFamily: robotoRegular,
-                //           color: AppColor().primaryAppColor)),
-                //   onTap: () {
-                //     Get.to(() => CalculatorScreen());
-                //   },
-                // ),
+
                 // ListTile(
                 //   leading: Icon(
                 //     Icons.travel_explore,
@@ -93,6 +78,21 @@ class MyDrawerWidget extends StatelessWidget {
                           color: AppColor().primaryAppColor)),
                   onTap: () {
                     Get.to(() => HistoryScreen());
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.play_circle,
+                    color: AppColor().secondaryAppColor,
+                    size: 30,
+                  ),
+                  title: Text('Tutorial',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: robotoRegular,
+                          color: AppColor().primaryAppColor)),
+                  onTap: () {
+                    Get.to(() => TutorialScreen());
                   },
                 ),
                 ListTile(
