@@ -76,14 +76,29 @@ class HistoryScreen extends StatelessWidget {
           } else {
             var historyData = snapshot.data!;
 
+            // Sort the historyData by updateTime in descending order
+            historyData.sort((a, b) {
+              var aTime =
+                  a['data']['calculatedValues'][0]['updateTime']?.toDate() ??
+                      DateTime(1970);
+              var bTime =
+                  b['data']['calculatedValues'][0]['updateTime']?.toDate() ??
+                      DateTime(1970);
+              return bTime.compareTo(aTime);
+            });
+
             return ListView.builder(
               itemCount: historyData.length,
               itemBuilder: (context, index) {
                 Map<String, dynamic> document = historyData[index];
-                var timestamp = document['data']['updateTime'];
+                List<dynamic> calculatedValues =
+                    document['data']['calculatedValues'];
 
+                // Check if calculatedValues is not empty and get the first element's updateTime
                 DateTime dateTime;
-                if (timestamp != null) {
+                if (calculatedValues.isNotEmpty &&
+                    calculatedValues[0]['updateTime'] != null) {
+                  var timestamp = calculatedValues[0]['updateTime'];
                   if (timestamp is Timestamp) {
                     dateTime = timestamp.toDate();
                   } else if (timestamp is DateTime) {

@@ -287,7 +287,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 10.0),
+                                              horizontal: 10.0, vertical: 5),
                                           child: TextButton.icon(
                                             style: TextButton.styleFrom(
                                               side: BorderSide(
@@ -295,15 +295,18 @@ class _LoadScreenState extends State<LoadScreen> {
                                                       .secondaryAppColor),
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(10),
+                                                    BorderRadius.circular(5),
                                               ),
                                             ),
                                             onPressed: () => showAddLoadDialog(
                                                 context, widget.homeController),
-                                            icon: const Icon(Icons.add),
+                                            icon: const Icon(
+                                              Icons.add,
+                                              size: 14,
+                                            ),
                                             label: Text(
                                               'Add',
-                                              style: TextStyle(fontSize: 16),
+                                              style: TextStyle(fontSize: 14),
                                             ),
                                           ),
                                         ),
@@ -325,414 +328,352 @@ class _LoadScreenState extends State<LoadScreen> {
             ),
           ),
           Container(
-              padding: const EdgeInsets.all(16.0),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                   color: AppColor().primaryAppColor,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.elliptical(40, 40),
                   )),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        widget.isUpdate
-                            ? TextButton(
-                                style: TextButton.styleFrom(
-                                  side: const BorderSide(
-                                      width: 1, color: Colors.white),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  showConfirmationDialog(context, () async {
-                                    if (formKey.currentState!.validate()) {
-                                      if (widget.isUpdate) {
-                                        widget.homeController
-                                            .totalFreightCharges.value = 0.0;
-                                        widget.homeController
-                                            .totalDispatchedMiles.value = 0.0;
-                                        widget
-                                            .homeController
-                                            .totalEstimatedTollsCost
-                                            .value = 0.0;
-                                        widget.homeController.totalOtherCost
-                                            .value = 0.0;
-                                        for (int i = 0;
-                                            i <
-                                                widget
-                                                    .homeController
-                                                    .freightChargeControllers
-                                                    .length;
-                                            i++) {
-                                          widget.homeController.freightCharge
-                                              .value = double.tryParse(widget
-                                                  .homeController
-                                                  .freightChargeControllers[i]
-                                                  .text) ??
-                                              0.0;
-                                          widget.homeController.dispatchedMiles
-                                              .value = double.tryParse(widget
-                                                  .homeController
-                                                  .dispatchedMilesControllers[i]
-                                                  .text) ??
-                                              0.0;
-                                          widget.homeController.estimatedTolls
-                                              .value = double.tryParse(widget
-                                                  .homeController
-                                                  .estimatedTollsControllers[i]
-                                                  .text) ??
-                                              0.0;
-                                          widget.homeController.otherCost
-                                              .value = double.tryParse(widget
-                                                  .homeController
-                                                  .otherCostsControllers[i]
-                                                  .text) ??
-                                              0.0;
-
+              child: Column(
+                children: [
+                  widget.isUpdate
+                      ? TextButton(
+                          style: TextButton.styleFrom(
+                            side:
+                                const BorderSide(width: 1, color: Colors.white),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                          ),
+                          onPressed: () async {
+                            showConfirmationDialog(context, () async {
+                              if (formKey.currentState!.validate()) {
+                                if (widget.isUpdate) {
+                                  widget.homeController.totalFreightCharges
+                                      .value = 0.0;
+                                  widget.homeController.totalDispatchedMiles
+                                      .value = 0.0;
+                                  widget.homeController.totalEstimatedTollsCost
+                                      .value = 0.0;
+                                  widget.homeController.totalOtherCost.value =
+                                      0.0;
+                                  for (int i = 0;
+                                      i <
                                           widget.homeController
-                                                  .totalFreightCharges.value +=
-                                              widget.homeController
-                                                  .freightCharge.value;
-                                          widget.homeController
-                                                  .totalDispatchedMiles.value +=
-                                              widget.homeController
-                                                  .dispatchedMiles.value;
-                                          widget
-                                                  .homeController
-                                                  .totalEstimatedTollsCost
-                                                  .value +=
-                                              widget.homeController
-                                                  .estimatedTolls.value;
-                                          widget.homeController.totalOtherCost
-                                                  .value +=
-                                              widget.homeController.otherCost
-                                                  .value;
-                                        }
-                                        Map<String, dynamic> weeklyFixedCosts =
-                                            await FirebaseServices()
-                                                .fetchFixedWeeklyCost();
-
-                                        // Update with fetched values
-                                        widget.homeController.weeklyTruckPayment
-                                            .value = weeklyFixedCosts[
-                                                'weeklyTruckPayment'] ??
-                                            widget.homeController
-                                                .weeklyTruckPayment.value;
-                                        widget.homeController.weeklyInsurance
-                                            .value = weeklyFixedCosts[
-                                                'weeklyInsurancePayment'] ??
-                                            widget.homeController
-                                                .weeklyInsurance.value;
-                                        widget.homeController.weeklyTrailerLease
-                                            .value = weeklyFixedCosts[
-                                                'weeklyTrailerLease'] ??
-                                            widget.homeController
-                                                .weeklyTrailerLease.value;
-                                        widget.homeController.weeklyEldService
-                                            .value = weeklyFixedCosts[
-                                                'weeklyEldService'] ??
-                                            widget.homeController
-                                                .weeklyEldService.value;
-                                        widget
-                                            .homeController
-                                            .weeklyoverHeadAmount
-                                            .value = weeklyFixedCosts[
-                                                'monthlyOverheadCost'] ??
-                                            widget.homeController
-                                                .weeklyoverHeadAmount.value;
-                                        widget.homeController.weeklyOtherCost
-                                            .value = weeklyFixedCosts[
-                                                'monthlyOtherCost'] ??
-                                            widget.homeController
-                                                .weeklyOtherCost.value;
-                                        widget.homeController
-                                                .totalWeeklyFixedCost.value =
-                                            weeklyFixedCosts['weeklyFixedCost'];
-                                        // Fetch per-mile costs from Firebase
-                                        Map<String, double> perMileageCosts =
-                                            await FirebaseServices()
-                                                .fetchPerMileageAmount();
-                                        widget.homeController.permileageFee
-                                            .value = perMileageCosts[
-                                                'milageFeePerMile'] ??
+                                              .freightChargeControllers.length;
+                                      i++) {
+                                    widget.homeController.freightCharge.value =
+                                        double.tryParse(widget
+                                                .homeController
+                                                .freightChargeControllers[i]
+                                                .text) ??
                                             0.0;
-                                        widget.homeController.perMileFuel
-                                                .value =
-                                            perMileageCosts['fuelFeePerMile'] ??
-                                                0.0;
-                                        widget.homeController.perMileDef.value =
-                                            perMileageCosts['defFeePerMile'] ??
-                                                0.0;
-                                        widget.homeController.perMileDriverPay
-                                            .value = perMileageCosts[
-                                                'driverPayFeePerMile'] ??
+                                    widget.homeController.dispatchedMiles
+                                        .value = double.tryParse(widget
+                                            .homeController
+                                            .dispatchedMilesControllers[i]
+                                            .text) ??
+                                        0.0;
+                                    widget.homeController.estimatedTolls.value =
+                                        double.tryParse(widget
+                                                .homeController
+                                                .estimatedTollsControllers[i]
+                                                .text) ??
+                                            0.0;
+                                    widget.homeController.otherCost.value =
+                                        double.tryParse(widget
+                                                .homeController
+                                                .otherCostsControllers[i]
+                                                .text) ??
                                             0.0;
 
-                                        // Calculate total factoring fee
-                                        widget.homeController.totalFactoringFee
-                                            .value = (widget.homeController
-                                                    .totalFreightCharges.value *
-                                                2) /
-                                            100;
+                                    widget.homeController.totalFreightCharges
+                                            .value +=
+                                        widget
+                                            .homeController.freightCharge.value;
+                                    widget.homeController.totalDispatchedMiles
+                                            .value +=
+                                        widget.homeController.dispatchedMiles
+                                            .value;
+                                    widget.homeController
+                                            .totalEstimatedTollsCost.value +=
+                                        widget.homeController.estimatedTolls
+                                            .value;
+                                    widget.homeController.totalOtherCost
+                                            .value +=
+                                        widget.homeController.otherCost.value;
+                                  }
+                                  Map<String, dynamic> weeklyFixedCosts =
+                                      await FirebaseServices()
+                                          .fetchFixedWeeklyCost();
 
-                                        // Calculate total mileage cost
-                                        widget.homeController.totalMilageCost.value = (widget
-                                                    .homeController
-                                                    .permileageFee
-                                                    .value *
-                                                widget
-                                                    .homeController
-                                                    .totalDispatchedMiles
-                                                    .value) +
-                                            (widget.homeController.perMileFuel.value *
-                                                widget
-                                                    .homeController
-                                                    .totalDispatchedMiles
-                                                    .value) +
-                                            (widget.homeController.perMileDef.value *
-                                                widget
-                                                    .homeController
-                                                    .totalDispatchedMiles
-                                                    .value) +
-                                            ((widget
-                                                        .homeController
-                                                        .perMileDriverPay
-                                                        .value *
+                                  // Update with fetched values
+                                  widget.homeController.weeklyTruckPayment
+                                          .value =
+                                      weeklyFixedCosts['weeklyTruckPayment'] ??
+                                          widget.homeController
+                                              .weeklyTruckPayment.value;
+                                  widget.homeController.weeklyInsurance.value =
+                                      weeklyFixedCosts[
+                                              'weeklyInsurancePayment'] ??
+                                          widget.homeController.weeklyInsurance
+                                              .value;
+                                  widget.homeController.weeklyTrailerLease
+                                          .value =
+                                      weeklyFixedCosts['weeklyTrailerLease'] ??
+                                          widget.homeController
+                                              .weeklyTrailerLease.value;
+                                  widget.homeController.weeklyEldService.value =
+                                      weeklyFixedCosts['weeklyEldService'] ??
+                                          widget.homeController.weeklyEldService
+                                              .value;
+                                  widget.homeController.weeklyoverHeadAmount
+                                          .value =
+                                      weeklyFixedCosts['monthlyOverheadCost'] ??
+                                          widget.homeController
+                                              .weeklyoverHeadAmount.value;
+                                  widget.homeController.weeklyOtherCost.value =
+                                      weeklyFixedCosts['monthlyOtherCost'] ??
+                                          widget.homeController.weeklyOtherCost
+                                              .value;
+                                  widget.homeController.totalWeeklyFixedCost
+                                          .value =
+                                      weeklyFixedCosts['weeklyFixedCost'];
+                                  // Fetch per-mile costs from Firebase
+                                  Map<String, double> perMileageCosts =
+                                      await FirebaseServices()
+                                          .fetchPerMileageAmount();
+                                  widget.homeController.permileageFee.value =
+                                      perMileageCosts['milageFeePerMile'] ??
+                                          0.0;
+                                  widget.homeController.perMileFuel.value =
+                                      perMileageCosts['fuelFeePerMile'] ?? 0.0;
+                                  widget.homeController.perMileDef.value =
+                                      perMileageCosts['defFeePerMile'] ?? 0.0;
+                                  widget.homeController.perMileDriverPay.value =
+                                      perMileageCosts['driverPayFeePerMile'] ??
+                                          0.0;
+
+                                  // Calculate total factoring fee
+                                  widget.homeController.totalFactoringFee
+                                      .value = (widget.homeController
+                                              .totalFreightCharges.value *
+                                          2) /
+                                      100;
+
+                                  // Calculate total mileage cost
+                                  widget.homeController.totalMilageCost
+                                      .value = (widget.homeController
+                                              .permileageFee.value *
+                                          widget.homeController
+                                              .totalDispatchedMiles.value) +
+                                      (widget.homeController.perMileFuel.value *
+                                          widget.homeController
+                                              .totalDispatchedMiles.value) +
+                                      (widget
+                                              .homeController.perMileDef.value *
+                                          widget.homeController
+                                              .totalDispatchedMiles.value) +
+                                      ((widget.homeController.perMileDriverPay
+                                                  .value *
+                                              widget.homeController
+                                                  .totalDispatchedMiles.value) *
+                                          1.2) +
+                                      widget.homeController.totalFactoringFee
+                                          .value;
+                                  widget.homeController.totalProfit.value = widget
+                                          .homeController
+                                          .totalFreightCharges
+                                          .value -
+                                      widget.homeController.totalWeeklyFixedCost
+                                          .value -
+                                      widget.homeController.totalMilageCost
+                                          .value -
+                                      widget.homeController
+                                          .totalEstimatedTollsCost.value -
+                                      widget
+                                          .homeController.totalOtherCost.value;
+
+                                  FirebaseServices().updateEntry(
+                                    documentId: widget.documentId!,
+                                    data: {
+                                      'totalFreightCharges': widget
+                                          .homeController
+                                          .totalFreightCharges
+                                          .value,
+                                      'totalDispatchedMiles': widget
+                                          .homeController
+                                          .totalDispatchedMiles
+                                          .value,
+                                      'totalMileageCost': widget
+                                          .homeController.totalMilageCost.value,
+                                      'timestamp': FieldValue.serverTimestamp(),
+                                      'updateTime': DateTime.now(),
+                                      'loads': List.generate(
+                                        widget.homeController
+                                            .freightChargeControllers.length,
+                                        (index) {
+                                          return {
+                                            'freightCharge': double.tryParse(
                                                     widget
                                                         .homeController
-                                                        .totalDispatchedMiles
-                                                        .value) *
-                                                1.2) +
-                                            widget.homeController
-                                                .totalFactoringFee.value;
-                                        widget.homeController.totalProfit.value = widget
-                                                .homeController
-                                                .totalFreightCharges
-                                                .value -
-                                            widget.homeController
-                                                .totalWeeklyFixedCost.value -
-                                            widget.homeController
-                                                .totalMilageCost.value -
-                                            widget.homeController
-                                                .totalEstimatedTollsCost.value -
-                                            widget.homeController.totalOtherCost
-                                                .value;
+                                                        .freightChargeControllers[
+                                                            index]
+                                                        .text) ??
+                                                0.0,
+                                            'dispatchedMiles': double.tryParse(
+                                                    widget
+                                                        .homeController
+                                                        .dispatchedMilesControllers[
+                                                            index]
+                                                        .text) ??
+                                                0.0,
+                                            'estimatedTolls': double.tryParse(
+                                                    widget
+                                                        .homeController
+                                                        .estimatedTollsControllers[
+                                                            index]
+                                                        .text) ??
+                                                0.0,
+                                            'otherCosts': double.tryParse(widget
+                                                    .homeController
+                                                    .otherCostsControllers[
+                                                        index]
+                                                    .text) ??
+                                                0.0,
+                                          };
+                                        },
+                                      ),
+                                      'totalFactoringFee': widget.homeController
+                                          .totalFactoringFee.value,
+                                      'totalProfit': widget
+                                          .homeController.totalProfit.value,
+                                    },
+                                  );
+                                  widget.homeController
+                                      .calculateVariableCosts();
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                  Get.to(() => ResultsScreen(
+                                      homeController: widget.homeController));
+                                } else {
+                                  widget.homeController
+                                      .calculateVariableCosts();
+                                  FirebaseServices().storeCalculatedValues(
+                                    totalFactoringFee: widget
+                                        .homeController.totalFactoringFee.value,
+                                    totalFreightCharges: widget.homeController
+                                        .totalFreightCharges.value,
+                                    totalDispatchedMiles: widget.homeController
+                                        .totalDispatchedMiles.value,
+                                    totalMileageCost: widget
+                                        .homeController.totalMilageCost.value,
+                                    totalProfit:
+                                        widget.homeController.totalProfit.value,
+                                    freightChargeControllers: widget
+                                        .homeController.freightChargeControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    dispatchedMilesControllers: widget
+                                        .homeController
+                                        .dispatchedMilesControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    estimatedTollsControllers: widget
+                                        .homeController
+                                        .estimatedTollsControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    otherCostsControllers: widget
+                                        .homeController.otherCostsControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    context: context,
+                                    homeController: widget.homeController,
+                                  );
 
-                                        FirebaseServices().updateEntry(
-                                          documentId: widget.documentId!,
-                                          data: {
-                                            'totalFreightCharges': widget
-                                                .homeController
-                                                .totalFreightCharges
-                                                .value,
-                                            'totalDispatchedMiles': widget
-                                                .homeController
-                                                .totalDispatchedMiles
-                                                .value,
-                                            'totalMileageCost': widget
-                                                .homeController
-                                                .totalMilageCost
-                                                .value,
-                                            'timestamp':
-                                                FieldValue.serverTimestamp(),
-                                            'updateTime': DateTime.now(),
-                                            'loads': List.generate(
-                                              widget
-                                                  .homeController
-                                                  .freightChargeControllers
-                                                  .length,
-                                              (index) {
-                                                return {
-                                                  'freightCharge':
-                                                      double.tryParse(widget
-                                                              .homeController
-                                                              .freightChargeControllers[
-                                                                  index]
-                                                              .text) ??
-                                                          0.0,
-                                                  'dispatchedMiles':
-                                                      double.tryParse(widget
-                                                              .homeController
-                                                              .dispatchedMilesControllers[
-                                                                  index]
-                                                              .text) ??
-                                                          0.0,
-                                                  'estimatedTolls':
-                                                      double.tryParse(widget
-                                                              .homeController
-                                                              .estimatedTollsControllers[
-                                                                  index]
-                                                              .text) ??
-                                                          0.0,
-                                                  'otherCosts': double.tryParse(
-                                                          widget
-                                                              .homeController
-                                                              .otherCostsControllers[
-                                                                  index]
-                                                              .text) ??
-                                                      0.0,
-                                                };
-                                              },
-                                            ),
-                                            'totalFactoringFee': widget
-                                                .homeController
-                                                .totalFactoringFee
-                                                .value,
-                                            'totalProfit': widget.homeController
-                                                .totalProfit.value,
-                                          },
-                                        );
-                                        widget.homeController
-                                            .calculateVariableCosts();
-                                        Navigator.of(context)
-                                            .pop(); // Close the dialog
-                                        Get.to(() => ResultsScreen(
-                                            homeController:
-                                                widget.homeController));
-                                      } else {
-                                        widget.homeController
-                                            .calculateVariableCosts();
-                                        FirebaseServices()
-                                            .storeCalculatedValues(
-                                          totalFactoringFee: widget
-                                              .homeController
-                                              .totalFactoringFee
-                                              .value,
-                                          totalFreightCharges: widget
-                                              .homeController
-                                              .totalFreightCharges
-                                              .value,
-                                          totalDispatchedMiles: widget
-                                              .homeController
-                                              .totalDispatchedMiles
-                                              .value,
-                                          totalMileageCost: widget
-                                              .homeController
-                                              .totalMilageCost
-                                              .value,
-                                          totalProfit: widget
-                                              .homeController.totalProfit.value,
-                                          freightChargeControllers: widget
-                                              .homeController
-                                              .freightChargeControllers
-                                              .map((controller) =>
-                                                  controller.text)
-                                              .toList(),
-                                          dispatchedMilesControllers: widget
-                                              .homeController
-                                              .dispatchedMilesControllers
-                                              .map((controller) =>
-                                                  controller.text)
-                                              .toList(),
-                                          estimatedTollsControllers: widget
-                                              .homeController
-                                              .estimatedTollsControllers
-                                              .map((controller) =>
-                                                  controller.text)
-                                              .toList(),
-                                          otherCostsControllers: widget
-                                              .homeController
-                                              .otherCostsControllers
-                                              .map((controller) =>
-                                                  controller.text)
-                                              .toList(),
-                                          context: context,
-                                          homeController: widget.homeController,
-                                        );
+                                  Get.snackbar(
+                                      'Success', 'Data submitted successfully',
+                                      colorText: Colors.white);
 
-                                        Get.snackbar('Success',
-                                            'Data submitted successfully',
-                                            colorText: Colors.white);
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                  Get.to(() => ResultsScreen(
+                                      homeController: widget.homeController));
+                                }
+                              }
+                            });
+                          },
+                          child: const Text(
+                            textAlign: TextAlign.center,
+                            'Update',
+                            style: TextStyle(
+                                color: Colors.white, fontFamily: robotoRegular),
+                          ),
+                        )
+                      : TextButton(
+                          style: ElevatedButton.styleFrom(
+                            side:
+                                const BorderSide(width: 1, color: Colors.white),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                          ),
+                          onPressed: () {
+                            showConfirmationDialog(context, () {
+                              if (formKey.currentState!.validate()) {
+                                widget.homeController.calculateVariableCosts();
 
-                                        Navigator.of(context)
-                                            .pop(); // Close the dialog
-                                        Get.to(() => ResultsScreen(
-                                            homeController:
-                                                widget.homeController));
-                                      }
-                                    }
-                                  });
-                                },
-                                child: const Text(
-                                  textAlign: TextAlign.center,
-                                  'Update',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: robotoRegular),
-                                ),
-                              )
-                            : TextButton(
-                                style: ElevatedButton.styleFrom(
-                                  side: const BorderSide(
-                                      width: 1, color: Colors.white),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  showConfirmationDialog(context, () {
-                                    if (formKey.currentState!.validate()) {
-                                      widget.homeController
-                                          .calculateVariableCosts();
+                                FirebaseServices().storeCalculatedValues(
+                                    totalFactoringFee: widget
+                                        .homeController.totalFactoringFee.value,
+                                    totalFreightCharges: widget.homeController
+                                        .totalFreightCharges.value,
+                                    totalDispatchedMiles: widget.homeController
+                                        .totalDispatchedMiles.value,
+                                    totalMileageCost: widget
+                                        .homeController.totalMilageCost.value,
+                                    totalProfit:
+                                        widget.homeController.totalProfit.value,
+                                    freightChargeControllers: widget
+                                        .homeController.freightChargeControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    dispatchedMilesControllers: widget
+                                        .homeController
+                                        .dispatchedMilesControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    estimatedTollsControllers: widget
+                                        .homeController
+                                        .estimatedTollsControllers
+                                        .map((controller) => controller.text)
+                                        .toList(),
+                                    otherCostsControllers: widget.homeController.otherCostsControllers.map((controller) => controller.text).toList(),
+                                    context: context,
+                                    homeController: widget.homeController);
 
-                                      FirebaseServices().storeCalculatedValues(
-                                          totalFactoringFee: widget
-                                              .homeController
-                                              .totalFactoringFee
-                                              .value,
-                                          totalFreightCharges: widget
-                                              .homeController
-                                              .totalFreightCharges
-                                              .value,
-                                          totalDispatchedMiles: widget
-                                              .homeController
-                                              .totalDispatchedMiles
-                                              .value,
-                                          totalMileageCost: widget
-                                              .homeController
-                                              .totalMilageCost
-                                              .value,
-                                          totalProfit: widget
-                                              .homeController.totalProfit.value,
-                                          freightChargeControllers: widget
-                                              .homeController
-                                              .freightChargeControllers
-                                              .map((controller) =>
-                                                  controller.text)
-                                              .toList(),
-                                          dispatchedMilesControllers:
-                                              widget.homeController.dispatchedMilesControllers.map((controller) => controller.text).toList(),
-                                          estimatedTollsControllers: widget.homeController.estimatedTollsControllers.map((controller) => controller.text).toList(),
-                                          otherCostsControllers: widget.homeController.otherCostsControllers.map((controller) => controller.text).toList(),
-                                          context: context,
-                                          homeController: widget.homeController);
+                                Get.snackbar(
+                                    'Success', 'Data submitted successfully',
+                                    // backgroundColor: Colors.deepPurpleAccent,
+                                    colorText: Colors.white);
 
-                                      Get.snackbar('Success',
-                                          'Data submitted successfully',
-                                          // backgroundColor: Colors.deepPurpleAccent,
-                                          colorText: Colors.white);
-
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                      Get.to(() => ResultsScreen(
-                                          homeController:
-                                              widget.homeController));
-                                    }
-                                  });
-                                },
-                                child: const Text(
-                                  textAlign: TextAlign.center,
-                                  'Submit',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: robotoRegular),
-                                ),
-                              ),
-                      ],
-                    ),
-                  ]))
+                                Navigator.of(context).pop(); // Close the dialog
+                                Get.to(() => ResultsScreen(
+                                    homeController: widget.homeController));
+                              }
+                            });
+                          },
+                          child: const Text(
+                            textAlign: TextAlign.center,
+                            'Submit',
+                            style: TextStyle(
+                                color: Colors.white, fontFamily: robotoRegular),
+                          ),
+                        ),
+                ],
+              ))
         ],
       ),
     );

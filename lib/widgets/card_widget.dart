@@ -1,3 +1,4 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -19,7 +20,12 @@ class CardWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: AppColor().secondaryAppColor),
+          borderRadius: BorderRadius.circular(
+            10,
+          ),
+        ),
         elevation: 10,
         child: SizedBox(
           height: MediaQuery.of(context).size.height * .18,
@@ -33,7 +39,10 @@ class CardWidget extends StatelessWidget {
                 onPressed: onTap,
                 child: Text(
                   butonText,
-                  style: TextStyle(fontSize: 24, fontFamily: robotoRegular,color: cardColor),
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontFamily: robotoRegular,
+                      color: cardColor),
                 ),
               ),
               Padding(
@@ -41,10 +50,7 @@ class CardWidget extends StatelessWidget {
                 child: Text(
                   textAlign: TextAlign.center,
                   cardText,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: cardColor
-                  ),
+                  style: TextStyle(fontSize: 12, color: cardColor),
                 ),
               )
             ],

@@ -192,7 +192,7 @@ class FirebaseServices {
           await doc.reference.update({
             'isEditabbleMilage': !currentIsEditableMileage,
           });
-         
+
           print(
               'isEditableMileage updated successfully: ${!currentIsEditableMileage}');
         } else {
@@ -364,14 +364,14 @@ class FirebaseServices {
           double weeklyEldService = data['weeklyEldService'] ?? 0.0;
 
           // Debug prints for verification
-          print('Fetching weekly fixed costs:');
-          print('truckPayment: $truckPayment');
-          print('truckInsurance: $truckInsurance');
-          print('trailerLease: $trailerLease');
-          print('eldService: $eldService');
-          print('overheadCost: $overheadCost');
-          print('otherCost: $otherCost');
-          print('weeklyFixedCost: $weeklyFixedCost');
+          // print('Fetching weekly fixed costs:');
+          // print('truckPayment: $truckPayment');
+          // print('truckInsurance: $truckInsurance');
+          // print('trailerLease: $trailerLease');
+          // print('eldService: $eldService');
+          // print('overheadCost: $overheadCost');
+          // print('otherCost: $otherCost');
+          // print('weeklyFixedCost: $weeklyFixedCost');
 
           return {
             'monthlyTruckPayment': truckPayment,
@@ -695,9 +695,11 @@ class FirebaseServices {
 
         // Calculate the start and end dates of the current week
         DateTime now = DateTime.now();
-        DateTime startOfWeek =
-            DateTime(now.year, now.month, now.day - now.weekday);
-        DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+        DateTime startOfWeek = DateTime(
+            now.year, now.month, now.day - now.weekday + 1); // Monday as start
+        DateTime endOfWeek =
+            startOfWeek.add(Duration(days: 6)); // Sunday as end
+
         print('Current date time : $now');
         print('Start of the week : $startOfWeek');
         print('End of the week : $endOfWeek');
@@ -722,7 +724,9 @@ class FirebaseServices {
         Map<String, dynamic> combinedData = {
           'calculatedValues': [],
           'mileageFee': [],
-          'truckPayment': []
+          'truckPayment': [],
+          'transferTimestamp': FieldValue
+              .serverTimestamp() // Add a timestamp for when the transfer happens
         };
 
         // Add calculated values data
@@ -780,6 +784,9 @@ class FirebaseServices {
         return {
           'id': doc.id,
           'data': doc.data() as Map<String, dynamic>,
+          'timestamp':
+              (doc.data() as Map<String, dynamic>)['transferTimestamp'] ??
+                  FieldValue.serverTimestamp(),
         };
       }).toList();
 
