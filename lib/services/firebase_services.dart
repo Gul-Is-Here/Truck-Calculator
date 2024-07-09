@@ -17,8 +17,6 @@ class FirebaseServices {
     required double tWeeklyInsurance,
     required double tWeeklyTrailerLease,
     required double tWeeklyEldService,
-    // required double tWeeklyOverheadAmount,
-    // required double tWeeklyOtherCost,
     required double weeklyTruckPayment,
     required double weeklyTrailerLease,
     required double weeklyEldService,
@@ -362,17 +360,6 @@ class FirebaseServices {
           double weeklyTrailerLease = data['weeklyTrailerLease'] ?? 0.0;
           double weeklyInsurancePayment = data['weeklyInsurancePayment'] ?? 0.0;
           double weeklyEldService = data['weeklyEldService'] ?? 0.0;
-
-          // Debug prints for verification
-          // print('Fetching weekly fixed costs:');
-          // print('truckPayment: $truckPayment');
-          // print('truckInsurance: $truckInsurance');
-          // print('trailerLease: $trailerLease');
-          // print('eldService: $eldService');
-          // print('overheadCost: $overheadCost');
-          // print('otherCost: $otherCost');
-          // print('weeklyFixedCost: $weeklyFixedCost');
-
           return {
             'monthlyTruckPayment': truckPayment,
             'monthlyTruckInsurance': truckInsurance,
@@ -387,13 +374,14 @@ class FirebaseServices {
             'weeklyEldService': weeklyEldService,
           };
         } else {
-          print('No document found in Firestore for WeeklyFixedCost');
+     
         }
+      // ignore: empty_catches
       } catch (e) {
-        print('Error fetching values from Firestore: $e');
+    
       }
     } else {
-      print('No user signed in');
+      
     }
 
     // Return an empty map or default values in case of error or no data found
@@ -481,13 +469,11 @@ class FirebaseServices {
             }),
           });
 
-          print('Loads values stored successfully in Firestore');
         }
       } catch (e) {
         print('Error storing values in Firestore: $e');
       }
     } else {
-      print('No user signed in');
     }
   }
 
@@ -505,11 +491,9 @@ class FirebaseServices {
 
         return existingDocsSnapshot.docs.isNotEmpty;
       } catch (e) {
-        print('Error checking if document exists: $e');
         return false;
       }
     } else {
-      print('No user signed in');
       return false;
     }
   }
@@ -622,67 +606,6 @@ class FirebaseServices {
     }
     return [];
   }
-
-  // A method to delete data from calculatedValues Collection and transfer to History Collection
-
-  // Future<void> transferAndDeleteWeeklyData() async {
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  //   if (user != null) {
-  //     try {
-  //       // Get a reference to the user's document
-  //       DocumentReference userDocRef =
-  //           firestore.collection('users').doc(user.uid);
-
-  //       // Calculate the start and end dates of the current week
-  //       DateTime now = DateTime.now();
-  //       DateTime startOfWeek =
-  //           DateTime(now.year, now.month, now.day - now.weekday);
-  //       DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
-  //       print('Current date time : $now');
-  //       print('Start of the week : $startOfWeek');
-  //       print('End of the week : $endOfWeek');
-
-  //       // Query documents in the calculatedValues subcollection within the current week
-  //       QuerySnapshot querySnapshot = await userDocRef
-  //           .collection('calculatedValues')
-  //           .where('timestamp',
-  //               isGreaterThanOrEqualTo: startOfWeek,
-  //               isLessThanOrEqualTo: endOfWeek)
-  //           .get();
-
-  //       // Transfer each document to the history subcollection and delete from calculatedValues
-  //       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-  //         try {
-  //           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-  //           // Set a new document in the history collection with a unique ID
-  //           await userDocRef.collection('history').doc(doc.id).set(data);
-
-  //           // Delete the document from the calculatedValues collection
-  //           await userDocRef
-  //               .collection('calculatedValues')
-  //               .doc(doc.id)
-  //               .delete();
-
-  //           print(
-  //               'Document transferred to history and original document deleted successfully.');
-  //         } catch (e) {
-  //           print('Error processing document with ID ${doc.id}: $e');
-  //         }
-  //       }
-
-  //       print('Weekly data transfer and deletion completed.');
-  //     } catch (e) {
-  //       print(
-  //           'Error transferring data to history and deleting original documents: $e');
-  //     }
-  //   } else {
-  //     print('No user signed in');
-  //   }
-  // }
-
   Future<void> transferAndDeleteWeeklyData() async {
     User? user = FirebaseAuth.instance.currentUser;
     FirebaseFirestore firestore = FirebaseFirestore.instance;

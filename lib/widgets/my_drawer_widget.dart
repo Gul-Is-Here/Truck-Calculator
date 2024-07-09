@@ -4,7 +4,7 @@ import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
-import 'package:dispatched_calculator_app/screens/history_screen/youtube_vedio_screen.dart';
+import 'package:dispatched_calculator_app/screens/history_screen/tutorial_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
