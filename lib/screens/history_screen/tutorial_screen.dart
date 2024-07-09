@@ -18,7 +18,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
     super.initState();
     _flickManager = FlickManager(
         videoPlayerController: VideoPlayerController.networkUrl(Uri.parse(
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'))
+            'https://drive.google.com/uc?export=download&id=1RGWL7XViKfX5Is2XRYZZQwZAWEq5ckEd'))
           ..initialize().then((_) {
             setState(() {});
           }));
@@ -34,7 +34,9 @@ class _TutorialScreenState extends State<TutorialScreen> {
       body: Center(
         child: AspectRatio(
             aspectRatio: 16 / 10,
-            child: FlickVideoPlayer(flickManager: _flickManager)),
+            child: FlickVideoPlayer(
+              flickManager: _flickManager,
+            )),
       ),
     );
   }
