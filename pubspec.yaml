@@ -19,7 +19,6 @@ dependencies:
   tutorial_coach_mark: ^1.2.11
   shared_preferences: ^2.2.3
   google_mobile_ads: ^5.1.0
-  uuid: ^4.4.0
   youtube_player_flutter: ^9.0.1
   flutter_inappwebview: ^6.0.0
   webview_flutter_android: ^3.16.4
