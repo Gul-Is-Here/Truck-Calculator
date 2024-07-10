@@ -1,13 +1,10 @@
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/controllers/histroy_controller.dart';
-import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/widgets/custome_row_widget.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
-import '../../widgets/custome_history_card_widget.dart';
 
 class HistoryDetailsScreen extends StatelessWidget {
   final String documentId;

@@ -75,12 +75,12 @@ class _MileageFeSectionState extends State<MileageFeSection> {
     bool? shouldSubmit = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirm Submission'),
-        content: Text('Are you sure you want to submit the data?'),
+        title: const Text('Confirm Submission'),
+        content: const Text('Are you sure you want to submit the data?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(
+            child: const Text(
               'No',
               style: TextStyle(color: Colors.red, fontFamily: robotoRegular),
             ),
@@ -109,12 +109,12 @@ class _MileageFeSectionState extends State<MileageFeSection> {
     bool? shouldEdit = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Confirm Edit'),
-        content: Text('Are you sure you want to edit?'),
+        title: const Text('Confirm Edit'),
+        content: const Text('Are you sure you want to edit?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(
+            child: const Text(
               'No',
               style: TextStyle(color: Colors.red, fontFamily: robotoRegular),
             ),
@@ -135,7 +135,7 @@ class _MileageFeSectionState extends State<MileageFeSection> {
                   await FirebaseServices().fetchIsEditabbleMilage();
               widget.homeController.isEditableMilage.value =
                   widget.homeController.updatedIsEditableMilage.value;
-              Future.delayed((Duration(seconds: 3)));
+              Future.delayed((const Duration(seconds: 3)));
               Navigator.of(context).pop(true);
             },
             child: Text(
@@ -166,7 +166,7 @@ class _MileageFeSectionState extends State<MileageFeSection> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -178,19 +178,19 @@ class _MileageFeSectionState extends State<MileageFeSection> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: IconButton(
                               onPressed: () {
                                 showEditConfirmationDialog(context);
                               },
-                              icon: Icon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       buildRowForMileage(
                         intialValue: widget.homeController.fPermileageFee.value
                             .toString(),
@@ -243,7 +243,7 @@ class _MileageFeSectionState extends State<MileageFeSection> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             const SizedBox(height: 20),
             Obx(
               () => widget.homeController.isEditableMilage.value
@@ -258,7 +258,7 @@ class _MileageFeSectionState extends State<MileageFeSection> {
                       onPressed: () {
                         showSubmitConfirmationDialog(context);
                       },
-                      child: Text('Submit'),
+                      child: const Text('Submit'),
                     )
                   : Container(),
             ),

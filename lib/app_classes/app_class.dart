@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 class AppClass {
   final GlobalKey mileageButtonKey = GlobalKey();
   final GlobalKey truckPaymentButtonKey = GlobalKey();
@@ -8,7 +7,6 @@ class AppClass {
   // Greeting Method
   String getGreeting() {
     final hour = DateTime.now().hour;
-    print(hour);
     if (hour < 12) {
       return 'Good Morning!';
     } else if (hour < 17) {
