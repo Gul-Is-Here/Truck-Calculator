@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:d_chart/bar_custom/view.dart';
+import 'package:d_chart/commons/data_model.dart';
+import 'package:d_chart/ordinal/bar.dart';
 
-class FirebaseServices {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-}
+import '../../services/firebase_services.dart';
 
 class ProfitBarChartScreen extends StatelessWidget {
-  const ProfitBarChartScreen({super.key});
-
-  Future<List<DChartBarDataCustom>> _fetchProfitData() async {
+  ProfitBarChartScreen({super.key});
+  final List<OrdinalData> chartData = [];
+  Future<List<OrdinalGroup>> _fetchProfitData() async {
     final User? user = FirebaseServices().auth.currentUser;
 
     if (user == null) {
@@ -32,8 +30,6 @@ class ProfitBarChartScreen extends StatelessWidget {
         return [];
       }
 
-      final List<DChartBarDataCustom> chartData = [];
-
       for (var doc in querySnapshot.docs) {
         var data = doc.data() as Map<String, dynamic>;
         print('Document data: $data');
@@ -52,22 +48,23 @@ class ProfitBarChartScreen extends StatelessWidget {
             }
           }
 
-          String timestamp = data['timestamp'] ?? 'Unknown Date';
-          chartData.add(DChartBarDataCustom(
-            elevation: 1,
-            value: totalProfit,
-            label: timestamp,
-            showValue: true,
-            valueTooltip: '\$${totalProfit.toStringAsFixed(2)}',
-            color: Colors.teal, // Customize the color as needed
-          ));
+          String timestamp = data.containsKey('timestamp')
+              ? (data['timestamp'] as Timestamp).toDate().toString()
+              : 'Unknown Date';
+
+          chartData.add(OrdinalData(domain: timestamp, measure: totalProfit));
         } else {
           print('Missing calculatedValues in: $data');
         }
       }
 
       print('Chart data length: ${chartData.length}');
-      return chartData;
+      return [
+        OrdinalGroup(
+          id: 'Profit',
+          data: chartData,
+        ),
+      ];
     } catch (e) {
       print('Error fetching history data: $e');
       return [];
@@ -76,6 +73,7 @@ class ProfitBarChartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Charter Date : $chartData');
     return Scaffold(
       appBar: AppBar(
         title: Text('Profit Bar Chart'),
@@ -105,7 +103,7 @@ class ProfitBarChartScreen extends StatelessWidget {
             ),
             SizedBox(height: 30),
             Expanded(
-              child: FutureBuilder<List<DChartBarDataCustom>>(
+              child: FutureBuilder<List<OrdinalGroup>>(
                 future: _fetchProfitData(),
                 builder: (context, snapshot) {
                   print('Snapshot data: ${snapshot.data}');
@@ -117,11 +115,13 @@ class ProfitBarChartScreen extends StatelessWidget {
                     return Center(child: Text('No data available'));
                   } else {
                     return Center(
-                      child: SizedBox(
-                        height: 0.0,
-                        child: DChartBarCustom(
-                          loadingDuration: Duration(seconds: 2),
-                          listData: [...snapshot.data!],
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: DChartBarO(
+                            groupList: snapshot.data!,
+                          ),
                         ),
                       ),
                     );

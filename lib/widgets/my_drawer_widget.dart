@@ -108,7 +108,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => const ProfitBarChartScreen());
+                    Get.to(() => ProfitBarChartScreen());
                   },
                 ),
                 ListTile(
