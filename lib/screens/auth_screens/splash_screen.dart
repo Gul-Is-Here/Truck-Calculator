@@ -1,4 +1,5 @@
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/main.dart';
 import 'package:dispatched_calculator_app/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/login_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -23,34 +25,9 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     FirebaseServices().fetchIsEditabbleTruckPayment();
     FirebaseServices().fetchIsEditabbleMilage();
-    // initBackgroundFetch();
     _navigateToNextScreen();
-
-    // FirebaseServices().transferAndDeleteWeeklyData();
+    scheduleWeeklyAlarm();
   }
-
-  // void initBackgroundFetch() {
-  //   BackgroundFetch.configure(
-  //     BackgroundFetchConfig(
-  //       minimumFetchInterval: 1440, // Daily fetch interval (1440 minutes)
-  //       startOnBoot: true,
-  //       stopOnTerminate: false,
-  //       enableHeadless: true,
-  //     ),
-  //     (String taskId) async {
-  //       DateTime now = DateTime.now();
-  //       // Check if today is Monday
-  //       if (now.weekday == DateTime.monday) {
-  //         await FirebaseServices().transferAndDeleteWeeklyData();
-  //       }
-  //       BackgroundFetch.finish(taskId);
-  //     },
-  //   ).then((int status) {
-  //     print('BackgroundFetch configure success: $status');
-  //   }).catchError((e) {
-  //     print('BackgroundFetch configure error: $e');
-  //   });
-  // }
 
   Future<void> _navigateToNextScreen() async {
     await Future.delayed(const Duration(seconds: 3));
@@ -87,8 +64,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      onPopInvoked: (didPop) {
+        _onWillPop();
+      },
+      canPop: false,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Column(

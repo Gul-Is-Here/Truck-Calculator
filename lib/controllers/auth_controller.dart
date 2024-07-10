@@ -1,5 +1,4 @@
 import 'package:dispatched_calculator_app/constants/colors.dart';
-import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +7,7 @@ import '../screens/auth_screens/login_screen.dart';
 import '../screens/auth_screens/otp_verification_screen.dart';
 import '../screens/auth_screens/otpverification_login.dart';
 import '../screens/home_screens/home_screen.dart';
-import '../services/firebase_services.dart';
+
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;

@@ -20,6 +20,9 @@ dependencies:
   google_mobile_ads: ^5.1.0
   flick_video_player: ^0.8.0
   video_player: ^2.9.1
+  android_alarm_manager_plus: ^4.0.3
+  fl_chart: ^0.68.0
+  d_chart: ^2.7.1
 
 dev_dependencies:
   flutter_test:

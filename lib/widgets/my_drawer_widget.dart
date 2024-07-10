@@ -3,6 +3,7 @@ import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/screens/charts_screen/barchart_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/tutorial_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
@@ -93,6 +94,21 @@ class MyDrawerWidget extends StatelessWidget {
                           color: AppColor().primaryAppColor)),
                   onTap: () {
                     Get.to(() => TutorialScreen());
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.play_circle,
+                    color: AppColor().secondaryAppColor,
+                    size: 30,
+                  ),
+                  title: Text('Chart',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: robotoRegular,
+                          color: AppColor().primaryAppColor)),
+                  onTap: () {
+                    Get.to(() => ProfitBarChartScreen());
                   },
                 ),
                 ListTile(

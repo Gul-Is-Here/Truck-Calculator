@@ -1,3 +1,4 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/firebase_options.dart';
@@ -9,16 +10,52 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'services/firebase_services.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferences.getInstance();
   // RequestConfiguration request = RequestConfiguration(testDeviceIds: '');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await AndroidAlarmManager.initialize();
   await MobileAds.instance.initialize();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  
 
   runApp(const MyApp());
+  scheduleWeeklyAlarm();
+}
+
+void printHello() {
+  final DateTime now = DateTime.now();
+  print("[$now] Hello, world! Alarm fired!");
+}
+
+void scheduleWeeklyAlarm() async {
+  // Calculate the initial delay until the next Monday at 6 AM
+  final now = DateTime.now();
+  final nextMonday = now.add(Duration(days: (8 - now.weekday) % 7));
+  final nextMondayMorning =
+      DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 6);
+  final initialDelay = nextMondayMorning.difference(now);
+  print('Next Monday $nextMonday');
+  print('Next Monday Morning $nextMondayMorning');
+  print('Initial : $initialDelay');
+  // Schedule the periodic alarm
+  await AndroidAlarmManager.periodic(
+    const Duration(days: 7), // Interval
+    0, // Unique alarm ID
+    transferAndDeleteWeeklyData,
+    startAt: nextMondayMorning,
+    exact: true,
+    wakeup: true,
+  );
+}
+
+void transferAndDeleteWeeklyData() async {
+  await Firebase.initializeApp();
+  print("Transfer and delete weekly data task triggered");
+  await FirebaseServices().transferAndDeleteWeeklyData();
+  print("Data transfer and deletion complete");
 }
 
 class MyApp extends StatelessWidget {
