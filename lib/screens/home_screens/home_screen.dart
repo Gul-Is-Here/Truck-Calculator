@@ -66,13 +66,13 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     return Scaffold(
-      bottomNavigationBar: isAdloaded
-          ? SizedBox(
-              height: bannerAd.size.height.toDouble(),
-              width: bannerAd.size.width.toDouble(),
-              child: AdWidget(ad: bannerAd),
-            )
-          : SizedBox(),
+      // bottomNavigationBar: isAdloaded
+      //     ? SizedBox(
+      //         height: bannerAd.size.height.toDouble(),
+      //         width: bannerAd.size.width.toDouble(),
+      //         child: AdWidget(ad: bannerAd),
+      //       )
+      //     : SizedBox(),
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: SafeArea(

@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import '../screens/charts_screen/history_analytics.dart';
+
 class MyDrawerWidget extends StatelessWidget {
   MyDrawerWidget({super.key});
   final homeController = HomeController();
@@ -108,7 +110,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => ProfitBarChartScreen());
+                    Get.to(() => BarChartScreen());
                   },
                 ),
                 ListTile(
