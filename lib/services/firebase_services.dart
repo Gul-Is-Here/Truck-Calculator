@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../app_classes/app_class.dart';
 import '../screens/load_screen/load_screen.dart';
 
 class FirebaseServices {
@@ -373,16 +374,10 @@ class FirebaseServices {
             'weeklyInsurancePayment': weeklyInsurancePayment,
             'weeklyEldService': weeklyEldService,
           };
-        } else {
-     
-        }
-      // ignore: empty_catches
-      } catch (e) {
-    
-      }
-    } else {
-      
-    }
+        } else {}
+        // ignore: empty_catches
+      } catch (e) {}
+    } else {}
 
     // Return an empty map or default values in case of error or no data found
     return {
@@ -468,13 +463,11 @@ class FirebaseServices {
               };
             }),
           });
-
         }
       } catch (e) {
         print('Error storing values in Firestore: $e');
       }
-    } else {
-    }
+    } else {}
   }
 
   Future<bool> checkIfCalculatedValuesDocumentExists() async {
@@ -606,6 +599,7 @@ class FirebaseServices {
     }
     return [];
   }
+
   Future<void> transferAndDeleteWeeklyData() async {
     User? user = FirebaseAuth.instance.currentUser;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -648,8 +642,8 @@ class FirebaseServices {
           'calculatedValues': [],
           'mileageFee': [],
           'truckPayment': [],
-          'transferTimestamp': FieldValue
-              .serverTimestamp() // Add a timestamp for when the transfer happens
+          'transferTimestamp': AppClass().formatDateSpecific(
+              DateTime.now()) // Add a timestamp for when the transfer happens
         };
 
         // Add calculated values data
@@ -720,7 +714,4 @@ class FirebaseServices {
       return [];
     }
   }
-
-
-
 }
