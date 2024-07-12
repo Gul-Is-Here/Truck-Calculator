@@ -3,7 +3,7 @@ import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/screens/charts_screen/barchart_screen.dart';
+import 'package:dispatched_calculator_app/screens/charts_screen/dispatched_analytics_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/tutorial_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../screens/charts_screen/history_analytics.dart';
+import '../screens/charts_screen/profit_analytics_screen.dart';
 
 class MyDrawerWidget extends StatelessWidget {
   MyDrawerWidget({super.key});
@@ -51,7 +51,6 @@ class MyDrawerWidget extends StatelessWidget {
                         transition: Transition.cupertino);
                   },
                 ),
-
                 // ListTile(
                 //   leading: Icon(
                 //     Icons.travel_explore,
@@ -64,8 +63,7 @@ class MyDrawerWidget extends StatelessWidget {
                 //           fontFamily: robotoRegular,
                 //           color: AppColor().primaryAppColor)),
                 //   onTap: () {
-                //     Get.to(() => MileageFeSection(
-                //         homeController: homeController, isUpdate: true));
+                //     Get.to(() => LineGraphScreen());
                 //   },
                 // ),
                 ListTile(
@@ -110,7 +108,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => BarChartScreen());
+                    Get.to(() => CombinedAnalyticsScreen());
                   },
                 ),
                 ListTile(

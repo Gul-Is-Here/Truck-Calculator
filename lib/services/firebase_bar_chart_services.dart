@@ -47,4 +47,8 @@ class FirebaseBarChartServices {
       return [];
     }
   }
+  
+  // Line data
+  
+  
 }

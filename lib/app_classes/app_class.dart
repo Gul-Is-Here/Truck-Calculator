@@ -26,7 +26,7 @@ class AppClass {
   }
 
   String formatDateSpecific(DateTime dateTime) {
-    final DateFormat formatter = DateFormat('d MMMM');
+    final DateFormat formatter = DateFormat('d MMM');
     return formatter.format(dateTime);
   }
 
@@ -43,5 +43,4 @@ class AppClass {
       controller.setSelectedDateRange(picked);
     }
   }
-  
 }
