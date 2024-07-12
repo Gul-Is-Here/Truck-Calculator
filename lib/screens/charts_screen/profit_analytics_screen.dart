@@ -178,10 +178,29 @@ class CombinedAnalyticsScreen extends StatelessWidget {
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              getTitlesWidget: (value,meta) {
-      final DateTime date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-      return Text('${date.day}/${date.month}'.toString());
-    },
+                              getTitlesWidget: (value, meta) {
+                                if (barChartController.lineChart.isEmpty) {
+                                  return const Text('No Data');
+                                }
+                                String label = barChartController.lineChart
+                                    .firstWhere(
+                                        (element) =>
+                                            element.label.hashCode == value,
+                                        orElse: () => BarData(
+                                            label: barChartController
+                                                .lineChart.length.numCurrency,
+                                            value: 0,
+                                            value2: 0))
+                                    .label;
+                                return SideTitleWidget(
+                                  axisSide: AxisSide.bottom,
+                                  space: 10,
+                                  child: Text(label,
+                                      style: const TextStyle(
+                                          fontSize: 10,
+                                          fontFamily: robotoRegular)),
+                                );
+                              },
                             ),
                           ),
                         ),
