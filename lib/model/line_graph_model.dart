@@ -1,15 +1,18 @@
-import '../app_classes/app_class.dart'; // Assuming this contains formatDateSpecific method
+import '../app_classes/app_class.dart';
 
-class LineData {
-  final String label2;
-  final double value2;
+class MyLineChart {
+  late final String label2;
+  final double? value2;
 
-  LineData({required this.label2, required this.value2});
+  MyLineChart({
+    required this.value2,
+    required this.label2,
+  });
 
-  factory LineData.fromMap(Map<String, dynamic> map) {
-    return LineData(
-      label2: AppClass().formatDateSpecific(map['transferTimestamp'].toDate()),
+  factory MyLineChart.fromMap(Map<String, dynamic> map) {
+    return MyLineChart(
       value2: map['totalDispatchedMiles'].toDouble(),
+      label2: AppClass().formatDateSpecific(map['transferTimestamp'].toDate()),
     );
   }
 }

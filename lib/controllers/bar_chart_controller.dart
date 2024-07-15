@@ -1,3 +1,4 @@
+import 'package:dispatched_calculator_app/model/line_graph_model.dart';
 import 'package:dispatched_calculator_app/services/firebase_bar_chart_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,7 +7,7 @@ import '../screens/charts_screen/barchart_screen.dart';
 
 class BarChartController extends GetxController {
   var barData = <BarData>[].obs;
-  var lineChart = <BarData>[].obs;
+
   var selectedDateRange = Rx<DateTimeRange?>(null);
   var isLoading = false.obs;
 
@@ -55,19 +56,22 @@ class BarChartController extends GetxController {
           String timestamp2 = data.containsKey('transferTimestamp')
               ? data['transferTimestamp']
               : 'Unknown Date';
+          timestamp = timestamp2;
+          print('timestamp $timestamp');
           barData.add(BarData(
             value2: 0,
             label: timestamp,
             value: totalProfit,
           ));
-          lineChart.add(BarData(
-              value2: totalDispatchedMiles, label: timestamp2, value: 0));
+          print('timestamp2 $timestamp2');
         } else {
           print('Missing calculatedValues in: $data');
+          // print(lineChart);
         }
       }
 
       print('Bar data length: ${barData.length}');
+      // print('Bar line length: ${lineChart.length}');
     } catch (e) {
       print('Error fetching history data: $e');
     } finally {
