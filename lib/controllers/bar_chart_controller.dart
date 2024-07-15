@@ -9,6 +9,7 @@ class BarChartController extends GetxController {
   var lineChart = <BarData>[].obs;
   var selectedDateRange = Rx<DateTimeRange?>(null);
   var isLoading = false.obs;
+  var timestam;
 
   @override
   void onInit() {
@@ -24,6 +25,7 @@ class BarChartController extends GetxController {
           await FirebaseBarChartServices()
               .fetchBarData(startDate: startDate, endDate: endDate);
       barData.clear();
+      lineChart.clear();
 
       for (var data in rawData) {
         if (data.containsKey('calculatedValues')) {
@@ -55,19 +57,25 @@ class BarChartController extends GetxController {
           String timestamp2 = data.containsKey('transferTimestamp')
               ? data['transferTimestamp']
               : 'Unknown Date';
+          timestamp = timestamp2;
+          print('timestamp $timestamp');
           barData.add(BarData(
             value2: 0,
             label: timestamp,
             value: totalProfit,
           ));
-          lineChart.add(BarData(
-              value2: totalDispatchedMiles, label: timestamp2, value: 0));
+          print('timestamp2 $timestamp2');
+          lineChart.add(
+            BarData(value2: totalDispatchedMiles, value: 0, label: timestamp2),
+          );
         } else {
           print('Missing calculatedValues in: $data');
+          print(lineChart);
         }
       }
 
       print('Bar data length: ${barData.length}');
+      print('Bar line length: ${lineChart.length}');
     } catch (e) {
       print('Error fetching history data: $e');
     } finally {

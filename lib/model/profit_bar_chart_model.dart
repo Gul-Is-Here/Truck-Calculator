@@ -5,15 +5,16 @@ class BarData {
   final double? value;
   final double? value2;
 
-  BarData(
-     { required this.value2,
+  BarData({
+    required this.value2,
     required this.label,
     required this.value,
   });
 
   factory BarData.fromMap(Map<String, dynamic> map) {
     return BarData(
-     value2:  map['totalDispatchedMiles'].toDouble(),
+      value2: map['totalDispatchedMiles'].toDouble(),
+      // label2: AppClass().formatDateSpecific(map['transferTimestamp'].toDate()),
       label: AppClass().formatDateSpecific(map['transferTimestamp'].toDate()),
       value: map['totalProfit'].toDouble(),
     );

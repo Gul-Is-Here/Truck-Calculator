@@ -41,14 +41,30 @@ void scheduleWeeklyAlarm() async {
   print('Next Monday Morning $nextMondayMorning');
   print('Initial : $initialDelay');
   // Schedule the periodic alarm
-  await AndroidAlarmManager.periodic(
-    const Duration(days: 7), // Interval
-    0, // Unique alarm ID
-    transferAndDeleteWeeklyData,
-    startAt: nextMondayMorning,
-    exact: true,
-    wakeup: true,
-  );
+  bool documentExists =
+      await FirebaseServices().checkIfCalculatedValuesDocumentExists();
+  if (documentExists) {
+    await AndroidAlarmManager.periodic(
+      const Duration(days: 7), // Interval
+      0, // Unique alarm ID
+      transferAndDeleteWeeklyData,
+      startAt: nextMondayMorning,
+      exact: true,
+      wakeup: true,
+    );
+  } else {
+    await AndroidAlarmManager.periodic(
+      const Duration(days: 7), // Interval
+      0, // Unique alarm ID
+      () {
+        print('No Document exists in Calculated Values Collection ');
+        print('New Week Strat');
+      },
+      startAt: nextMondayMorning,
+      exact: true,
+      wakeup: true,
+    );
+  }
 }
 
 void transferAndDeleteWeeklyData() async {
