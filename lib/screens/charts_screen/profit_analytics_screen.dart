@@ -1,3 +1,5 @@
+import 'package:dispatched_calculator_app/controllers/line_chart_cotroller.dart';
+import 'package:dispatched_calculator_app/model/line_graph_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -11,7 +13,7 @@ import '../../model/profit_bar_chart_model.dart';
 
 class CombinedAnalyticsScreen extends StatelessWidget {
   final BarChartController barChartController = Get.put(BarChartController());
-
+  final LineCartController lineChartController = Get.put(LineCartController());
   CombinedAnalyticsScreen({super.key});
 
   @override
@@ -28,6 +30,7 @@ class CombinedAnalyticsScreen extends StatelessWidget {
             icon: const Icon(Icons.refresh),
             onPressed: () {
               barChartController.setSelectedDateRange(null);
+              lineChartController.setSelectedDateRange(null);
             },
           ),
         ],
@@ -51,7 +54,7 @@ class CombinedAnalyticsScreen extends StatelessWidget {
       if (barChartController.isLoading.value) {
         return const Center(child: CircularProgressIndicator());
       } else if (barChartController.barData.isEmpty ||
-          barChartController.lineChart.isEmpty) {
+          lineChartController.myLineChart.isEmpty) {
         return const Center(child: Text('No Data'));
       } else {
         return Column(
@@ -171,13 +174,14 @@ class CombinedAnalyticsScreen extends StatelessWidget {
   }
 
   Widget _buildLineChart(BuildContext context) {
+    Set<int> printedIndices = {}; // To keep track of printed indices
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.4,
         child: LineChart(
           LineChartData(
-            gridData: const FlGridData(show: false),
+            gridData: FlGridData(show: false),
             titlesData: FlTitlesData(
               leftTitles: AxisTitles(
                 sideTitles: SideTitles(showTitles: false),
@@ -192,26 +196,47 @@ class CombinedAnalyticsScreen extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
-                    if (barChartController.barData.isEmpty) {
+                    if (lineChartController.myLineChart.isEmpty) {
                       return const Text('No Data');
                     }
-                    String label = barChartController.barData
-                        .firstWhere(
-                            (element) =>
-                                element.label.hashCode == value.toInt(),
-                            orElse: () => BarData(
-                                  label: 'Unknown',
-                                  value: 0,
-                                  value2: 0,
-                                ))
-                        .label;
-                    return SideTitleWidget(
-                      axisSide: AxisSide.bottom,
-                      space: 10,
-                      child: Text(label,
-                          style: const TextStyle(
-                              fontSize: 10, fontFamily: robotoRegular)),
-                    );
+                    int index = value.toInt();
+                    if (index >= 0 &&
+                        index < lineChartController.myLineChart.length) {
+                      String label =
+                          lineChartController.myLineChart[index].label2;
+                      // Ensure label is only printed once for each unique x value
+                      if (printedIndices.contains(index)) {
+                        return SideTitleWidget(
+                          axisSide: AxisSide.bottom,
+                          space: 10,
+                          child: Text(
+                            label.toString(),
+                            style: const TextStyle(
+                                fontSize: 10,
+                                fontFamily: robotoRegular,
+                                color: Colors.black),
+                          ),
+                        );
+                      } else {
+                        printedIndices.add(index);
+                        // Debug print for labels and values
+                        print(
+                            'Label: $label, Value: ${lineChartController.myLineChart[index].value2}');
+                        return SideTitleWidget(
+                          axisSide: AxisSide.bottom,
+                          space: 10,
+                          child: Text(
+                            label.toString(),
+                            style: const TextStyle(
+                                fontSize: 10,
+                                fontFamily: robotoRegular,
+                                color: Colors.black),
+                          ),
+                        );
+                      }
+                    } else {
+                      return const Text('Unknown');
+                    }
                   },
                 ),
               ),
@@ -229,30 +254,24 @@ class CombinedAnalyticsScreen extends StatelessWidget {
               ),
             ),
             minX: 0,
-            maxX: (barChartController.lineChart.length - 1).toDouble(),
+            maxX: (lineChartController.myLineChart.length - 1).toDouble(),
             minY: 0,
-            maxY: barChartController.lineChart
+            maxY: lineChartController.myLineChart
                     .map((data) => data.value2)
                     .reduce((a, b) => a! > b! ? a : b)! +
                 10,
             lineBarsData: [
               LineChartBarData(
-                spots:
-                    barChartController.lineChart.asMap().entries.map((entry) {
+                spots: lineChartController.myLineChart
+                    .asMap()
+                    .entries
+                    .map((entry) {
                   int index = entry.key;
-                  BarData data = entry.value;
+                  MyLineChart data = entry.value;
                   return FlSpot(index.toDouble(), data.value2!);
                 }).toList(),
-                isCurved: false, // Set this to false for straight lines
-                // isStepLineChart: true, // Uncomment this for stepped lines
-                gradient: LinearGradient(
-                  colors: [
-                    AppColor().primaryAppColor,
-                    AppColor().secondaryAppColor,
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
+                isCurved: true,
+                color: AppColor().secondaryAppColor,
                 barWidth: 4,
                 belowBarData: BarAreaData(
                   show: true,
@@ -267,14 +286,11 @@ class CombinedAnalyticsScreen extends StatelessWidget {
                 ),
                 dotData: FlDotData(
                   show: true,
-                  getDotPainter: (spot, percent, barData, index) {
-                    return FlDotCirclePainter(
-                      radius: 4,
-                      color: AppColor().primaryAppColor,
-                      strokeWidth: 2,
-                      strokeColor: AppColor().secondaryAppColor,
-                    );
-                  },
+                  getDotPainter: (spot, percent, barData, index) =>
+                      FlDotCirclePainter(
+                    radius: 4,
+                    color: AppColor().secondaryAppColor,
+                  ),
                 ),
               ),
             ],
