@@ -1,5 +1,6 @@
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
+import 'package:dispatched_calculator_app/screens/charts_screen/analytics_screen.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,7 @@ class ResultsScreen extends StatelessWidget {
       body: Column(
         children: [
           10.heightBox,
-          Center(
+          const Center(
             child: Text(
               'Summary/Results',
               style: TextStyle(
@@ -31,7 +32,7 @@ class ResultsScreen extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Obx(
                 () => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,14 +76,17 @@ class ResultsScreen extends StatelessWidget {
           Container(
               // height: 10,
               width: double.infinity,
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                   color: AppColor().primaryAppColor,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.elliptical(40, 40),
                   )),
               child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.offAll(() => CombinedAnalyticsScreen(),
+                        curve: Curves.easeIn);
+                  },
                   icon: Icon(Icons.home,
                       size: 30, color: AppColor().appTextColor))),
         ],

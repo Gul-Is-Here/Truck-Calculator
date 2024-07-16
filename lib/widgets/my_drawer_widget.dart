@@ -3,7 +3,6 @@ import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/controllers/auth_controller.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
-import 'package:dispatched_calculator_app/screens/charts_screen/dispatched_analytics_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_screen.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/tutorial_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../screens/charts_screen/profit_analytics_screen.dart';
+import '../screens/charts_screen/analytics_screen.dart';
 
 class MyDrawerWidget extends StatelessWidget {
   MyDrawerWidget({super.key});
@@ -37,7 +36,7 @@ class MyDrawerWidget extends StatelessWidget {
                 Divider(),
                 ListTile(
                   leading: Icon(
-                    Icons.home,
+                    Icons.dashboard_customize_outlined,
                     color: AppColor().secondaryAppColor,
                     size: 30,
                   ),
@@ -47,30 +46,15 @@ class MyDrawerWidget extends StatelessWidget {
                           color: AppColor().primaryAppColor,
                           fontSize: 18)),
                   onTap: () {
-                    Get.offAll(() => HomeScreen(),
+                    Get.off(() => HomeScreen(),
                         transition: Transition.cupertino);
                   },
                 ),
-                // ListTile(
-                //   leading: Icon(
-                //     Icons.travel_explore,
-                //     color: AppColor().secondaryAppColor,
-                //     size: 30,
-                //   ),
-                //   title: Text('Mileage',
-                //       style: TextStyle(
-                //           fontSize: 18,
-                //           fontFamily: robotoRegular,
-                //           color: AppColor().primaryAppColor)),
-                //   onTap: () {
-                //     Get.to(() => LineGraphScreen());
-                //   },
-                // ),
                 ListTile(
-                  leading: Icon(
-                    Icons.calculate,
+                  leading: Image.asset(
+                    historyIcon,
+                    height: 25,
                     color: AppColor().secondaryAppColor,
-                    size: 30,
                   ),
                   title: Text('History',
                       style: TextStyle(
@@ -78,14 +62,15 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => HistoryScreen());
+                    Get.off(() => const HistoryScreen());
+                    // Navigator.of(context).pop();
                   },
                 ),
                 ListTile(
                   leading: Icon(
-                    Icons.play_circle,
+                    Icons.play_circle_outline_outlined,
                     color: AppColor().secondaryAppColor,
-                    size: 30,
+                    size: 25,
                   ),
                   title: Text('Tutorial',
                       style: TextStyle(
@@ -93,14 +78,14 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => TutorialScreen());
+                    Get.off(() => TutorialScreen());
                   },
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.play_circle,
+                  leading: Image.asset(
+                    chartIcon,
+                    height: 25,
                     color: AppColor().secondaryAppColor,
-                    size: 30,
                   ),
                   title: Text('Chart',
                       style: TextStyle(
@@ -108,14 +93,14 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.to(() => CombinedAnalyticsScreen());
+                    Get.off(() => CombinedAnalyticsScreen());
                   },
                 ),
                 ListTile(
                   leading: Icon(
-                    Icons.logout,
+                    Icons.logout_outlined,
                     color: AppColor().secondaryAppColor,
-                    size: 30,
+                    size: 25,
                   ),
                   title: Text('LogOut',
                       style: TextStyle(

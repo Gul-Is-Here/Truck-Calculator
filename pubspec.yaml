@@ -22,7 +22,7 @@ dependencies:
   video_player: ^2.9.1
   android_alarm_manager_plus: ^4.0.3
   fl_chart: ^0.68.0
-  d_chart: ^2.7.1
+  syncfusion_flutter_charts: ^26.1.42
 
 dev_dependencies:
   flutter_test:

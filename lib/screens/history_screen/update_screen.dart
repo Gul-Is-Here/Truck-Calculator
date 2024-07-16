@@ -13,7 +13,7 @@ class UpdateScreen extends StatefulWidget {
   final HomeController homeController;
   final bool isUpdate;
 
-  const UpdateScreen({required this.homeController, required this.isUpdate});
+  const UpdateScreen({super.key, required this.homeController, required this.isUpdate});
 
   @override
   _UpdateScreenState createState() => _UpdateScreenState();
@@ -35,12 +35,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<List<Map<String, dynamic>>>(
           future: FirebaseServices().fetchAllEntriesForEditing(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
@@ -49,7 +49,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
             var data = snapshot.data ?? [];
             if (data.isEmpty) {
-              return Center(child: Text('No update data available.'));
+              return const Center(child: Text('No update data available.'));
             }
 
             return Scrollbar(
@@ -109,15 +109,15 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     return DataRow(
                       cells: <DataCell>[
                         DataCell(Text(loadId,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontFamily: robotoRegular, fontSize: 14))),
                         DataCell(Text(
                           date,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontFamily: robotoRegular, fontSize: 14),
                         )),
                         DataCell(Text(time,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontFamily: robotoRegular, fontSize: 14))),
                         DataCell(
                           Row(
@@ -136,12 +136,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                         ));
                                   }
                                 },
-                                child: Text('Edit'),
+                                child: const Text('Edit'),
                               ),
                               ElevatedButton(
                                   onPressed: FirebaseServices()
                                       .transferAndDeleteWeeklyData,
-                                  child: Text('Delete'))
+                                  child: const Text('Delete'))
                             ],
                           ),
                         ),

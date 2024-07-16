@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../screens/charts_screen/profit_analytics_screen.dart';
-
 class AppClass {
   var controller = Get.put(BarChartController());
   final GlobalKey mileageButtonKey = GlobalKey();

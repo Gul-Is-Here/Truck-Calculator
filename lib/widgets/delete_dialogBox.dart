@@ -5,17 +5,17 @@ void showDeleteConfirmationDialog(BuildContext context, int index,var controller
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Load'),
-          content: Text('Are you sure you want to delete this load?'),
+          title: const Text('Delete Load'),
+          content: const Text('Are you sure you want to delete this load?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Delete'),
+              child: const Text('Delete'),
               onPressed: () {
                 controller.removeLoad(index);
                 Navigator.of(context).pop();

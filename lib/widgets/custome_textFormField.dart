@@ -19,13 +19,13 @@ Widget buildTextFormField({
   }
 
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: 14),
+    padding: const EdgeInsets.symmetric(horizontal: 14),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
               overflow: TextOverflow.ellipsis,
               letterSpacing: 1.5,
               fontFamily: robotoRegular,
@@ -48,7 +48,7 @@ Widget buildTextFormField({
                     fontSize: 12,
                     fontFamily: robotoRegular,
                     color: Colors.grey.shade400),
-                errorStyle: TextStyle(fontSize: 12, fontFamily: robotoRegular),
+                errorStyle: const TextStyle(fontSize: 12, fontFamily: robotoRegular),
                 // isDense: true,
                 alignLabelWithHint: true,
                 focusedBorder: UnderlineInputBorder(
@@ -57,7 +57,7 @@ Widget buildTextFormField({
                     width: 2,
                   ),
                 ),
-                labelStyle: TextStyle(
+                labelStyle: const TextStyle(
                   fontFamily:
                       robotoRegular, // Apply fontFamily to the text input
                   fontSize: 14,
