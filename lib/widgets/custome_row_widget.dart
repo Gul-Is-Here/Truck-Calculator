@@ -17,7 +17,7 @@ class CustomeRowWidget extends StatelessWidget {
       children: [
         Text(
           textHeading,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: robotoRegular,
             fontSize: 13,
           ),
@@ -25,7 +25,7 @@ class CustomeRowWidget extends StatelessWidget {
         10.widthBox,
         Text(
           '\$$values',
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: robotoRegular,
             fontSize: 12,
           ),

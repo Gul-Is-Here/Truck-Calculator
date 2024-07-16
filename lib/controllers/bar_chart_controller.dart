@@ -1,10 +1,8 @@
-import 'package:dispatched_calculator_app/model/line_graph_model.dart';
+
 import 'package:dispatched_calculator_app/services/firebase_bar_chart_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../model/profit_bar_chart_model.dart';
-import '../screens/charts_screen/barchart_screen.dart';
-
 class BarChartController extends GetxController {
   var barData = <BarData>[].obs;
 
@@ -32,21 +30,17 @@ class BarChartController extends GetxController {
               data['calculatedValues'] as List<dynamic>;
 
           double totalProfit = 0.0;
-          double totalDispatchedMiles = 0.0;
           for (var value in calculatedValues) {
             if (value is Map<String, dynamic> &&
                 value.containsKey('totalProfit')) {
               totalProfit += value['totalProfit'];
             } else {
-              print('Invalid entry or missing totalProfit in: $value');
             }
           }
           for (var value in calculatedValues) {
             if (value is Map<String, dynamic> &&
                 value.containsKey('totalDispatchedMiles')) {
-              totalDispatchedMiles += value['totalDispatchedMiles'];
             } else {
-              print('Invalid entry or missing totalDispatchedMiles in: $value');
             }
           }
 
@@ -57,23 +51,18 @@ class BarChartController extends GetxController {
               ? data['transferTimestamp']
               : 'Unknown Date';
           timestamp = timestamp2;
-          print('timestamp $timestamp');
           barData.add(BarData(
             value2: 0,
             label: timestamp,
             value: totalProfit,
           ));
-          print('timestamp2 $timestamp2');
         } else {
-          print('Missing calculatedValues in: $data');
           // print(lineChart);
         }
       }
 
-      print('Bar data length: ${barData.length}');
       // print('Bar line length: ${lineChart.length}');
     } catch (e) {
-      print('Error fetching history data: $e');
     } finally {
       isLoading.value = false;
     }

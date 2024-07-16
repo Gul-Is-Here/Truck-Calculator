@@ -7,7 +7,7 @@ class ResultWidget extends StatelessWidget {
   final Color cardColor;
   final Color textColor;
   final Color headingTextColor;
-  ResultWidget(
+  const ResultWidget(
       {super.key,
       required this.headingTextColor,
       required this.textColor,
@@ -26,7 +26,7 @@ class ResultWidget extends StatelessWidget {
           color: cardColor,
           elevation: 5,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

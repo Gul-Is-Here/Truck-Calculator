@@ -1,3 +1,5 @@
+import 'package:dispatched_calculator_app/app_classes/app_class.dart';
+import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 void showAddLoadDialog(BuildContext context, var controller) {
@@ -5,17 +7,23 @@ void showAddLoadDialog(BuildContext context, var controller) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Add Another Load'),
-        content: Text('Do you want to add another load?'),
+        title: const Text('Add Another Load'),
+        content: const Text('Do you want to add another load?'),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.red),
+            ),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
           TextButton(
-            child: Text('Add'),
+            child: Text(
+              'Add',
+              style: TextStyle(color: AppColor().secondaryAppColor),
+            ),
             onPressed: () {
               controller.addNewLoad();
               Navigator.of(context).pop();

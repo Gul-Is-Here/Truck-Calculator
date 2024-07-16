@@ -20,7 +20,7 @@ class CustomeHistoryCardWidget extends StatelessWidget {
             children: [
               Text(
                 textHeading,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: robotoRegular,
                   fontSize: 13,
                 ),
@@ -30,7 +30,7 @@ class CustomeHistoryCardWidget extends StatelessWidget {
                 children: [
                   Text(
                     '\$$values',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: robotoRegular,
                       fontSize: 13,
                     ),

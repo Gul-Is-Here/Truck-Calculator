@@ -62,12 +62,9 @@ class FirebaseServices {
           'weeklyEldService': weeklyEldService,
         });
 
-        print('Truck Payment values stored successfully in Firestore');
       } catch (e) {
-        print('Error storing values in Firestore: $e');
       }
     } else {
-      print('No user signed in');
     }
   }
 
@@ -100,7 +97,6 @@ class FirebaseServices {
             'defFeePerMile': perMileDef,
             'driverPayFeePerMile': perMileDriverPay,
           });
-          print('Per Mileage Cost updated successfully in Firestore');
         } else {
           // Create new document
           String perMileageId =
@@ -119,13 +115,10 @@ class FirebaseServices {
             'driverPayFeePerMile': perMileDriverPay,
           });
 
-          print('Per Mileage Cost stored successfully in Firestore');
         }
       } catch (e) {
-        print('Error storing/updating values in Firestore: $e');
       }
     } else {
-      print('No user signed in');
     }
   }
 
@@ -156,13 +149,10 @@ class FirebaseServices {
             'driverPayFeePerMile': perMileDriverPay,
           };
         } else {
-          print('No document found in Firestore for perMileageCost');
         }
       } catch (e) {
-        print('Error fetching values from Firestore: $e');
       }
     } else {
-      print('No user signed in');
     }
 
     return {
@@ -192,16 +182,11 @@ class FirebaseServices {
             'isEditabbleMilage': !currentIsEditableMileage,
           });
 
-          print(
-              'isEditableMileage updated successfully: ${!currentIsEditableMileage}');
         } else {
-          print('No document found for perMileageCost');
         }
       } catch (e) {
-        print('Error toggling isEditableMileage: $e');
       }
     } else {
-      print('No user signed in');
     }
   }
 
@@ -224,8 +209,6 @@ class FirebaseServices {
               .doc()
               .set({'isEditabbleMilage': false});
 
-          print(
-              'No document found, created new document with default isEditableMileage: false');
           return false;
         }
 
@@ -233,18 +216,14 @@ class FirebaseServices {
           DocumentSnapshot doc = querySnapshot.docs.first;
           bool isEditableMileage = doc['isEditabbleMilage'];
 
-          print('Fetched isEditableMileage: $isEditableMileage');
           return isEditableMileage;
         } else {
-          print('No document found for perMileageCost');
           return false;
         }
       } catch (e) {
-        print('Error fetching isEditableMileage: $e');
         return false;
       }
     } else {
-      print('No user signed in');
       return false;
     }
   }
@@ -276,16 +255,11 @@ class FirebaseServices {
             'isEditableTruckPayment': updateisEditableTruckPayment,
           });
 
-          print(
-              'isEditabbleMilage updated successfully: $updateisEditableTruckPayment');
         } else {
-          print('No document found for truckPaymentCollection');
         }
       } catch (e) {
-        print('Error toggling isEditabbleMilage: $e');
       }
     } else {
-      print('No user signed in');
     }
   }
 
@@ -308,8 +282,6 @@ class FirebaseServices {
               .doc()
               .set({'isEditableTruckPayment': false});
 
-          print(
-              'No document found, created new document with default isEditableMileage: false');
           return false;
         }
         // Check if there is an existing document
@@ -317,18 +289,14 @@ class FirebaseServices {
           DocumentSnapshot doc = querySnapshot.docs.first;
           bool isEditableTruckPayment = doc['isEditableTruckPayment'];
 
-          print('Fetched isEditableTruckPayment: $isEditableTruckPayment');
           return isEditableTruckPayment;
         } else {
-          print('No document found for TruckPayment');
           return false; // Default to false if document doesn't exist
         }
       } catch (e) {
-        print('Error fetching isEditableTruckPayment: $e');
         return false; // Default to false on error
       }
     } else {
-      print('No user signed in');
       return false; // Default to false if no user is signed in
     }
   }
@@ -465,7 +433,6 @@ class FirebaseServices {
           });
         }
       } catch (e) {
-        print('Error storing values in Firestore: $e');
       }
     } else {}
   }
@@ -531,7 +498,6 @@ class FirebaseServices {
         );
       }
     } catch (e) {
-      print('Error deleting load: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error deleting load: $e')),
       );
@@ -550,7 +516,6 @@ class FirebaseServices {
           .doc(documentId)
           .update(data);
     } catch (e) {
-      print('Error updating entry: $e');
     }
   }
 
@@ -567,7 +532,6 @@ class FirebaseServices {
 
         return doc.data() as Map<String, dynamic>?;
       } catch (e) {
-        print('Error fetching entry for editing: $e');
       }
     }
     return null;
@@ -588,14 +552,11 @@ class FirebaseServices {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           data['id'] = doc.id; // Include the document ID
           docId = data['id'];
-          print(docId);
           return data;
         }).toList();
       } catch (e) {
-        print('Error fetching entries for editing: $e');
       }
     } else {
-      print('No user signed in');
     }
     return [];
   }
@@ -617,9 +578,6 @@ class FirebaseServices {
         DateTime endOfWeek =
             startOfWeek.add(Duration(days: 6)); // Sunday as end
 
-        print('Current date time : $now');
-        print('Start of the week : $startOfWeek');
-        print('End of the week : $endOfWeek');
 
         // Query documents in the calculatedValues subcollection within the current week
         QuerySnapshot calculatedValuesSnapshot = await userDocRef
@@ -670,12 +628,9 @@ class FirebaseServices {
             userDocRef.collection('history').doc(historyDocId);
         await newHistoryDoc.set(combinedData);
 
-        print('Weekly data transfer completed.');
       } catch (e) {
-        print('Error transferring data to history: $e');
       }
     } else {
-      print('No user signed in');
     }
   }
 
@@ -684,7 +639,6 @@ class FirebaseServices {
     final User? user = FirebaseServices().auth.currentUser;
 
     if (user == null) {
-      print('Error: No user is currently logged in.');
       return [];
     }
 
@@ -707,10 +661,8 @@ class FirebaseServices {
         };
       }).toList();
 
-      print('Fetched ${documents.length} documents.');
       return documents;
     } catch (e) {
-      print('Error fetching history data: $e');
       return [];
     }
   }

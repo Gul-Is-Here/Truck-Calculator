@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final GlobalKey mileageButtonKey = GlobalKey();
   final GlobalKey truckPaymentButtonKey = GlobalKey();
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -51,8 +52,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ad.dispose();
           print(error);
         }),
-        request: AdRequest());
+        request: const AdRequest());
     bannerAd.load();
+  }
+
+  toggleDrawer() async {
+    if (_scaffoldKey.currentState!.isDrawerOpen) {
+      _scaffoldKey.currentState!.openDrawer();
+    } else {
+      _scaffoldKey.currentState!.openEndDrawer();
+    }
   }
 
   @override
@@ -66,31 +75,31 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     return Scaffold(
-      // bottomNavigationBar: isAdloaded
-      //     ? SizedBox(
-      //         height: bannerAd.size.height.toDouble(),
-      //         width: bannerAd.size.width.toDouble(),
-      //         child: AdWidget(ad: bannerAd),
-      //       )
-      //     : SizedBox(),
+      bottomNavigationBar: isAdloaded
+          ? SizedBox(
+              height: bannerAd.size.height.toDouble(),
+              width: bannerAd.size.width.toDouble(),
+              child: AdWidget(ad: bannerAd),
+            )
+          : const SizedBox(),
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: SafeArea(
         child: Obx(() {
           return Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Center(
                 child: Text(
                   AppClass().getGreeting(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: robotoRegular,
                     fontSize: 25,
                     // fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -108,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         homeController.fetchMileageValues();
                       }
                     },
-                    child: Text('Cost Per Mile'),
+                    child: const Text('Cost Per Mile'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -121,11 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         homeController.fetchTruckPaymentIntialValues();
                       }
                     },
-                    child: Text('Fixed Payment'),
+                    child: const Text('Fixed Payment'),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               if (homeController.fTrcukPayment.value != 0.0 &&
                   homeController.fPermileageFee.value != 0.0)
                 CardWidget(
@@ -164,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (homeController.fPermileageFee.value == 0.0)
-                            Text(
+                            const Text(
                               "1 - Please add 'Cost Per Mile' value.",
                               style: TextStyle(
                                 fontFamily: robotoRegular,
@@ -175,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               textAlign: TextAlign.center,
                             ),
                           if (homeController.fTrcukPayment.value == 0.0)
-                            Text(
+                            const Text(
                               "2 - Please add 'Fixed Payment'.",
                               style: TextStyle(
                                 fontFamily: robotoRegular,
@@ -190,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // CardWidget(
               //   onTap: () {
               //     Get.to(() => UpdateScreen(
@@ -230,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
-            child: Text(
+            child: const Text(
               "Step 1: Please add cost per mile",
               style: TextStyle(
                   color: Colors.white, fontSize: 15, fontFamily: robotoRegular),
@@ -246,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
-            child: Text(
+            child: const Text(
               "Step 2: Please add fixed payment",
               style: TextStyle(
                   color: Colors.white, fontSize: 15, fontFamily: robotoRegular),

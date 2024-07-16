@@ -112,7 +112,6 @@ class _LoadScreenState extends State<LoadScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.homeController.totalMilageCost.value);
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(
@@ -270,10 +269,7 @@ class _LoadScreenState extends State<LoadScreen> {
                                                                     .homeController
                                                                     .otherCostsControllers,
                                                                 userId: userId);
-                                                          } else {
-                                                            print(
-                                                                'User ID or Document ID is null.');
-                                                          }
+                                                          } else {}
                                                           Navigator.of(context)
                                                               .pop();
                                                         }
@@ -592,10 +588,13 @@ class _LoadScreenState extends State<LoadScreen> {
                                     context: context,
                                     homeController: widget.homeController,
                                   );
-
                                   Get.snackbar(
-                                      'Success', 'Data submitted successfully',
-                                      colorText: Colors.white);
+                                    'Success',
+                                    'Data submitted successfully',
+                                    backgroundColor: AppColor().primaryAppColor,
+                                    duration: const Duration(seconds: 2),
+                                    colorText: Colors.white,
+                                  );
 
                                   Navigator.of(context)
                                       .pop(); // Close the dialog
@@ -655,9 +654,12 @@ class _LoadScreenState extends State<LoadScreen> {
                                     homeController: widget.homeController);
 
                                 Get.snackbar(
-                                    'Success', 'Data submitted successfully',
-                                    // backgroundColor: Colors.deepPurpleAccent,
-                                    colorText: Colors.white);
+                                  'Success',
+                                  'Data submitted successfully',
+                                  backgroundColor: AppColor().primaryAppColor,
+                                  duration: Duration(seconds: 2),
+                                  colorText: Colors.white,
+                                );
 
                                 Navigator.of(context).pop(); // Close the dialog
                                 Get.to(() => ResultsScreen(

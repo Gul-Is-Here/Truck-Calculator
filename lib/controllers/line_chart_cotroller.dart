@@ -1,12 +1,10 @@
-import 'package:dispatched_calculator_app/model/line_graph_model.dart';
 import 'package:dispatched_calculator_app/services/firebase_bar_chart_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../model/profit_bar_chart_model.dart';
-import '../screens/charts_screen/barchart_screen.dart';
+import '../model/line_graph_model.dart';
 
 class LineCartController extends GetxController {
-  var myLineChart = <MyLineChart>[].obs;
+  var myLineChart = <MyLineChart2>[].obs;
   var selectedDateRange = Rx<DateTimeRange?>(null);
   var isLoading = false.obs;
 
@@ -23,7 +21,7 @@ class LineCartController extends GetxController {
       final List<Map<String, dynamic>> rawData =
           await FirebaseBarChartServices()
               .fetchBarData(startDate: startDate, endDate: endDate);
-      // barData.clear();
+      // Clear the existing data
       myLineChart.clear();
 
       for (var data in rawData) {
@@ -31,7 +29,6 @@ class LineCartController extends GetxController {
           List<dynamic> calculatedValues =
               data['calculatedValues'] as List<dynamic>;
 
-          // double totalProfit = 0.0;
           double totalDispatchedMiles = 0.0;
 
           for (var value in calculatedValues) {
@@ -49,7 +46,10 @@ class LineCartController extends GetxController {
 
           print('timestamp line Chart $timestamp2');
           myLineChart.add(
-            MyLineChart(value2: totalDispatchedMiles, label2: timestamp2),
+            MyLineChart2(
+              timestamp2,
+              totalDispatchedMiles,
+            ),
           );
           print('My Line Chart  : $myLineChart');
         } else {
@@ -58,7 +58,6 @@ class LineCartController extends GetxController {
         }
       }
 
-      // print('Bar data length: ${barData.length}');
       print('Bar line length: ${myLineChart.length}');
     } finally {
       isLoading.value = false;
