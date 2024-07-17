@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/screens/history_screen/history_details_screen.dart';
 import 'package:dispatched_calculator_app/services/firebase_services.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
@@ -17,7 +18,11 @@ class HistoryScreen extends StatelessWidget {
     return Scaffold(
       drawer: MyDrawerWidget(),
       appBar: AppBar(
-        title: const Text('History'),
+        title: Text(
+          'History',
+          style: TextStyle(
+              color: AppColor().appTextColor, fontFamily: robotoRegular),
+        ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: FirebaseServices().fetchHistoryDataById(),

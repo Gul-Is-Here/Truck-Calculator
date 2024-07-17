@@ -1,6 +1,8 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import '../../controllers/auth_controller.dart';
 
 class OTPVerificationScreen extends StatelessWidget {
@@ -10,6 +12,7 @@ class OTPVerificationScreen extends StatelessWidget {
   final String phone;
 
   OTPVerificationScreen({
+    super.key,
     required this.verificationId,
     required this.email,
     required this.name,
@@ -36,7 +39,7 @@ class OTPVerificationScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'OTP Verification',
                 style: TextStyle(
                   fontFamily: robotoRegular,
@@ -44,39 +47,50 @@ class OTPVerificationScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 20),
-              Text('Enter the OTP sent to your phone number',
+              const SizedBox(height: 20),
+              const Text('Enter the OTP sent to your phone number',
                   style: TextStyle(
                     fontFamily: robotoRegular,
                     fontSize: 16,
                     color: Colors.grey,
                   )),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
-                  return Container(
+                  return SizedBox(
                     width: MediaQuery.of(context).size.width * .14,
                     height: 60,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: TextField(
+                        cursorColor: AppColor().primaryAppColor,
                         controller: _otpControllers[index],
                         focusNode: _focusNodes[index],
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: AppColor().secondaryAppColor),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: AppColor().secondaryAppColor),
+                            ),
+                            focusColor: AppColor().primaryAppColor),
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 20),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                        ],
                         onChanged: (value) {
                           if (value.length == 1 && index < 5) {
                             _focusNodes[index + 1].requestFocus();
                           } else if (value.length == 1 && index == 5) {
                             _focusNodes[index].unfocus();
-                          } else if (value.length == 0 && index > 0) {
+                          } else if (value.isEmpty && index > 0) {
                             _focusNodes[index - 1].requestFocus();
                           }
                         },
@@ -85,12 +99,20 @@ class OTPVerificationScreen extends StatelessWidget {
                   );
                 }),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Obx(() => authController.isLoading.value
-                  ? CircularProgressIndicator()
+                  ? CircularProgressIndicator(
+                      color: AppColor().secondaryAppColor,
+                    )
                   : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: AppColor().appTextColor,
+                          backgroundColor: AppColor().primaryAppColor),
                       onPressed: verifyOTP,
-                      child: Text('Verify OTP'),
+                      child: Text(
+                        'Verify OTP',
+                        style: TextStyle(color: AppColor().appTextColor),
+                      ),
                     )),
             ],
           ),

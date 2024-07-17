@@ -23,6 +23,7 @@ dependencies:
   android_alarm_manager_plus: ^4.0.3
   fl_chart: ^0.68.0
   syncfusion_flutter_charts: ^26.1.42
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:

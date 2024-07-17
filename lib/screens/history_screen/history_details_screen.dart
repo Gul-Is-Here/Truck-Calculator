@@ -138,8 +138,8 @@ class HistoryDetailsScreen extends StatelessWidget {
                                   ),
                                   Icon(
                                     histroyController.isCloseFixedCost.value
-                                        ? Icons.keyboard_arrow_up
-                                        : Icons.keyboard_arrow_down,
+                                        ? Icons.keyboard_arrow_down
+                                        : Icons.keyboard_arrow_up,
                                     color: AppColor().secondaryAppColor,
                                   ),
                                 ],
@@ -172,14 +172,6 @@ class HistoryDetailsScreen extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            // const Text(
-                                            //   'Fixed Cost',
-                                            //   style: TextStyle(
-                                            //     fontFamily: robotoRegular,
-                                            //     fontSize: 20,
-                                            //     fontWeight: FontWeight.bold,
-                                            //   ),
-                                            // ),
                                             Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -359,8 +351,8 @@ class HistoryDetailsScreen extends StatelessWidget {
                                       Icon(
                                         histroyController
                                                 .isClosePerMileCost.value
-                                            ? Icons.keyboard_arrow_up
-                                            : Icons.keyboard_arrow_down,
+                                            ? Icons.keyboard_arrow_down
+                                            : Icons.keyboard_arrow_up,
                                         color: AppColor()
                                             .secondaryAppColor, // Replace with your color
                                       ),

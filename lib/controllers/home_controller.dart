@@ -174,33 +174,6 @@ class HomeController extends GetxController {
         weeklyoverHeadAmount.value +
         weeklyOtherCost.value;
 
-    // Fetch the fixed weekly costs from Firebase
-    // Map<String, double> weeklyFixedCosts =
-    //     await FirebaseServices().fetchFixedWeeklyCost();
-
-    // // Update the individual weekly costs with the fetched values if they exist
-    // weeklyTruckPayment.value =
-    //     weeklyFixedCosts['truckPayment'] ?? weeklyTruckPayment.value;
-    // weeklyInsurance.value =
-    //     weeklyFixedCosts['truckInsurance'] ?? weeklyInsurance.value;
-    // weeklyTrailerLease.value =
-    //     weeklyFixedCosts['trailerLease'] ?? weeklyTrailerLease.value;
-    // weeklyEldService.value =
-    //     weeklyFixedCosts['eldService'] ?? weeklyEldService.value;
-    // weeklyoverHeadAmount.value =
-    //     weeklyFixedCosts['overheadCost'] ?? weeklyoverHeadAmount.value;
-    // weeklyOtherCost.value =
-    //     weeklyFixedCosts['otherCost'] ?? weeklyOtherCost.value;
-
-    // // Recalculate the total weekly fixed cost after updating with fetched values
-    // weeklyFixedCost.value = weeklyTruckPayment.value +
-    //     weeklyInsurance.value +
-    //     weeklyTrailerLease.value +
-    //     weeklyEldService.value +
-    //     weeklyoverHeadAmount.value +
-    //     weeklyOtherCost.value;
-    // totalWeeklyFixedCost.value =
-    //     weeklyFixedCosts['weeklyFixedCost'] ?? weeklyFixedCost.value;
   }
 
   //------------------->Truck Weekly Fixed Cost Value <----------------------
@@ -451,5 +424,5 @@ class HomeController extends GetxController {
     }
   }
 
-  void fetchSomeValues() {}
+
 }

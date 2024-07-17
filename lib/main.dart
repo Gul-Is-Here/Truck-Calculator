@@ -27,7 +27,6 @@ void main() async {
 
 void printHello() {
   final DateTime now = DateTime.now();
-  print("[$now] Hello, world! Alarm fired!");
 }
 
 void scheduleWeeklyAlarm() async {
@@ -37,9 +36,6 @@ void scheduleWeeklyAlarm() async {
   final nextMondayMorning =
       DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 6);
   final initialDelay = nextMondayMorning.difference(now);
-  print('Next Monday $nextMonday');
-  print('Next Monday Morning $nextMondayMorning');
-  print('Initial : $initialDelay');
   // Schedule the periodic alarm
   bool documentExists =
       await FirebaseServices().checkIfCalculatedValuesDocumentExists();
@@ -57,8 +53,6 @@ void scheduleWeeklyAlarm() async {
       const Duration(days: 7), // Interval
       0, // Unique alarm ID
       () {
-        print('No Document exists in Calculated Values Collection ');
-        print('New Week Strat');
       },
       startAt: nextMondayMorning,
       exact: true,
@@ -69,9 +63,7 @@ void scheduleWeeklyAlarm() async {
 
 void transferAndDeleteWeeklyData() async {
   await Firebase.initializeApp();
-  print("Transfer and delete weekly data task triggered");
   await FirebaseServices().transferAndDeleteWeeklyData();
-  print("Data transfer and deletion complete");
 }
 
 class MyApp extends StatelessWidget {
