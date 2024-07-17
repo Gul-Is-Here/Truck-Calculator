@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:get/get_rx/get_rx.dart';
 
-
 class FirebaseBarChartServices {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -30,7 +29,7 @@ class FirebaseBarChartServices {
       print(
           'Querying between ${AppClass().formatDateSpecific(startDate)} and ${AppClass().formatDateSpecific(endDate)}');
     } else {
-      query = query.orderBy('transferTimestamp', descending: true).limit(4);
+      query = query.orderBy('transferTimestamp', descending: true);
     }
 
     try {
@@ -43,7 +42,6 @@ class FirebaseBarChartServices {
 
       return data;
     } catch (e) {
-   
       return [];
     }
   }

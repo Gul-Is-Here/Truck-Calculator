@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/screens/load_screen/load_screen.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
@@ -13,7 +14,8 @@ class UpdateScreen extends StatefulWidget {
   final HomeController homeController;
   final bool isUpdate;
 
-  const UpdateScreen({super.key, required this.homeController, required this.isUpdate});
+  const UpdateScreen(
+      {super.key, required this.homeController, required this.isUpdate});
 
   @override
   _UpdateScreenState createState() => _UpdateScreenState();
@@ -40,7 +42,10 @@ class _UpdateScreenState extends State<UpdateScreen> {
           future: FirebaseServices().fetchAllEntriesForEditing(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                  child: CircularProgressIndicator(
+                color: AppColor().secondaryAppColor,
+              ));
             }
 
             if (snapshot.hasError) {

@@ -1,6 +1,8 @@
+import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import '../../controllers/auth_controller.dart';
 
 class OTPVerificationLoginScreen extends StatelessWidget {
@@ -8,6 +10,7 @@ class OTPVerificationLoginScreen extends StatelessWidget {
   final String phone;
 
   OTPVerificationLoginScreen({
+    super.key,
     required this.verificationId,
     required this.phone,
   });
@@ -26,13 +29,14 @@ class OTPVerificationLoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColor().appTextColor,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'OTP Verification',
                 style: TextStyle(
                   fontFamily: robotoRegular,
@@ -40,8 +44,8 @@ class OTPVerificationLoginScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Enter the OTP sent to your phone number',
                 style: TextStyle(
                   fontFamily: robotoRegular,
@@ -49,7 +53,7 @@ class OTPVerificationLoginScreen extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
@@ -60,22 +64,37 @@ class OTPVerificationLoginScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: TextField(
+                        cursorColor: AppColor().primaryAppColor,
                         controller: _otpControllers[index],
                         focusNode: _focusNodes[index],
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColor().secondaryAppColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColor().secondaryAppColor,
+                            ),
                           ),
                         ),
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(
+                          fontSize: 20,
+                        ),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                        ],
                         onChanged: (value) {
                           if (value.length == 1 && index < 5) {
                             _focusNodes[index + 1].requestFocus();
                           } else if (value.length == 1 && index == 5) {
                             _focusNodes[index].unfocus();
-                          } else if (value.length == 0 && index > 0) {
+                          } else if (value.isEmpty && index > 0) {
                             _focusNodes[index - 1].requestFocus();
                           }
                         },
@@ -84,12 +103,22 @@ class OTPVerificationLoginScreen extends StatelessWidget {
                   );
                 }),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Obx(() => authController.isLoading.value
-                  ? CircularProgressIndicator()
+                  ? CircularProgressIndicator(
+                      color: AppColor().primaryAppColor,
+                    )
                   : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: AppColor().appTextColor,
+                          backgroundColor: AppColor().primaryAppColor),
                       onPressed: verifyOTP,
-                      child: Text('Verify OTP'),
+                      child: Text(
+                        'Verify OTP',
+                        style: TextStyle(
+                            color: AppColor().appTextColor,
+                            fontFamily: robotoRegular),
+                      ),
                     )),
             ],
           ),
