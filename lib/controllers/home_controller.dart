@@ -15,6 +15,17 @@ class HomeController extends GetxController {
   var weeklyoverHeadAmount = 0.0.obs;
   var weeklyOtherCost = 0.0.obs;
   var weeklyFixedCost = 0.0.obs;
+  var weeklyTrailerRental = 0.0.obs;
+  var weeklyOtherExpenses = 0.0.obs;
+  RxDouble weeklyTotalMileageFee = 0.0.obs;
+  RxDouble weeklyTotalFuel = 0.0.obs;
+  RxDouble weeklyTotalDef = 0.0.obs;
+  RxDouble weeklyTotalDriverPay = 0.0.obs;
+  RxDouble weeklyTotalCostPerMile = 0.0.obs;
+  RxDouble fPermileageFee = 0.0.obs;
+  RxDouble fPerMileFuel = 0.0.obs;
+  RxDouble fPerMileDef = 0.0.obs;
+  RxDouble fPerMileDriverPay = 0.0.obs;
   // RxBool isEditable = true.obs;
   RxBool isEditableTruckPayment = false.obs;
   RxBool isEditableMilage = false.obs;
@@ -70,12 +81,6 @@ class HomeController extends GetxController {
   RxDouble fTruckWeeklyInsurance = 0.0.obs;
   RxDouble fTruckWeeklyTrailerLease = 0.0.obs;
   RxDouble fTruckWeeklyEldServices = 0.0.obs;
-  // ----------- Truck Payment Fetch Values to Show TextformField In Mileage Screen-------
-
-  RxDouble fPermileageFee = 0.0.obs;
-  RxDouble fPerMileFuel = 0.0.obs;
-  RxDouble fPerMileDef = 0.0.obs;
-  RxDouble fPerMileDriverPay = 0.0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -90,7 +95,7 @@ class HomeController extends GetxController {
     fPermileageFee.addListener;
 
     addNewLoad(); // Initialize with the first load
-    fetchHistoryData(); // Fetch data from Firebase
+    // fetchHistoryData(); // Fetch data from Firebase
     FirebaseServices().fetchPerMileageAmount(); // Fetch per-mile cost
     FirebaseServices().fetchFixedWeeklyCost(); // Fetch weekly fixed costs
     fetchMileageValues(); //  This Method is Used To fetch Intial Values of Trcuk Per Mileage fee Payments in Mileage Screen
@@ -173,7 +178,6 @@ class HomeController extends GetxController {
         weeklyEldService.value +
         weeklyoverHeadAmount.value +
         weeklyOtherCost.value;
-
   }
 
   //------------------->Truck Weekly Fixed Cost Value <----------------------
@@ -306,25 +310,25 @@ class HomeController extends GetxController {
     }
   }
 
-  void fetchHistoryData() async {
-    User? user = FirebaseServices().auth.currentUser;
-    if (user != null) {
-      QuerySnapshot querySnapshot = await FirebaseServices()
-          .firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('calculatedValues')
-          .get();
+  // void fetchHistoryData() async {
+  //   User? user = FirebaseServices().auth.currentUser;
+  //   if (user != null) {
+  //     QuerySnapshot querySnapshot = await FirebaseServices()
+  //         .firestore
+  //         .collection('users')
+  //         .doc(user.uid)
+  //         .collection('calculatedValues')
+  //         .get();
 
-      // Process the data from the querySnapshot as needed
-      // For example, convert it to a list of entries
-      List<DocumentSnapshot> documents = querySnapshot.docs;
-      // Update your state with the new data
-      print('Fetched ${documents.length} documents.');
-    } else {
-      print('Error: No user is currently logged in.');
-    }
-  }
+  //     // Process the data from the querySnapshot as needed
+  //     // For example, convert it to a list of entries
+  //     List<DocumentSnapshot> documents = querySnapshot.docs;
+  //     // Update your state with the new data
+  //     print('Fetched ${documents.length} documents.');
+  //   } else {
+  //     print('Error: No user is currently logged in.');
+  //   }
+  // }
 
   void fetchTruckPaymentIntialValues() async {
     Map<String, double> weeklyFixedCosts =
@@ -423,6 +427,4 @@ class HomeController extends GetxController {
       perMileDriverPayController.text = fPerMileDriverPay.value.toString();
     }
   }
-
-
 }
