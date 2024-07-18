@@ -200,17 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               const SizedBox(height: 10),
-              // CardWidget(
-              //   onTap: () {
-              //     Get.to(() => UpdateScreen(
-              //         homeController: homeController, isUpdate: true));
-              //   },
-              //   butonText: 'Update',
-              //   cardText:
-              //       'This is a calculator where you can calculate your expanses',
-              //   cardColor: AppColor().primaryAppColor,
-              // ),
-              // SizedBox(height: 10),
             ],
           );
         }),

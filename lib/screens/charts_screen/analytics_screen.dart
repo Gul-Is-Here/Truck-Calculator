@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:velocity_x/velocity_x.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../app_classes/app_class.dart';
@@ -39,10 +38,6 @@ class CombinedAnalyticsScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.date_range),
-            onPressed: () => AppClass().selectDateRange(context),
-          ),
-          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               barChartController.setSelectedDateRange(null);
@@ -52,31 +47,26 @@ class CombinedAnalyticsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: lineChartController.myLineChart.isEmpty
-          ? const Center(
-              child: Text('No Data available'),
-            )
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                bool isTablet = constraints.maxWidth > 600;
-                return SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: isTablet ? 40 : 20),
-                      const Text(
-                        'Profit/Loss Chart',
-                        style:
-                            TextStyle(fontFamily: robotoRegular, fontSize: 18),
-                      ),
-                      Center(child: _buildCharts(context, isTablet)),
-                      Center(child: _buildFreightChart(context, isTablet)),
-                    ],
-                  ),
-                );
-              },
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          bool isTablet = constraints.maxWidth > 600;
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: isTablet ? 40 : 20),
+                const Text(
+                  'Profit/Loss Chart',
+                  style: TextStyle(fontFamily: robotoRegular, fontSize: 18),
+                ),
+                Center(child: _buildCharts(context, isTablet)),
+                Center(child: _buildFreightChart(context, isTablet)),
+              ],
             ),
+          );
+        },
+      ),
     );
   }
 
@@ -116,9 +106,9 @@ class CombinedAnalyticsScreen extends StatelessWidget {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: SizedBox(
-            width: barChartController.barData.length < 3
+            width: barChartController.barData.length < 2
                 ? MediaQuery.of(context).size.width * .8
-                : barChartController.barData.length * 50.0,
+                : barChartController.barData.length * 85.0,
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceEvenly,
@@ -237,9 +227,9 @@ class CombinedAnalyticsScreen extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: SizedBox(
-          width: lineChartController.myLineChart.length < 3
+          width: lineChartController.myLineChart.length < 2
               ? MediaQuery.of(context).size.width * .8
-              : lineChartController.myLineChart.length * 50.0,
+              : lineChartController.myLineChart.length * 85.0,
           child: Column(
             children: [
               const Text(
@@ -315,9 +305,9 @@ class CombinedAnalyticsScreen extends StatelessWidget {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SizedBox(
-              width: freightLineController.myFreightLineChart.length < 3
+              width: freightLineController.myFreightLineChart.length < 2
                   ? MediaQuery.of(context).size.width * .8
-                  : freightLineController.myFreightLineChart.length * 50.0,
+                  : freightLineController.myFreightLineChart.length * 85,
               child: Column(
                 children: [
                   const Text(
