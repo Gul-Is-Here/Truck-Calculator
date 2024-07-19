@@ -25,8 +25,6 @@ void main() async {
   scheduleWeeklyAlarm();
 }
 
-void printHello() {}
-
 void scheduleWeeklyAlarm() async {
   // Calculate the initial delay until the next Monday at 6 AM
   final now = DateTime.now();
