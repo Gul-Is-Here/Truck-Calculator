@@ -9,7 +9,6 @@ import 'package:dispatched_calculator_app/widgets/card_widget.dart';
 import 'package:dispatched_calculator_app/widgets/my_drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../../services/firebase_services.dart';
@@ -22,39 +21,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HomeController homeController = Get.put(HomeController());
-  late BannerAd bannerAd;
-  bool isAdloaded = false;
-  var addUit = 'ca-app-pub-3940256099942544/9214589741';
 
   final GlobalKey mileageButtonKey = GlobalKey();
   final GlobalKey truckPaymentButtonKey = GlobalKey();
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    initBannerAd();
+
     homeController.fetchMileageValues();
     homeController.fetchTruckPaymentIntialValues();
     FirebaseServices().fetchIsEditabbleMilage();
     FirebaseServices().fetchIsEditabbleTruckPayment();
   }
 
-  initBannerAd() {
-    bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: addUit,
-        listener: BannerAdListener(onAdLoaded: (ad) {
-          setState(() {
-            isAdloaded = true;
-          });
-        }, onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          print(error);
-        }),
-        request: const AdRequest());
-    bannerAd.load();
-  }
 
   toggleDrawer() async {
     if (_scaffoldKey.currentState!.isDrawerOpen) {
@@ -75,13 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     return Scaffold(
-      bottomNavigationBar: isAdloaded
-          ? SizedBox(
-              height: bannerAd.size.height.toDouble(),
-              width: bannerAd.size.width.toDouble(),
-              child: AdWidget(ad: bannerAd),
-            )
-          : const SizedBox(),
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: SafeArea(

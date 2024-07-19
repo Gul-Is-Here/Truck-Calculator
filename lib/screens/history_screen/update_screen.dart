@@ -143,10 +143,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                 },
                                 child: const Text('Edit'),
                               ),
-                              ElevatedButton(
-                                  onPressed: FirebaseServices()
-                                      .transferAndDeleteWeeklyData,
-                                  child: const Text('Delete'))
                             ],
                           ),
                         ),

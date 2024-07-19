@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/login_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
-
+import 'package:velocity_x/velocity_x.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -45,16 +45,16 @@ class _SplashScreenState extends State<SplashScreen> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Exit App'),
-            content: Text('Are you sure you want to exit the app?'),
+            title: const Text('Exit App'),
+            content: const Text('Are you sure you want to exit the app?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
+                child: const Text('No'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
+                child: const Text('Yes'),
               ),
             ],
           ),
@@ -77,7 +77,17 @@ class _SplashScreenState extends State<SplashScreen> {
             Center(
               child: Image.asset(
                 appLogo,
-                height: 150,
+                height: MediaQuery.of(context).size.height * .152,
+                width: MediaQuery.of(context).size.height * .165,
+                fit: BoxFit.cover,
+              ),
+            ),
+            20.heightBox,
+            Center(
+              child: Image.asset(
+                appLogo1,
+                // height: 150,
+                width: 200,
                 fit: BoxFit.cover,
               ),
             ),
