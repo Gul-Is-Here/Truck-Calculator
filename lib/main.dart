@@ -33,27 +33,15 @@ void scheduleWeeklyAlarm() async {
       DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 6);
   nextMondayMorning.difference(now);
   // Schedule the periodic alarm
-  bool documentExists =
-      await FirebaseServices().checkIfCalculatedValuesDocumentExists();
-  if (documentExists) {
-    await AndroidAlarmManager.periodic(
-      const Duration(days: 7), // Interval
-      0, // Unique alarm ID
-      transferAndDeleteWeeklyData,
-      startAt: nextMondayMorning,
-      exact: true,
-      wakeup: true,
-    );
-  } else {
-    await AndroidAlarmManager.periodic(
-      const Duration(days: 7), // Interval
-      0, // Unique alarm ID
-      () {},
-      startAt: nextMondayMorning,
-      exact: true,
-      wakeup: true,
-    );
-  }
+
+  await AndroidAlarmManager.periodic(
+    const Duration(days: 7), // Interval
+    0, // Unique alarm ID
+    transferAndDeleteWeeklyData,
+    startAt: nextMondayMorning,
+    exact: true,
+    wakeup: true,
+  );
 }
 
 void transferAndDeleteWeeklyData() async {
