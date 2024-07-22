@@ -61,11 +61,8 @@ class FirebaseServices {
           'weeklyTrailerLease': weeklyTrailerLease,
           'weeklyEldService': weeklyEldService,
         });
-
-      } catch (e) {
-      }
-    } else {
-    }
+      } catch (e) {}
+    } else {}
   }
 
   Future<void> storePerMileageAmount({
@@ -114,12 +111,9 @@ class FirebaseServices {
             'defFeePerMile': perMileDef,
             'driverPayFeePerMile': perMileDriverPay,
           });
-
         }
-      } catch (e) {
-      }
-    } else {
-    }
+      } catch (e) {}
+    } else {}
   }
 
   Future<Map<String, double>> fetchPerMileageAmount() async {
@@ -148,12 +142,9 @@ class FirebaseServices {
             'defFeePerMile': perMileDef,
             'driverPayFeePerMile': perMileDriverPay,
           };
-        } else {
-        }
-      } catch (e) {
-      }
-    } else {
-    }
+        } else {}
+      } catch (e) {}
+    } else {}
 
     return {
       'milageFeePerMile': 0.0,
@@ -181,13 +172,9 @@ class FirebaseServices {
           await doc.reference.update({
             'isEditabbleMilage': !currentIsEditableMileage,
           });
-
-        } else {
-        }
-      } catch (e) {
-      }
-    } else {
-    }
+        } else {}
+      } catch (e) {}
+    } else {}
   }
 
   Future<bool> fetchIsEditabbleMilage() async {
@@ -254,13 +241,9 @@ class FirebaseServices {
           await doc.reference.update({
             'isEditableTruckPayment': updateisEditableTruckPayment,
           });
-
-        } else {
-        }
-      } catch (e) {
-      }
-    } else {
-    }
+        } else {}
+      } catch (e) {}
+    } else {}
   }
 
   Future<bool> fetchIsEditabbleTruckPayment() async {
@@ -432,8 +415,7 @@ class FirebaseServices {
             }),
           });
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     } else {}
   }
 
@@ -515,8 +497,7 @@ class FirebaseServices {
           .collection('calculatedValues')
           .doc(documentId)
           .update(data);
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<Map<String, dynamic>?> fetchEntryForEditing(String documentId) async {
@@ -531,8 +512,7 @@ class FirebaseServices {
             .get();
 
         return doc.data() as Map<String, dynamic>?;
-      } catch (e) {
-      }
+      } catch (e) {}
     }
     return null;
   }
@@ -554,10 +534,8 @@ class FirebaseServices {
           docId = data['id'];
           return data;
         }).toList();
-      } catch (e) {
-      }
-    } else {
-    }
+      } catch (e) {}
+    } else {}
     return [];
   }
 
@@ -577,7 +555,6 @@ class FirebaseServices {
             now.year, now.month, now.day - now.weekday + 1); // Monday as start
         DateTime endOfWeek =
             startOfWeek.add(Duration(days: 6)); // Sunday as end
-
 
         // Query documents in the calculatedValues subcollection within the current week
         QuerySnapshot calculatedValuesSnapshot = await userDocRef
@@ -627,11 +604,8 @@ class FirebaseServices {
         DocumentReference newHistoryDoc =
             userDocRef.collection('history').doc(historyDocId);
         await newHistoryDoc.set(combinedData);
-
-      } catch (e) {
-      }
-    } else {
-    }
+      } catch (e) {}
+    } else {}
   }
 
   // A method to get data from History Collection
