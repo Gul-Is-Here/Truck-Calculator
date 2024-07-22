@@ -1,4 +1,3 @@
-import 'package:dispatched_calculator_app/app_classes/app_class.dart';
 import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:flutter/material.dart';
 

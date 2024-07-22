@@ -25,17 +25,13 @@ void main() async {
   scheduleWeeklyAlarm();
 }
 
-void printHello() {
-  final DateTime now = DateTime.now();
-}
-
 void scheduleWeeklyAlarm() async {
   // Calculate the initial delay until the next Monday at 6 AM
   final now = DateTime.now();
   final nextMonday = now.add(Duration(days: (8 - now.weekday) % 7));
   final nextMondayMorning =
       DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 6);
-  final initialDelay = nextMondayMorning.difference(now);
+  nextMondayMorning.difference(now);
   // Schedule the periodic alarm
   bool documentExists =
       await FirebaseServices().checkIfCalculatedValuesDocumentExists();
@@ -52,8 +48,7 @@ void scheduleWeeklyAlarm() async {
     await AndroidAlarmManager.periodic(
       const Duration(days: 7), // Interval
       0, // Unique alarm ID
-      () {
-      },
+      () {},
       startAt: nextMondayMorning,
       exact: true,
       wakeup: true,
