@@ -76,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Center(
               child: Image.asset(
-                appLogo,
+                truckLogo,
                 height: 150,
                 fit: BoxFit.cover,
               ),
