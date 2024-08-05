@@ -8,7 +8,6 @@ import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/login_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 

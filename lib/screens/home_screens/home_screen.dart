@@ -33,27 +33,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    initBannerAd();
+
     homeController.fetchMileageValues();
     homeController.fetchTruckPaymentIntialValues();
     FirebaseServices().fetchIsEditabbleMilage();
     FirebaseServices().fetchIsEditabbleTruckPayment();
-  }
-
-  initBannerAd() {
-    bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: addUit,
-        listener: BannerAdListener(onAdLoaded: (ad) {
-          setState(() {
-            isAdloaded = true;
-          });
-        }, onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          print(error);
-        }),
-        request: const AdRequest());
-    bannerAd.load();
   }
 
   toggleDrawer() async {
@@ -75,13 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     return Scaffold(
-      bottomNavigationBar: isAdloaded
-          ? SizedBox(
-              height: bannerAd.size.height.toDouble(),
-              width: bannerAd.size.width.toDouble(),
-              child: AdWidget(ad: bannerAd),
-            )
-          : const SizedBox(),
       drawer: MyDrawerWidget(),
       appBar: AppBar(),
       body: SafeArea(

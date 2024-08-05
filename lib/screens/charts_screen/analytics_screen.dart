@@ -107,7 +107,7 @@ class CombinedAnalyticsScreen extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: SizedBox(
             width: barChartController.barData.length < 2
-                ? MediaQuery.of(context).size.width * .8
+                ? MediaQuery.of(context).size.width * .9
                 : barChartController.barData.length * 85.0,
             child: BarChart(
               BarChartData(
@@ -228,7 +228,7 @@ class CombinedAnalyticsScreen extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: SizedBox(
           width: lineChartController.myLineChart.length < 2
-              ? MediaQuery.of(context).size.width * .8
+              ? MediaQuery.of(context).size.width * .9
               : lineChartController.myLineChart.length * 85.0,
           child: Column(
             children: [
@@ -306,7 +306,7 @@ class CombinedAnalyticsScreen extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: SizedBox(
               width: freightLineController.myFreightLineChart.length < 2
-                  ? MediaQuery.of(context).size.width * .8
+                  ? MediaQuery.of(context).size.width * .98
                   : freightLineController.myFreightLineChart.length * 85,
               child: Column(
                 children: [

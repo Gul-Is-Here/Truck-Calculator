@@ -15,7 +15,6 @@ import 'services/firebase_services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferences.getInstance();
-  // RequestConfiguration request = RequestConfiguration(testDeviceIds: '');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await AndroidAlarmManager.initialize();
   await MobileAds.instance.initialize();
@@ -26,19 +25,17 @@ void main() async {
 }
 
 void scheduleWeeklyAlarm() async {
-  // Calculate the initial delay until the next Monday at 6 AM
   final now = DateTime.now();
   final nextMonday = now.add(Duration(days: (8 - now.weekday) % 7));
   final nextMondayMorning =
-      DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 6);
-  nextMondayMorning.difference(now);
-  // Schedule the periodic alarm
+      DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 5);
+  final initialDelay = nextMondayMorning.difference(now);
 
   await AndroidAlarmManager.periodic(
-    const Duration(days: 7), // Interval
-    0, // Unique alarm ID
+    const Duration(days: 7),
+    0,
     transferAndDeleteWeeklyData,
-    startAt: nextMondayMorning,
+    startAt: DateTime.now().add(initialDelay),
     exact: true,
     wakeup: true,
   );
@@ -51,50 +48,55 @@ void transferAndDeleteWeeklyData() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Dispatched Calculator',
-        theme: ThemeData(
-          appBarTheme: AppBarTheme(
-              color: AppColor().primaryAppColor,
-              iconTheme: AppColor().appDrawerColor),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              textStyle: const TextStyle(
-                  fontFamily: robotoRegular,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-              foregroundColor: AppColor().secondaryAppColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+      debugShowCheckedModeBanner: false,
+      title: 'Dispatched Calculator',
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          color: AppColor().primaryAppColor,
+          iconTheme: AppColor().appDrawerColor,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            textStyle: const TextStyle(
+              fontFamily: robotoRegular,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              textStyle: const TextStyle(
-                  fontFamily: robotoRegular,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-              foregroundColor: AppColor().secondaryAppColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+            foregroundColor: AppColor().secondaryAppColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-          ),
-          cardColor: AppColor().appTextColor,
-          useMaterial3: true,
-          textTheme: TextTheme(
-            bodyLarge: const TextStyle(fontFamily: robotoRegular),
-            bodyMedium: TextStyle(
-                fontFamily: robotoRegular,
-                fontSize: 12,
-                color: AppColor().secondaryAppColor),
-            // bodySmall: TextStyle(fontFamily: 'Raleway'),
           ),
         ),
-        home: const SplashScreen());
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            textStyle: const TextStyle(
+              fontFamily: robotoRegular,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            foregroundColor: AppColor().secondaryAppColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        cardColor: AppColor().appTextColor,
+        useMaterial3: true,
+        textTheme: TextTheme(
+          bodyLarge: const TextStyle(fontFamily: robotoRegular),
+          bodyMedium: TextStyle(
+            fontFamily: robotoRegular,
+            fontSize: 12,
+            color: AppColor().secondaryAppColor,
+          ),
+        ),
+      ),
+      home: const SplashScreen(),
+    );
   }
 }
