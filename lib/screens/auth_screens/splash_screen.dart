@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3100));
     User? user = _auth.currentUser;
     if (user != null) {
       Get.offAll(
@@ -75,8 +75,8 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Center(
               child: Image.asset(
-                truckLogo,
-                height: 150,
+                appLogo,
+                height: 350,
                 fit: BoxFit.cover,
               ),
             ),
