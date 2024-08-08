@@ -46,8 +46,9 @@ class MyDrawerWidget extends StatelessWidget {
                           color: AppColor().primaryAppColor,
                           fontSize: 18)),
                   onTap: () {
-                    Get.off(() => HomeScreen(),
+                    Get.off(() => const HomeScreen(),
                         transition: Transition.cupertino);
+                    Get.back();
                   },
                 ),
                 ListTile(
@@ -63,7 +64,7 @@ class MyDrawerWidget extends StatelessWidget {
                           color: AppColor().primaryAppColor)),
                   onTap: () {
                     Get.off(() => const HistoryScreen());
-                    // Navigator.of(context).pop();
+                    Get.back();
                   },
                 ),
                 ListTile(
@@ -78,7 +79,8 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.off(() => TutorialScreen());
+                    Get.off(() => const TutorialScreen());
+                    Get.back();
                   },
                 ),
                 ListTile(
@@ -94,6 +96,7 @@ class MyDrawerWidget extends StatelessWidget {
                           color: AppColor().primaryAppColor)),
                   onTap: () {
                     Get.off(() => CombinedAnalyticsScreen());
+                    Get.back();
                   },
                 ),
                 ListTile(

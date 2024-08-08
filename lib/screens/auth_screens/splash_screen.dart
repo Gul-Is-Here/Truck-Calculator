@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3100));
+    await Future.delayed(const Duration(seconds: 3));
     User? user = _auth.currentUser;
     if (user != null) {
       Get.offAll(
@@ -44,16 +44,16 @@ class _SplashScreenState extends State<SplashScreen> {
     return (await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Exit App'),
-            content: Text('Are you sure you want to exit the app?'),
+            title: const Text('Exit App'),
+            content: const Text('Are you sure you want to exit the app?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
+                child: const Text('No'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
+                child: const Text('Yes'),
               ),
             ],
           ),
@@ -76,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Center(
               child: Image.asset(
                 appLogo,
-                height: 350,
+                height: 200,
                 fit: BoxFit.cover,
               ),
             ),

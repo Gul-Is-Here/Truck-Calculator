@@ -116,41 +116,51 @@ class HistoryScreen extends StatelessWidget {
                       DateTime.now(); // Fallback if the timestamp is null
                 }
 
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: GestureDetector(
-                    onTap: () {
-                      Get.to(
-                        () => HistoryDetailsScreen(
-                          data: document['data'],
-                          documentId: document['id'],
-                        ),
-                        transition: Transition.circularReveal,
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(
-                              Icons.info_rounded,
-                              size: 40,
-                              color: AppColor().secondaryAppColor,
-                            ),
-                            Column(
-                              children: [
-                                Text(document['id']),
-                                Text(AppClass()
-                                    .formatDateTimeFriendly(dateTime)),
-                              ],
-                            ),
-                          ],
-                        ),
-                        10.heightBox,
-                        const Divider(),
-                      ],
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(
+                      () => HistoryDetailsScreen(
+                        data: document['data'],
+                        documentId: document['id'],
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.to(
+                          () => HistoryDetailsScreen(
+                            data: document['data'],
+                            documentId: document['id'],
+                          ),
+                          transition: Transition.circularReveal,
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(
+                                Icons.info_rounded,
+                                size: 40,
+                                color: AppColor().secondaryAppColor,
+                              ),
+                              Column(
+                                children: [
+                                  Text(document['id']),
+                                  Text(AppClass()
+                                      .formatDateTimeFriendly(dateTime)),
+                                ],
+                              ),
+                            ],
+                          ),
+                          10.heightBox,
+                          const Divider(),
+                        ],
+                      ),
                     ),
                   ),
                 );
