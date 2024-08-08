@@ -8,7 +8,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../app_classes/app_class.dart';
 import '../../constants/colors.dart';
 import '../../constants/fonts_strings.dart';
 import '../../controllers/bar_chart_controller.dart';

@@ -216,21 +216,34 @@ class _LoadScreenState extends State<LoadScreen> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: Text('Delete Load'),
-                                                  content: Text(
+                                                  title:
+                                                      const Text('Delete Load'),
+                                                  content: const Text(
                                                       'Are you sure you want to delete this load?'),
                                                   actions: <Widget>[
                                                     TextButton(
-                                                      child: Text('Cancel'),
+                                                      child:
+                                                          const Text('Cancel'),
                                                       onPressed: () {
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
                                                     ),
                                                     TextButton(
-                                                      child: Text('Delete'),
+                                                      child:
+                                                          const Text('Delete'),
                                                       onPressed: () {
+                                                        print(
+                                                            'widget.isUpdate: ${widget.isUpdate}');
                                                         if (widget.isUpdate) {
+                                                          widget.homeController
+                                                              .removeLoad(
+                                                                  index);
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        } else if (widget
+                                                                .isUpdate ==
+                                                            false) {
                                                           widget.homeController
                                                               .removeLoad(
                                                                   index);
@@ -336,10 +349,11 @@ class _LoadScreenState extends State<LoadScreen> {
                   widget.isUpdate
                       ? TextButton(
                           style: TextButton.styleFrom(
+                            backgroundColor: Colors.white,
                             side:
                                 const BorderSide(width: 1, color: Colors.white),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
                           onPressed: () async {
@@ -604,19 +618,21 @@ class _LoadScreenState extends State<LoadScreen> {
                               }
                             });
                           },
-                          child: const Text(
+                          child: Text(
                             textAlign: TextAlign.center,
                             'Update',
                             style: TextStyle(
-                                color: Colors.white, fontFamily: robotoRegular),
+                                color: AppColor().primaryAppColor,
+                                fontFamily: robotoRegular),
                           ),
                         )
                       : TextButton(
                           style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
                             side:
                                 const BorderSide(width: 1, color: Colors.white),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
                           onPressed: () {
@@ -667,11 +683,12 @@ class _LoadScreenState extends State<LoadScreen> {
                               }
                             });
                           },
-                          child: const Text(
+                          child: Text(
                             textAlign: TextAlign.center,
                             'Submit',
                             style: TextStyle(
-                                color: Colors.white, fontFamily: robotoRegular),
+                                color: AppColor().primaryAppColor,
+                                fontFamily: robotoRegular),
                           ),
                         ),
                 ],
