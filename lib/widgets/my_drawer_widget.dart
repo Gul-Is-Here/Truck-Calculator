@@ -46,7 +46,7 @@ class MyDrawerWidget extends StatelessWidget {
                           color: AppColor().primaryAppColor,
                           fontSize: 18)),
                   onTap: () {
-                    Get.off(() => const HomeScreen(),
+                    Get.offAll(() => const HomeScreen(),
                         transition: Transition.cupertino);
                     Get.back();
                   },
@@ -63,7 +63,7 @@ class MyDrawerWidget extends StatelessWidget {
                           fontFamily: robotoRegular,
                           color: AppColor().primaryAppColor)),
                   onTap: () {
-                    Get.off(() => const HistoryScreen());
+                    Get.offAll(() => const HistoryScreen());
                     Get.back();
                   },
                 ),

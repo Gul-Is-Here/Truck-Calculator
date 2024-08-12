@@ -3,7 +3,9 @@ import 'package:dispatched_calculator_app/constants/colors.dart';
 import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/firebase_options.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/splash_screen.dart';
+import 'package:dispatched_calculator_app/services/notification_services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -18,11 +20,16 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await AndroidAlarmManager.initialize();
   await MobileAds.instance.initialize();
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingbacgroundHandler);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  runApp(const MyApp());
   scheduleWeeklyAlarm();
+  runApp(const MyApp());
 }
+
+// @pragma('vm:entry-point')
+// Future<void> _firebaseMessagingbacgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp();
+// }
 
 void scheduleWeeklyAlarm() async {
   final now = DateTime.now();
@@ -30,7 +37,9 @@ void scheduleWeeklyAlarm() async {
   final nextMondayMorning =
       DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 5);
   final initialDelay = nextMondayMorning.difference(now);
-
+  print('intial Delay: $initialDelay');
+  print('nextMonday : $nextMonday');
+  print('nextMondayMorning : $nextMondayMorning');
   await AndroidAlarmManager.periodic(
     const Duration(days: 7),
     0,

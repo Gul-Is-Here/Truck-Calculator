@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dispatched_calculator_app/services/notification_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -81,9 +82,15 @@ class HomeController extends GetxController {
   RxDouble fTruckWeeklyInsurance = 0.0.obs;
   RxDouble fTruckWeeklyTrailerLease = 0.0.obs;
   RxDouble fTruckWeeklyEldServices = 0.0.obs;
+  // NotificationServices notifications = NotificationServices();
   @override
   void onInit() {
     super.onInit();
+    // notifications.requestNotificationPermission();
+    // notifications.getDeviceToken().then((value) {
+    //   print('Device token');
+    //   print(value);
+    // });
     tTruckPaymentController.addListener(_calculateFixedCost);
     tInsuranceController.addListener(_calculateFixedCost);
     tTrailerLeaseController.addListener(_calculateFixedCost);

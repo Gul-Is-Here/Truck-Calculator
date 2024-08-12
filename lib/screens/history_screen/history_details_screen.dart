@@ -541,194 +541,169 @@ class HistoryDetailsScreen extends StatelessWidget {
                             ),
                           ),
                           10.heightBox,
-                          data['calculatedValues'][index]['loads'].isEmpty ||
-                                  data['calculatedValues'][index]['loads'] ==
-                                      null
-                              ? const Center(
-                                  child: Text(
-                                  'No load added this week',
-                                  style: TextStyle(
-                                      fontFamily: robotoRegular, fontSize: 12),
-                                ))
-                              : SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.28,
-                                  child: ListView(
-                                    physics: const BouncingScrollPhysics(),
-                                    scrollDirection: Axis.horizontal,
-                                    children: List.generate(
-                                        data['calculatedValues'][index]['loads']
-                                            .length, (loadIndex) {
-                                      var load = data['calculatedValues'][index]
-                                          ['loads'][loadIndex];
-                                      return SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .8,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          child: Card(
-                                            elevation: 5,
-                                            shape: RoundedRectangleBorder(
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.28,
+                            child: ListView(
+                              physics: const BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              children: List.generate(
+                                  data['calculatedValues'][index]['loads']
+                                      .length, (loadIndex) {
+                                var load = data['calculatedValues'][index]
+                                    ['loads'][loadIndex];
+                                return SizedBox(
+                                  width: MediaQuery.of(context).size.width * .8,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
+                                    child: Card(
+                                      elevation: 5,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusDirectional.only(
+                                                  topStart: Radius.circular(10),
+                                                  topEnd: Radius.circular(10))),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
                                                 borderRadius:
-                                                    BorderRadiusDirectional
-                                                        .only(
-                                                            topStart:
-                                                                Radius.circular(
-                                                                    10),
-                                                            topEnd:
-                                                                Radius.circular(
-                                                                    10))),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      color: AppColor()
-                                                          .secondaryAppColor),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 8),
-                                                    child: Text(
-                                                      '${loadIndex + 1}',
-                                                      style: TextStyle(
-                                                        fontFamily:
-                                                            robotoRegular,
-                                                        fontSize: 19,
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
+                                                    BorderRadius.circular(10),
+                                                color: AppColor()
+                                                    .secondaryAppColor),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8),
+                                              child: Text(
+                                                '${loadIndex + 1}',
+                                                style: TextStyle(
+                                                  fontFamily: robotoRegular,
+                                                  fontSize: 19,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
-                                                10.heightBox,
-                                                Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      12.0),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            'Dispatched Miles',
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                          Text(
-                                                            'Freight Charges',
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                          Text(
-                                                            'Estimated Tolls',
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                          Text(
-                                                            'Other Cost',
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                        ],
-                                                      ),
-                                                      20.widthBox,
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            "\$${load['dispatchedMiles'].toString()}",
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                          Text(
-                                                            "\$${load['freightCharge'].toString()}",
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                          Text(
-                                                            "\$${load['estimatedTolls'].toString()}",
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                          Text(
-                                                            "\$${load['otherCosts'].toString()}",
-                                                            style: TextStyle(
-                                                                color: AppColor()
-                                                                    .secondaryAppColor,
-                                                                fontFamily:
-                                                                    robotoRegular,
-                                                                fontSize: 13),
-                                                          ),
-                                                          10.heightBox,
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
+                                              ),
+                                            ),
+                                          ),
+                                          10.heightBox,
+                                          Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Dispatched Miles',
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                    Text(
+                                                      'Freight Charges',
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                    Text(
+                                                      'Estimated Tolls',
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                    Text(
+                                                      'Other Cost',
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                  ],
+                                                ),
+                                                20.widthBox,
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "\$${load['dispatchedMiles'].toString()}",
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                    Text(
+                                                      "\$${load['freightCharge'].toString()}",
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                    Text(
+                                                      "\$${load['estimatedTolls'].toString()}",
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                    Text(
+                                                      "\$${load['otherCosts'].toString()}",
+                                                      style: TextStyle(
+                                                          color: AppColor()
+                                                              .secondaryAppColor,
+                                                          fontFamily:
+                                                              robotoRegular,
+                                                          fontSize: 13),
+                                                    ),
+                                                    10.heightBox,
+                                                  ],
                                                 )
                                               ],
                                             ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
+                                          )
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                );
+                              }),
+                            ),
+                          ),
                         ],
                       ),
                     ),

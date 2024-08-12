@@ -8,6 +8,8 @@ import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/login_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 
+import '../../services/notification_services.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -25,7 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
     FirebaseServices().fetchIsEditabbleTruckPayment();
     FirebaseServices().fetchIsEditabbleMilage();
     _navigateToNextScreen();
-    scheduleWeeklyAlarm();
   }
 
   Future<void> _navigateToNextScreen() async {
@@ -63,6 +64,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // NotificationServices().firebaseInit(context);
+
     return PopScope(
       onPopInvoked: (didPop) {
         _onWillPop();

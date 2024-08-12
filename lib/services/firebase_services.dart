@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dispatched_calculator_app/controllers/home_controller.dart';
+import 'package:dispatched_calculator_app/services/notification_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -540,6 +542,9 @@ class FirebaseServices {
   }
 
   Future<void> transferAndDeleteWeeklyData() async {
+    print('transferAndDeleteWeeklyData triggered');
+
+    await Firebase.initializeApp();
     User? user = FirebaseAuth.instance.currentUser;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -555,6 +560,10 @@ class FirebaseServices {
             now.year, now.month, now.day - now.weekday + 1); // Monday as start
         DateTime endOfWeek =
             startOfWeek.add(Duration(days: 6)); // Sunday as end
+
+        // Log the start and end dates of the week
+        print('Start of Week: $startOfWeek');
+        print('End of Week: $endOfWeek');
 
         // Query documents in the calculatedValues subcollection within the current week
         QuerySnapshot calculatedValuesSnapshot = await userDocRef
@@ -584,8 +593,13 @@ class FirebaseServices {
         // Add calculated values data
         for (QueryDocumentSnapshot doc in calculatedValuesSnapshot.docs) {
           combinedData['calculatedValues'].add(doc.data());
-          // Delete the document from the calculatedValues collection
-          await doc.reference.delete();
+          // Attempt to delete the document from the calculatedValues collection
+          try {
+            await doc.reference.delete();
+            print('Document ${doc.id} deleted successfully.');
+          } catch (e) {
+            print('Error deleting document ${doc.id}: $e');
+          }
         }
 
         // Add mileage fee data without deleting
@@ -604,8 +618,14 @@ class FirebaseServices {
         DocumentReference newHistoryDoc =
             userDocRef.collection('history').doc(historyDocId);
         await newHistoryDoc.set(combinedData);
-      } catch (e) {}
-    } else {}
+
+        print('Data transferred and deleted successfully.');
+      } catch (e) {
+        print('Error in transferAndDeleteWeeklyData: $e');
+      }
+    } else {
+      print('No user is logged in.');
+    }
   }
 
   // A method to get data from History Collection
@@ -640,4 +660,16 @@ class FirebaseServices {
       return [];
     }
   }
+ 
+  //   Future<void> saveDeviceToken() async {
+  //   User? user = auth.currentUser;
+  //   if (user != null) {
+  //     String? token = await NotificationServices().getDeviceToken();
+  //     if (token != null) {
+  //       await firestore.collection('users').doc(user.uid).set({
+  //         'deviceToken': token,
+  //       }, SetOptions(merge: true));
+  //     }
+  //   }
+  // }
 }

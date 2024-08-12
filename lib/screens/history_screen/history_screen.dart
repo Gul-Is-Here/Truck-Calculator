@@ -82,12 +82,29 @@ class HistoryScreen extends StatelessWidget {
 
             // Sort the historyData by updateTime in descending order
             historyData.sort((a, b) {
-              var aTime =
-                  a['data']['calculatedValues'][0]['updateTime']?.toDate() ??
-                      DateTime(1970);
-              var bTime =
-                  b['data']['calculatedValues'][0]['updateTime']?.toDate() ??
-                      DateTime(1970);
+              DateTime aTime = DateTime(1970);
+              DateTime bTime = DateTime(1970);
+
+              if (a['data']['calculatedValues'] != null &&
+                  a['data']['calculatedValues'].isNotEmpty) {
+                var aTimestamp = a['data']['calculatedValues'][0]['updateTime'];
+                if (aTimestamp is Timestamp) {
+                  aTime = aTimestamp.toDate();
+                } else if (aTimestamp is DateTime) {
+                  aTime = aTimestamp;
+                }
+              }
+
+              if (b['data']['calculatedValues'] != null &&
+                  b['data']['calculatedValues'].isNotEmpty) {
+                var bTimestamp = b['data']['calculatedValues'][0]['updateTime'];
+                if (bTimestamp is Timestamp) {
+                  bTime = bTimestamp.toDate();
+                } else if (bTimestamp is DateTime) {
+                  bTime = bTimestamp;
+                }
+              }
+
               return bTime.compareTo(aTime);
             });
 
@@ -127,7 +144,7 @@ class HistoryScreen extends StatelessWidget {
                   },
                   child: Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
                     child: GestureDetector(
                       onTap: () {
                         Get.to(
