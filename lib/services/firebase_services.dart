@@ -3,6 +3,7 @@ import 'package:dispatched_calculator_app/controllers/home_controller.dart';
 import 'package:dispatched_calculator_app/services/notification_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -661,15 +662,40 @@ class FirebaseServices {
     }
   }
  
-  //   Future<void> saveDeviceToken() async {
-  //   User? user = auth.currentUser;
-  //   if (user != null) {
-  //     String? token = await NotificationServices().getDeviceToken();
-  //     if (token != null) {
-  //       await firestore.collection('users').doc(user.uid).set({
-  //         'deviceToken': token,
-  //       }, SetOptions(merge: true));
-  //     }
-  //   }
-  // }
+    Future<void> saveDeviceToken() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      String? token = await NotificationServices().getDeviceToken();
+      if (token != null) {
+        await firestore.collection('users').doc(user.uid).set({
+          'deviceToken': token,
+        }, SetOptions(merge: true));
+      }
+    }
+  }
+  void setupTokenRefreshListener() {
+  FirebaseMessaging.instance.onTokenRefresh.listen((String newToken) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        // Update the device token in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'deviceToken': newToken,
+        }, SetOptions(merge: true));
+        print("Device token updated successfully.");
+      } catch (e) {
+        print("Error updating device token: $e");
+      }
+    }
+  });
+}
+void onUserAuthenticated(User user) {
+  // Store the initial device token
+  saveDeviceToken();
+  
+  // Set up listener to handle token refresh
+  setupTokenRefreshListener();
+}
+
+
 }

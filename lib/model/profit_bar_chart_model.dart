@@ -12,11 +12,18 @@ class BarData {
   });
 
   factory BarData.fromMap(Map<String, dynamic> map) {
+    // Extract fields from the map with null safety
+    final totalDispatchedMiles = map['totalDispatchedMiles']?.toDouble();
+    final transferTimestamp = map['transferTimestamp']?.toDate();
+    final totalProfit = map['totalProfit']?.toDouble();
+
+    // Handle the possibility of null values
     return BarData(
-      value2: map['totalDispatchedMiles'].toDouble(),
-      // label2: AppClass().formatDateSpecific(map['transferTimestamp'].toDate()),
-      label: AppClass().formatDateSpecific(map['transferTimestamp'].toDate()),
-      value: map['totalProfit'].toDouble(),
+      value2: totalDispatchedMiles ?? 0.0, // Default to 0.0 if null
+      label: transferTimestamp != null
+          ? AppClass().formatDateSpecific(transferTimestamp)
+          : 'No Date', // Default label if date is null
+      value: totalProfit ?? 0.0, // Default to 0.0 if null
     );
   }
 }

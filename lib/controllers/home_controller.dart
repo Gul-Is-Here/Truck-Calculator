@@ -82,15 +82,15 @@ class HomeController extends GetxController {
   RxDouble fTruckWeeklyInsurance = 0.0.obs;
   RxDouble fTruckWeeklyTrailerLease = 0.0.obs;
   RxDouble fTruckWeeklyEldServices = 0.0.obs;
-  // NotificationServices notifications = NotificationServices();
+  NotificationServices notifications = NotificationServices();
   @override
   void onInit() {
     super.onInit();
-    // notifications.requestNotificationPermission();
-    // notifications.getDeviceToken().then((value) {
-    //   print('Device token');
-    //   print(value);
-    // });
+    notifications.requestNotificationPermission();
+    notifications.getDeviceToken().then((value) {
+      print('Device token');
+      print(value);
+    });
     tTruckPaymentController.addListener(_calculateFixedCost);
     tInsuranceController.addListener(_calculateFixedCost);
     tTrailerLeaseController.addListener(_calculateFixedCost);

@@ -8,6 +8,7 @@ import 'package:dispatched_calculator_app/constants/image_strings.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/login_screen.dart';
 import 'package:dispatched_calculator_app/screens/home_screens/home_screen.dart';
 
+import '../../controllers/auth_controller.dart';
 import '../../services/notification_services.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     FirebaseServices().fetchIsEditabbleTruckPayment();
     FirebaseServices().fetchIsEditabbleMilage();
     _navigateToNextScreen();
+    
   }
 
   Future<void> _navigateToNextScreen() async {

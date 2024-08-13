@@ -4,6 +4,7 @@ import 'package:dispatched_calculator_app/constants/fonts_strings.dart';
 import 'package:dispatched_calculator_app/firebase_options.dart';
 import 'package:dispatched_calculator_app/screens/auth_screens/splash_screen.dart';
 import 'package:dispatched_calculator_app/services/notification_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -12,47 +13,80 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'controllers/auth_controller.dart';
 import 'services/firebase_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferences.getInstance();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await AndroidAlarmManager.initialize();
-  await MobileAds.instance.initialize();
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingbacgroundHandler);
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  scheduleWeeklyAlarm();
+
+  try {
+    await SharedPreferences.getInstance();
+    await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform)
+        .then((_) {
+      FirebaseAuth.instance.authStateChanges().listen((User? user) {
+        if (user != null) {
+          AuthController().onUserAuthenticated(user);
+        }
+      });
+    });
+    await MobileAds.instance.initialize();
+
+    // Initialize FlutterLocalNotificationsPlugin here
+    await NotificationServices().initializeNotification();
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    await scheduleWeeklyAlarm(); // Ensure this completes before running the app
+  } catch (e) {
+    print("Error during initialization: $e");
+  }
+
   runApp(const MyApp());
 }
 
-// @pragma('vm:entry-point')
-// Future<void> _firebaseMessagingbacgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-// }
-
-void scheduleWeeklyAlarm() async {
-  final now = DateTime.now();
-  final nextMonday = now.add(Duration(days: (8 - now.weekday) % 7));
-  final nextMondayMorning =
-      DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 5);
-  final initialDelay = nextMondayMorning.difference(now);
-  print('intial Delay: $initialDelay');
-  print('nextMonday : $nextMonday');
-  print('nextMondayMorning : $nextMondayMorning');
-  await AndroidAlarmManager.periodic(
-    const Duration(days: 7),
-    0,
-    transferAndDeleteWeeklyData,
-    startAt: DateTime.now().add(initialDelay),
-    exact: true,
-    wakeup: true,
-  );
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  try {
+    await Firebase.initializeApp();
+    await NotificationServices().initializeNotification();
+    await NotificationServices().showNotification(message);
+  } catch (e) {
+    print("Error in background message handler: $e");
+  }
 }
 
-void transferAndDeleteWeeklyData() async {
-  await Firebase.initializeApp();
-  await FirebaseServices().transferAndDeleteWeeklyData();
+Future<void> scheduleWeeklyAlarm() async {
+  try {
+    final now = DateTime.now();
+    final nextMonday = now.add(Duration(days: (8 - now.weekday) % 7));
+    final nextMondayMorning =
+        DateTime(nextMonday.year, nextMonday.month, nextMonday.day, 5);
+    final initialDelay = nextMondayMorning.difference(now);
+    print('Initial Delay: $initialDelay');
+    print('Next Monday: $nextMonday');
+    print('Next Monday Morning: $nextMondayMorning');
+
+    await AndroidAlarmManager.periodic(
+      const Duration(days: 7),
+      0,
+      transferAndDeleteWeeklyData,
+      startAt: DateTime.now().add(initialDelay),
+      exact: true,
+      wakeup: true,
+    );
+  } catch (e) {
+    print("Error scheduling weekly alarm: $e");
+  }
+}
+
+Future<void> transferAndDeleteWeeklyData() async {
+  try {
+    await Firebase.initializeApp();
+    await FirebaseServices().transferAndDeleteWeeklyData();
+  } catch (e) {
+    print("Error transferring and deleting weekly data: $e");
+  }
 }
 
 class MyApp extends StatelessWidget {

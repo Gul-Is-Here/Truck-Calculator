@@ -1,4 +1,6 @@
 import 'package:dispatched_calculator_app/constants/colors.dart';
+import 'package:dispatched_calculator_app/services/firebase_services.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -158,7 +160,10 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
-
+  void onUserAuthenticated(User user) {
+ FirebaseServices().saveDeviceToken();
+  FirebaseServices().setupTokenRefreshListener();
+}
   Future<void> _registerUserWithCredential(PhoneAuthCredential credential,
       String name, String email, String phone) async {
     UserCredential userCredential =
@@ -187,4 +192,23 @@ class AuthController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
     }
   }
+  void setupTokenRefreshListener() {
+  FirebaseMessaging.instance.onTokenRefresh.listen((String newToken) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        // Update the device token in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'deviceToken': newToken,
+        }, SetOptions(merge: true));
+        print("Device token updated successfully.");
+      } catch (e) {
+        print("Error updating device token: $e");
+      }
+    }
+  }).onError((error) {
+    print("Error setting up token refresh listener: $error");
+  });
+}
+
 }
